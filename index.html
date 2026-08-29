@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vinyl Set Builder</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background:#0d0d0f; color:#e8e6e3; font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin:0; padding:48px 24px; }
+  main { max-width:680px; margin:0 auto; }
+  h1 { font-size:2rem; letter-spacing:-.02em; margin:0 0 .25em; }
+  h2 { font-size:1.1rem; margin:2.5em 0 .6em; color:#9ecbff; }
+  .sub { color:#8b949e; margin:0 0 2em; }
+  a { color:#58a6ff; }
+  ol { padding-left:1.2em; }
+  li { margin:.4em 0; }
+  .src { border-left:3px solid #30363d; padding:.1em 0 .1em 1em; margin:1em 0; }
+  footer { margin-top:3em; color:#6e7681; font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Vinyl Set Builder</h1>
+  <p class="sub">Photograph vinyl labels. Resolve the metadata. Auto-sequence a mixable DJ set.</p>
+
+  <p>Point an iPhone at a record label. On-device Vision OCR reads the track listing, the
+  tracks are resolved against music metadata services, and a BPM-gated, harmonically-aware
+  sequencer orders the crate into a set you can actually play.</p>
+
+  <h2>How it works</h2>
+  <ol>
+    <li><strong>Capture</strong> — shoot each vinyl label, one side at a time</li>
+    <li><strong>OCR</strong> — Apple Vision reads the label text with bounding boxes</li>
+    <li><strong>Segment</strong> — deterministic geometric clustering splits the label into individual tracks</li>
+    <li><strong>Resolve</strong> — each track is matched to artist, title, BPM and musical key</li>
+    <li><strong>Sequence</strong> — a beam search finds the longest playable run under a BPM tolerance gate, minimising Camelot-wheel distance between neighbours</li>
+  </ol>
+
+  <h2>Data sources</h2>
+
+  <div class="src">
+    <p>BPM and musical key data is provided by
+    <a href="https://getsongbpm.com" target="_blank" rel="noopener">GetSongBPM</a>.
+    Tempo and key information powering the set sequencer comes from
+    <a href="https://getsongbpm.com" target="_blank" rel="noopener">https://getsongbpm.com</a>.</p>
+  </div>
+
+  <div class="src">
+    <p>Release, artist, label and pressing metadata from
+    <a href="https://www.discogs.com" target="_blank" rel="noopener">Discogs</a>.</p>
+  </div>
+
+  <div class="src">
+    <p>Open music encyclopedia data from
+    <a href="https://musicbrainz.org" target="_blank" rel="noopener">MusicBrainz</a>,
+    used as a resolution fallback.</p>
+  </div>
+
+  <h2>Source</h2>
+  <p><a href="https://github.com/rishi-zamvar/VinylSetBuilder">github.com/rishi-zamvar/VinylSetBuilder</a></p>
+
+  <footer>
+    Personal project, iOS 17+ / SwiftUI. Not distributed.<br>
+    Powered by <a href="https://getsongbpm.com">GetSongBPM</a>.
+  </footer>
+</main>
+</body>
+</html>
