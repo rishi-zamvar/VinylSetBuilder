@@ -37,9 +37,18 @@ add more, it has done its job. Scanning is only the input method.
 
 ### Out of Scope
 
-- **Audio analysis of any kind** — there is no audio. The app sees photographs of paper
-  labels. This also kills the spec's original AcoustID fallback, which fingerprints audio
-  and can therefore never fire here.
+- **Hand-written DSP** — Apple's Music Understanding framework does tempo and key
+  extraction on-device. We write no signal-processing maths, and we do not vendor aubio
+  or Essentia.
+- **AcoustID fingerprinting** — it matches a fingerprint to a *known recording*; it does
+  not produce tempo or key, and it needs the audio to already be identified. Music
+  Understanding replaces the reason we wanted it.
+- **Microphone capture of the record playing** — considered and deferred. It is the only
+  route that resolves a dubplate present nowhere online, but it costs ~30s per record with
+  the record actually playing, which contradicts the "scan 20 without waiting" goal.
+  Revisit if the SoundCloud hit-rate proves too low.
+- **YouTube audio extraction** — signature-cipher extraction is fragile and breaks
+  constantly, and it analyses a different master than the pressing in hand.
 - **Playback** — this builds the set; Rekordbox and the CDJs play it.
 - **Cloud sync / accounts / sharing** — single user, single device, no auth.
 - **App Store distribution** — personal build. Directly enables bundling API keys.
@@ -78,12 +87,20 @@ synthetic images.
 
 ## Constraints
 
-- **Tech stack**: Swift only, SwiftUI, iOS 17+. No Python runtime, no embedded interpreter.
+- **Tech stack**: Swift only, SwiftUI, **iOS 27+**. No Python runtime, no embedded interpreter.
   URLSession covers every API call.
-- **OCR**: Apple Vision (`VNRecognizeTextRequest`, `.accurate`). On-device, free, no model
-  bundling, no network.
+- **iOS 27 deployment target is deliberate and load-bearing**: it is the minimum for Apple's
+  Music Understanding framework, which supplies BPM and key. iOS 27 general release is
+  ~14 September 2026; the device runs the public beta until then. This also unlocks the
+  modern Swift-native Vision `RecognizeTextRequest` (iOS 18+).
+- **OCR**: Apple Vision, `.accurate` recognition level. On-device, free, no model bundling,
+  no network. On an iOS 27 target the Swift-native `RecognizeTextRequest` is available and
+  preferred over the older `VNRecognizeTextRequest`.
+- **BPM + key**: Apple Music Understanding (`MusicUnderstandingSession`), on-device,
+  offline, no API key, no rate limit, no licence encumbrance.
 - **Persistence**: SwiftData, on-device only.
-- **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning.
+- **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning. The 14 Pro
+  is supported by iOS 27.
 - **Public repo**: the GitHub repo must stay public because GetSongBPM requires a
   verifiable backlink. Therefore **no secret may ever be committed**. Keys are generated
   into a gitignored `Secrets.swift` at build time from `~/.config/keys/` — compiled into
@@ -107,6 +124,14 @@ synthetic images.
 | Bundle a pruned `walkman-dj/library.db` as tier-0 resolution | 7,010 rows with both BPM and Camelot, same genres, free, offline, zero latency. Strictly better than an API call. | — Pending |
 | Keys in gitignored generated `Secrets.swift`, not committed | Repo must be public for the GetSongBPM backlink; keys still compile into the binary as requested. | — Pending |
 | Paid Apple Developer account | 1-year provisioning, no weekly re-sign friction. | — Pending |
+| **Target iOS 27; use Apple Music Understanding for BPM + key** | Ships on-device tempo (`RhythmResult.beatsPerMinute`) and key (`KeySignature`) from an `AVAsset`, offline, free, Apple-maintained. Eliminates GetSongBPM, its mandatory backlink, the blocked GitHub Actions dependency, and all hand-rolled DSP in one move. | — Pending |
+| **SoundCloud is the audio source for analysis** | Working OAuth already proven in CrateDig. Jungle/DnB promos and white-label rips live there precisely when they have no Discogs entry. Fetch → analyse → discard. | — Pending |
+| **Drop GetSongBPM entirely** | Its mandatory backlink cannot be satisfied: GitHub does not server-render READMEs, and GitHub Pages cannot build because Actions is disabled at the account level. Music Understanding removes the need. | — Pending |
+| **Spotify ruled out empirically** | `/v1/audio-features` returns 403 for the owner's credentials — the client is not grandfathered past the Nov 2024 deprecation. Tested, not assumed. | ✓ Good |
+| **Sequencer is the product; OCR is commodity** | VinylBPM already ships label OCR → Discogs → Camelot on the App Store. Nothing models one-track-per-physical-record with re-optimisation. Effort goes to the sequencer. | — Pending |
+| **Non-decreasing BPM is a documented ceiling, not a truth** | Real sets arc (warm-up → peak → cool-down). Monotonic BPM is kept for MVP because it makes the DAG tractable, and recorded as a known simplification to revisit. | — Pending |
+| **Segmentation strategy is decided by a Phase 1 spike, not up front** | Vision models straight baselines and cannot follow a baseline curving within a line. Radial clustering also contradicts a plain-paper white-label collection. Measure the real fixture split first. | — Pending |
+| **Core/app package split** | Segmentation + sequencing live in a Swift package that never links AVFoundation or URLSession, making "no camera, no network in tests" a compile-time fact. | — Pending |
 
 ## Evolution
 
@@ -126,4 +151,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-29 after initialization*
+*Last updated: 2026-08-29 after research — pivoted to iOS 27 + Music Understanding*
