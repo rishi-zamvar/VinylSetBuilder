@@ -295,6 +295,18 @@ final class CaptureWalkUITests: XCTestCase {
         let lines = lineCount()
         XCTAssertEqual(lines, 11, "IMG_0505 has 11 trusted observations; the draft opened with \(lines) lines")
 
+        // The other half of "does truncation make two lines read identically". It does not need
+        // truncation to: the over-split draft (D-03-4) carries the SAME string twice when the
+        // OCR read it off two surfaces of one sleeve. Recorded rather than asserted, because the
+        // duplicate is a property of the photograph, not of this screen.
+        var lineTexts: [String] = []
+        for n in 1...lines {
+            lineTexts.append((app.textFields["inspect-line-field-\(n)"].value as? String) ?? "")
+        }
+        let duplicates = Dictionary(grouping: lineTexts, by: { $0 }).filter { $0.value.count > 1 }.keys.sorted()
+        print("WALK12 V13 IMG_0505 lines = \(lineTexts)")
+        print("WALK12 V13 IMG_0505 duplicate line texts = \(duplicates)")
+
         XCTAssertFalse(app.staticTexts["inspect-raw-obs-1"].exists,
                        "OCR-04: the raw text is expanded before anyone asked for it")
         app.buttons["inspect-raw-text-section"].tap()
@@ -315,6 +327,18 @@ final class CaptureWalkUITests: XCTestCase {
         XCTAssertTrue(row3.contains("0.30"), "OCR-04: observation 3 came back at 0.30; the sheet says '\(row3)'")
         XCTAssertGreaterThan(row3.count, 100,
                              "V13: expected the 106-character read on row 3; got \(row3.count) characters")
+
+        // **V13, the half a photograph cannot answer.** Row 3 sits at the bottom edge of the
+        // frame, so whether the 106-character read WRAPS onto further lines or is cut off is not
+        // visible in the picture. Height answers it: a wrapped row is several times taller than
+        // a one-line row, and rows 1 and 2 are the one-line control.
+        for n in 1...3 {
+            print("WALK12 V13 raw row \(n) height = \(app.staticTexts["inspect-raw-obs-\(n)"].frame.height)pt")
+        }
+        let oneLine = app.staticTexts["inspect-raw-obs-1"].frame.height
+        let longRow = app.staticTexts["inspect-raw-obs-3"].frame.height
+        XCTAssertGreaterThan(longRow, oneLine * 1.5,
+                             "V13: the 106-character read renders at \(longRow)pt against a one-line row's \(oneLine)pt — it is being cut off, not wrapped")
 
         capture("03-walk-06-inspect-raw-text")
         closeSheet()
