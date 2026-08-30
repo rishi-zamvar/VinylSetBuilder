@@ -46,8 +46,18 @@ public struct CaptureItem: Identifiable, Sendable, Hashable {
     ///
     /// An all-whitespace reading is treated as no reading: a blank thumbnail label is a defect,
     /// not a name.
+    ///
+    /// **V12.** It takes the first trusted reading the SEG-03 noise filter KEEPS, not simply the
+    /// first trusted reading. Text order out of the reader is spatial, not semantic, so whatever
+    /// scrap sits highest-left on the sleeve arrives first — and on IMG_0503 that is `Zzz.`, a
+    /// shard of a shop price sticker, which titled that record on three separate screens for the
+    /// whole of Act I. The next kept reading is `Cause 4 Concern-`.
+    ///
+    /// The filter is shared with the segmenter on purpose: one definition of "not a track line",
+    /// used by the thing that names records and by the thing that lists them.
     public var displayLabel: String {
-        for observation in observations where observation.confidence >= 1.0 {
+        for observation in observations
+        where TrackTextFilter.isTrusted(observation) && !TrackTextFilter.isNoise(observation.text) {
             let trimmed = observation.text.trimmingCharacters(in: .whitespacesAndNewlines)
             if !trimmed.isEmpty { return trimmed }
         }
