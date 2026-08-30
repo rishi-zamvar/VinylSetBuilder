@@ -93,6 +93,14 @@ extension CrateDetailModel {
     /// CRATE-04. Takes the shape a list's move handler hands over. Computed from the
     /// *currently displayed* order, so a drag on an already-manual list composes. Out-of-range
     /// offsets are ignored rather than trapping — a drag is not worth crashing over.
+    ///
+    /// **V18.** A drag that produces the order already on screen is a no-op, and a no-op may
+    /// not commit anything: writing `manualOrder` for an identity move put the crate into
+    /// `.manual` — *Custom order* header, *Restore* action — over the sequencer's own order,
+    /// with nothing to restore. Leaving `manualOrder` untouched (rather than clearing it) is
+    /// what makes the guard correct in BOTH directions: a sequenced list stays `nil`, and a
+    /// list the user already arranged by hand keeps that arrangement. `ManualOrderTests`
+    /// asserts each direction separately.
     public mutating func moveRows(fromOffsets: IndexSet, toOffset: Int) {
         let ids = rows.sequenced.map(\.id)
         guard !ids.isEmpty,
@@ -100,7 +108,10 @@ extension CrateDetailModel {
               (0...ids.count).contains(toOffset)
         else { return }
 
-        crate.manualOrder = Self.moved(ids, fromOffsets: fromOffsets, toOffset: toOffset)
+        let order = Self.moved(ids, fromOffsets: fromOffsets, toOffset: toOffset)
+        guard order != ids else { return }
+
+        crate.manualOrder = order
         rebuildRows()
     }
 
