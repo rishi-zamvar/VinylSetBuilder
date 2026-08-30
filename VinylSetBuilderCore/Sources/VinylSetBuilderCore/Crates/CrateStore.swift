@@ -1,0 +1,100 @@
+import Foundation
+
+/// The crate-management reducer: CRATE-01 (list), CRATE-02 (create + route in one call),
+/// CRATE-06 (delete crate / remove vinyl), and CRATE-07 (per-crate track selection) as a
+/// pure value type. No view framework, no I/O — the app target owns the one `@Observable` wrapper.
+public struct CrateStore: Sendable, Equatable {
+    public private(set) var crates: [Crate]     // newest first
+    public var route: Route
+
+    public init(crates: [Crate] = [], route: Route = .crateList) {
+        self.crates = crates
+        self.route = route
+    }
+
+    // MARK: CRATE-01
+
+    public var summaries: [CrateSummary] {
+        crates.map { CrateSummary(id: $0.id, name: $0.name, recordCount: $0.recordCount) }
+    }
+
+    public func crate(_ id: UUID) -> Crate? {
+        crates.first { $0.id == id }
+    }
+
+    // MARK: CRATE-02 — creating and routing are ONE operation, never two
+
+    @discardableResult
+    public mutating func createCrate(named rawName: String, now: Date = Date()) -> UUID {
+        let trimmed = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let name = trimmed.isEmpty ? "Untitled Crate" : trimmed
+        let crate = Crate(name: name, createdAt: now, bpmTolerance: BPMRules.defaultTolerance)
+        crates.insert(crate, at: 0)   // newest first
+        route = .capture(crateID: crate.id)
+        return crate.id
+    }
+
+    // MARK: CRATE-06
+
+    public mutating func deleteCrate(_ id: UUID) {
+        crates.removeAll { $0.id == id }
+        if case .capture(let crateID) = route, crateID == id { route = .crateList }
+        if case .crateDetail(let crateID) = route, crateID == id { route = .crateList }
+    }
+
+    public mutating func removeVinyl(_ vinylID: UUID, from crateID: UUID) {
+        withCrate(crateID) { crate in
+            crate.vinyls.removeAll { $0.id == vinylID }
+            crate.vinyls = crate.vinyls
+                .sorted { $0.position < $1.position }
+                .enumerated()
+                .map { index, vinyl in
+                    var vinyl = vinyl
+                    vinyl.position = index
+                    return vinyl
+                }
+            crate.selectedTrackByVinyl.removeValue(forKey: vinylID)
+        }
+    }
+
+    // MARK: CRATE-07
+
+    public mutating func addVinyl(_ vinyl: VinylEntry, to crateID: UUID) {
+        withCrate(crateID) { crate in
+            guard !crate.vinyls.contains(where: { $0.id == vinyl.id }) else { return }
+            var vinyl = vinyl
+            vinyl.position = crate.vinyls.count
+            crate.vinyls.append(vinyl)
+        }
+    }
+
+    public mutating func selectTrack(_ trackID: UUID, forVinyl vinylID: UUID, in crateID: UUID) {
+        withCrate(crateID) { crate in
+            guard crate.vinyls.contains(where: { $0.id == vinylID }) else { return }
+            crate.selectedTrackByVinyl[vinylID] = trackID
+        }
+    }
+
+    public func selectedTrack(forVinyl vinylID: UUID, in crateID: UUID) -> UUID? {
+        crate(crateID)?.selectedTrackByVinyl[vinylID]
+    }
+
+    // MARK: Navigation
+
+    public mutating func open(_ crateID: UUID) {
+        route = .crateDetail(crateID: crateID)
+    }
+
+    public mutating func closeToList() {
+        route = .crateList
+    }
+
+    // MARK: Private
+
+    /// Every mutator resolves the crate through here. No-ops on an unknown ID rather than
+    /// trapping — every unknown-ID test routes through this one guard.
+    private mutating func withCrate(_ id: UUID, _ body: (inout Crate) -> Void) {
+        guard let index = crates.firstIndex(where: { $0.id == id }) else { return }
+        body(&crates[index])
+    }
+}
