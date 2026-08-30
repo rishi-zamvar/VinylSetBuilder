@@ -25,7 +25,7 @@ screenshot is an opinion, not a defect.
 | V16 | **The over-split draft contains exact duplicate lines.** IMG_0505's eleven-line draft carries `SIMON BASSLINE SMITH` **twice** — the OCR read the same text off two surfaces of one sleeve, and D-03-4's one-line-per-trusted-observation rule keeps both. IMG_0503 shows the near-miss version: `Timeless Recordings` / `TimelessRecordings` and `Cause 4 Concern-` / `Cause 4 Concern`. A person correcting this sheet has to delete lines they cannot tell apart from the ones they are keeping. This is the deliberate cost of not segmenting in Act I, made visible — de-duplication is SEG-03's filtering and belongs to Phase 6. | `03-walk-06-inspect-raw-text.png` (lines 2 and 5 both `SIMON BASSLINE SMITH`); `03-04-sheet-lines.png` (lines 8/9 and 2/10) | Low | CARRIED — Phase 6 |
 | V11 | **Add More opens a capture screen that says "0 records" for a crate that already holds four.** The session count is scoped to the visit, which is CAP-03's own wording ("scanned so far in this session") and decision D-03-3, so it is behaving as designed — recorded as informational so a reviewer looking at the picture is not surprised, and so the owner can say whether they would rather see the crate's total. | `02-walk-11-add-more-capture.png` (Friday Warehouse, 4 records in the crate, "0 records" on the strip). **ADJUDICATED 2026-08-30 (plan 04-04): CARRIED, owner Phase 4 / U11** — filed as U11 by this plan, because the row had sat informational with no mechanism to ever get answered. | Informational | CARRIED — Phase 4 / U11 |
 | V17 | **The crate walk does not reproduce the same screen STATES run to run.** On 1 of 7 known runs, `02-walk-09-detail-manual-order.png` and `02-walk-10-detail-restored.png` were captured **outside** edit mode — no delete circles, no drag handles, `Edit` in the toolbar instead of `Done` — so frame 10 photographed **state 7, not state 8**, against byte-identical code (`App/`, `UITests/`, `project.yml` unchanged since `bd925ea`). Not a regression and not a rendering bug: non-determinism in the walk itself. **Found by plan 04-01 (Finding 3) and handed to the ledger; filed here by plan 04-04.** | Gate B of `Scripts/screenshot-audit.py` reddened on it and named the pair (`02-walk-07` vs `02-walk-10`, fraction 0.000154, 0 differing pixels below y=150), rc=1. Two independent measurements localise it to the same two frames: pixel diff (**17.6%** against 0.015%) and per-frame mean drift (**0.2266** and **0.2026** against the stated ±0.06 bar, with **0** frames over that bar between two normal runs). **ADJUDICATED 2026-08-30 (plan 04-04): CARRIED, owner Phase 11.** One anomalous observation is not a rate and is not reported as one. | Low | CARRIED — Phase 11 |
-| V18 | **A drag that reorders nothing still puts the crate into "Custom order", and the walk's CRATE-04 assertion cannot see the difference.** `CrateDetailModel.moveRows` writes `crate.manualOrder` for any in-range offsets — including an identity move such as `fromOffsets: [1], toOffset: 1`, where `moved()` returns the array unchanged — and `orderingMode` is `.manual` whenever `manualOrder != nil` (`CrateDetailModel.swift:91`). So a drag that lands on the row boundary renders the **Custom order** header and the **Restore** action over an order identical to the sequencer's. The walk cannot tell: `reorderTookEffect()` (`CrateWalkUITests.swift:389`) asks only whether `restore-sequenced-order-button` **exists**, and step 9 then asserts the header changed — neither looks at the row order. This is the exact shape of the mutation-J lesson `CONTEXT.md` records: *a presence assertion standing where a measurement belongs.* **This is what failed S3 and refused Act I.** | Reproduced on **2 of 3 clean runs by plan 04-05**, and the two failures are the same state twice: `02-walk-09-detail-manual-order.png` came back reading **Custom order + Restore with rows `1 Source Direct — Snake Style` / `2 Photek — Ni Ten Ichi Ryu`** — the sequenced order — **22,142 differing pixels below y=150** against the committed frame on both runs, and the two anomalous frames differ from each other only inside the status-bar clock (bbox (172,79)-(272,116), **0** pixels below y=150). The UI suite reported **7 passed / 0 failed** from the log and from `build/ui.xcresult` on all three runs, and printed `WALK DRAG RECIPE FIRED: 1` on all three. Gate B of `Scripts/screenshot-audit.py` caught it (`02-walk-08` vs `02-walk-09` = 9131 px, fraction 0.002888, under the 0.005 threshold) and `./Scripts/screenshots.sh` exited **1** both times. The committed `02-walk-09-detail-manual-order.png` shows the CORRECT swapped order — the defect is in regeneration, not in the committed frame. Third confirmation from the committed suite itself: `ManualOrderTests.swift:194` moves a row onto its own index and asserts only that the displayed order is unchanged, while the out-of-range case three lines above it also asserts `manualOrder == nil` — that assertion is absent for the identity move. **FILED 2026-08-30 by plan 04-05: CARRIED, owner Phase 4 / plan 04-06.** | Low | CARRIED — Phase 4 / 04-06 |
+| ~~V18~~ | ~~**A drag that reorders nothing still puts the crate into "Custom order", and the walk's CRATE-04 assertion cannot see the difference.**~~ | **FIXED AND CLOSED 2026-08-30 (plan 04-06).** See "V18 — closed, with evidence" below, which carries both halves of the route. **Back to the defect:** delete the line `guard order != ids else { return }` from `CrateDetailModel.moveRows` and `ManualOrderTests.swift` reddens with 4 expectations — measured, `rc=1`. **To the fix:** commit `a20a43d` (the guard), `d658e3e` (the assertions that were missing), `fbcf12c` (the walk measures row order, not button presence). **Photograph:** `02-walk-09-detail-manual-order.png`, regenerated on three clean runs, reads `1 Photek — Ni Ten Ichi Ryu` / `2 Source Direct — Snake Style` under `Custom order` — the swap, not the sequenced order. `test_givenAnOutOfRangeMove_whenApplied_thenNothingTraps` and `test_givenAManualOrder_whenARowIsMovedOntoItsOwnIndex_thenTheExistingOrderIsPreserved` assert both directions. **Gate S3 now rc=0 on 3 of 3 runs.** | — | Closed |
 
 ---
 
@@ -591,6 +591,113 @@ and never `1 records`.
 
 ---
 
+## V18 — closed, with evidence
+
+**The row that refused Act I.** Both halves of the route are below: a way back to the defect,
+and a way to the fix. Neither is prose — each is a command.
+
+### The mutation, and the assertion it reddens
+
+Delete one line from `CrateDetailModel.moveRows`:
+
+```swift
+        let order = Self.moved(ids, fromOffsets: fromOffsets, toOffset: toOffset)
+        guard order != ids else { return }        // <- delete this line
+```
+
+`./Scripts/test.sh` then reddens with **4 expectations**, measured, `rc=1`:
+
+```
+✘ ManualOrderTests.swift:185: (single.crate.manualOrder → [B37DD671-…]) == nil
+✘ ManualOrderTests.swift:186: (single.orderingMode → .manual) == .sequenced
+✘ ManualOrderTests.swift:202: (ladder.crate.manualOrder → [2EA47038-…, CB173352-…, 80D5A8FF-…]) == nil
+✘ ManualOrderTests.swift:203: (ladder.orderingMode → .manual) == .sequenced
+```
+
+The **other** direction has its own mutation, because a guard that *cleared* the override on a
+no-op would satisfy every assertion above and silently throw a user's arrangement away.
+Replace the guard with `if order == ids { crate.manualOrder = nil; rebuildRows(); return }` and
+`test_givenAManualOrder_whenARowIsMovedOntoItsOwnIndex_thenTheExistingOrderIsPreserved` reddens
+with **3 expectations**, `rc=1`. Both mutations were run and both were reverted.
+
+### The fix
+
+`CrateDetailModel.moveRows` computes the order the move would produce, compares it with the
+order already displayed, and returns without touching `crate.manualOrder` when they are equal.
+One guard, in the one function every caller routes through — `CrateDetailView`'s `.onMove` is
+the only call site, and it goes through this function. Commit **`a20a43d`**; the assertions are
+**`d658e3e`**.
+
+### The presence check is gone
+
+`reorderTookEffect()` asked whether `restore-sequenced-order-button` **exists**. It now polls
+`sequencedRowLabels()` for a genuine **permutation** — same rows, different order — with the
+same 3s timeout, so it still doubles as the reorder animation's settle. Commit **`fbcf12c`**.
+
+Three controls run **in band on every walk**, so the comparator cannot quietly stop working:
+
+| Control | Assertion | Why |
+|---|---|---|
+| negative | `isReorder(before, before)` is **false** | a comparator that calls a list a permutation of itself cannot fail |
+| positive | `isReorder(before, reversed(before))` is **true** | …and one that never returns true cannot succeed |
+| structural | `rowIdentities(before) != before` | the position strip actually fires — otherwise the check compares positions, not rows |
+
+**Two things were measured while writing that check, and both were surprises.**
+
+1. **Recipe 1 does not reliably reorder.** Across the **8** walk runs made with the corrected
+   comparator, recipe 1 (press-and-drag, edit mode ON) genuinely reordered **3** times and
+   failed **5**; recipe 2 (edit mode OFF) picked up all five. Every green run through the old
+   presence check was recipe 1 "succeeding" on the identity move it had just committed — the
+   old check could not tell the two apart, and printed `WALK DRAG RECIPE FIRED: 1` for both.
+   That is V18's mechanism, observed directly rather than inferred. (A ninth run, made with the
+   broken first version of the comparator, is excluded: it fired every recipe and cannot be
+   attributed.)
+2. **The first version of the row-order check was itself blind.** A row's label leads with its
+   *position* (`"1, Source Direct — Snake Style, 170, 5A"`), and `indexLabel` renumbers 1…N
+   after every move — so a real swap changes the text of every label and a multiset comparison
+   of raw labels sees two disjoint sets. Measured: the walk fired all four recipes, swapped a
+   two-row list four times, and reported `recipe: none` over a committed manual order.
+   `rowIdentities()` strips the position (and edit mode's leading `Remove`), and the structural
+   control above exists so that strip cannot silently stop firing.
+
+### A second defect, found because V18's fix let other recipes win
+
+The four drag recipes run in **different edit modes**, and the first to fire wins. With recipe 1
+always "succeeding" the list was always left in edit mode; once it could lose, the state
+photographed as frames 9 and 10 began to follow the gesture routing. Measured on S3 series-A
+run 3: recipe 2 won, and `02-walk-10-detail-restored.png` came back **byte-identical** to
+`02-walk-07-not-included-expanded.png` — **0** differing pixels, fraction 0.000000 — while the
+declared `08/10` pair went stale. `screenshots.sh` exited **1**.
+
+This is not V18 and is not filed as a new row: it was introduced and closed inside this plan.
+The walk now normalises to edit mode ON after the drag loop, which is the state frame 8
+establishes and the state the committed 9/10 pair was photographed in. Commit **`3efc975`**.
+Series B then ran three times with recipes **2, 1, 2** — both branches exercised — and all
+three were rc=0.
+
+### The photograph
+
+`02-walk-09-detail-manual-order.png`, regenerated from a purged host on three clean runs, reads
+`Custom order` + `Restore` over rows **`1 Photek — Ni Ten Ichi Ryu`** / **`2 Source Direct —
+Snake Style`**: the swap. The `02-walk-08` vs `02-walk-09` pair measures **31,273 px /
+0.009890** — 04-05's recorded figure for the correct state. The defect measured **9,131 px /
+0.002888** and reddened gate B. It did not reproduce on any of the three runs.
+
+Every one of the 34 regenerated PNGs is **content-identical** to the committed set below
+y=150 — 0 differing pixels each, measured by `probe-frames.py --drift`. Only the status-bar
+clock moved.
+
+### And the instrument that saw nothing
+
+Per-frame **mean** drift measured 0.0346 on the defective frame — inside the ±0.06 bar — while
+22,142 content pixels had changed, because a mean cannot see a permutation. `--drift` now
+reports the mean delta **and** the differing-pixel count below y=150 and fails if either is
+breached. Its negative control is a synthetic permutation built in `--selftest`: identical
+means (`mean_delta=0.0`, `mean_ok=True`) with `content_px=20000`, `content_ok=False`. Commit
+**`009ff13`**. The ±0.06 mean bar must never again be quoted on its own.
+
+---
+
 ## Ledger — machine-readable
 
 Regenerated by adjudication (plan 04-04, 2026-08-30), checked by `Scripts/ledger-check.py`,
@@ -601,7 +708,7 @@ exact column order. **Do not hand-edit without re-running the checker.**
 ID | SEVERITY | STATUS | OWNER | EVIDENCE_OR_REASON
 ```
 
-**18 rows: 8 closed, 10 carried, of which 2 are Medium or above.** Derived from the block below by `Scripts/ledger-check.py`, which re-derives it on every run and fails if this line disagrees — not typed.
+**18 rows: 9 closed, 9 carried, of which 2 are Medium or above.** Derived from the block below by `Scripts/ledger-check.py`, which re-derives it on every run and fails if this line disagrees — not typed.
 
 ### The rules this block is written to, and the checker enforces
 
@@ -691,5 +798,5 @@ V14 | Informational | CLOSED | Closed | closed by accounting rather than by a fi
 V15 | Low | CARRIED | Phase 6 | Blocked on U9 and superseded by Phase 6 in the same direction, which is why the owner is Phase 6 and not Phase 4. Whether half of a 44-character line being invisible at rest matters depends on whether the correction sheet is a routine path at a stopwatch, which only the owner can say (U9), and the population of long lines changes before any layout fix would be designed: SEG-03's filter drops the price-sticker, address and URL fragments that make the longest lines long. Widening a field against fragments that will not survive segmentation is work aimed at the wrong target. Nothing is lost meanwhile — XCUITest reads all 44 characters back off the field, so the value is intact and only unreadable at rest: 03-walk-05-inspect-sheet.png line 4
 V16 | Low | CARRIED | Phase 6 | De-duplication is SEG-03's filtering, and Phase 6 success criterion 2 rewrites exactly the stage that produces the duplicates. They exist because D-03-4's one-line-per-trusted-observation rule deliberately keeps both reads when the OCR reads the same text off two surfaces of one sleeve, which is the honest cost of not segmenting in Act I. A de-duplicator written now is a de-duplicator Phase 6 immediately replaces. Evidence on three runs: 03-walk-06-inspect-raw-text.png lines 2 and 5 both read SIMON BASSLINE SMITH, and 03-04-sheet-lines.png lines 8/9 and 2/10 carry the near-miss version
 V17 | Low | CARRIED | Phase 11 | NEW, handed to this plan by 04-01's Finding 3 rather than found by it: the crate walk does not reproduce the same screen STATES run to run. On 1 of 7 known runs, 02-walk-09-detail-manual-order.png and 02-walk-10-detail-restored.png were captured OUTSIDE edit mode, so frame 10 photographed state 7 — against byte-identical code, App/ and UITests/ and project.yml unchanged since bd925ea. Two independent measurements localise it to the same two frames: pixel diff (17.6 percent against 0.015 percent) and per-frame mean drift (0.2266 and 0.2026 against a 0.06 bar, with 0 frames over that bar between two normal runs). It is not silent — Gate B of Scripts/screenshot-audit.py caught it and named the pair, and the run exited 1. Carried rather than fixed because the cause is in the walk's own gesture and settle timing, and Phase 11 criterion 2 re-runs both walks and regenerates the whole set after each of five swaps: five more independent observations of a roughly-1-in-7 event, with the walk already open. One anomalous observation is not a rate and is not reported as one
-V18 | Low | CARRIED | Phase 4 / 04-06 | THE DEFECT THAT REFUSED ACT I. A drag that reorders nothing still puts the crate into Custom order, and the walk cannot see it. CrateDetailModel.moveRows writes crate.manualOrder for any in-range offsets including an identity move, moved() returns the array unchanged, and orderingMode is .manual whenever manualOrder is non-nil (CrateDetailModel.swift:91) — so a drag landing on the row boundary renders the Custom order header and the Restore action over the sequencer's own order. reorderTookEffect() in CrateWalkUITests.swift:389 asks only whether restore-sequenced-order-button EXISTS and step 9 asserts only that the header changed, so neither assertion looks at the row order: a presence assertion standing where a measurement belongs, the mutation-J lesson repeating. Measured on 2 of 3 clean runs by plan 04-05, the same wrong state twice — 22142 differing pixels below y=150 against the committed 02-walk-09-detail-manual-order.png, the two anomalous frames differing from each other only in the status-bar clock with 0 pixels below y=150 — while the UI suite reported 7 passed 0 failed from log and result bundle every time. Confirmed a third way by the committed suite: ManualOrderTests.swift asserts only that an identity move leaves the displayed order alone and omits the manualOrder-is-nil assertion it makes for the out-of-range case three lines above. Carried to a new Act I plan 04-06 rather than to Phase 11, because S3 is red now and Act I cannot sign off until a regeneration is trustworthy: 04-06 gives moveRows an identity guard and gives the walk an assertion on ROW ORDER, then re-runs the set clean three times
+V18 | — | CLOSED | Closed | THE DEFECT THAT REFUSED ACT I, fixed and closed by plan 04-06. moveRows now compares the order a move produces against the order already displayed and returns early when they are equal, so an identity drag commits nothing: commit a20a43d. Leaving manualOrder untouched rather than clearing it is what makes it correct in both directions, and ManualOrderTests.swift asserts each separately — test_givenAnOutOfRangeMove_whenApplied_thenNothingTraps for the sequenced list and test_givenAManualOrder_whenARowIsMovedOntoItsOwnIndex_thenTheExistingOrderIsPreserved for the hand-arranged one, commit d658e3e. The presence check is gone: reorderTookEffect now polls the ROW ORDER for a genuine permutation, commit fbcf12c, and the walk runs three controls on that comparator in band. Photograph 02-walk-09-detail-manual-order.png, regenerated from a purged host on three clean runs, reads 1 Photek then 2 Source Direct under Custom order — the swap. Gate S3 rc=0 on 3 of 3 runs where 04-05 measured rc=0 rc=1 rc=1, and the 08 vs 09 pair is back at 31273 px 0.009890 against the 9131 px 0.002888 the defect produced. Route back to the defect: delete the guard line and 4 expectations redden, measured.
 ```
