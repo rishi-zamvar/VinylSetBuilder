@@ -64,7 +64,13 @@ public enum FixtureCrates {
               selectedTrackByVinyl: [sharedVinyl.id: sharedVinylTrackY.id])
     }
 
+    /// Every fixture crate, in the order the crate list shows them. ONE list, so a crate added
+    /// to the app is automatically a crate `FixtureCratesTests` checks — a second hand-written
+    /// list in the tests is a list someone forgets to update, which is how V5's duplicate
+    /// position survived being read past twice.
+    public static var all: [Crate] { [secondCrate, mixedResultsCrate] }
+
     public static var demoStore: CrateStore {
-        CrateStore(crates: [secondCrate, mixedResultsCrate])
+        CrateStore(crates: all)
     }
 }
