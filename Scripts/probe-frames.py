@@ -47,9 +47,31 @@ of frames ago (ink 0 on a title-less frame, 9498 on `02-walk-01`) before it is t
 luminance IS the background, whereas the mean drags toward the ink and would make a badge look
 better-contrasted the more text it carried.
 
+--drift (added by plan 04-06, from 04-05's second finding)
+----------------------------------------------------------
+A regeneration was checked by comparing per-frame MEAN luminance between runs against a
++/-0.06 bar. On `02-walk-09-detail-manual-order.png` that bar measured **0.0346 — inside it —
+on a frame where 22,142 content pixels had changed**, because the two top rows of the list had
+swapped and a mean cannot see a permutation. Swapping two rows moves ink from one place to
+another and leaves the average exactly where it was.
+
+`--drift A B` therefore reports BOTH numbers and fails if EITHER is breached:
+
+    mean_delta   |mean(A) - mean(B)|                     <= MAX_MEAN_DRIFT   (0.06)
+    content_px   differing pixels below CONTENT_BAND_Y   == 0                (y >= 150)
+
+The band excludes the status-bar clock, which legitimately differs between any two runs; that
+is the same y=150 cut every content-band measurement in this repo already uses. Thresholds are
+module constants for the same reason the three above are: a bar you can pass on the command
+line is a bar that gets passed.
+
+`--selftest` builds a synthetic PERMUTATION — two frames with identical means and a swapped
+pair of bands — and asserts the mean bar passes it while the positional bar catches it. That
+case IS the negative control for the mean-only claim.
+
 USAGE
 -----
-    Scripts/probe-frames.py [--json] [--check] [--diff A B] [--selftest]
+    Scripts/probe-frames.py [--json] [--check] [--diff A B] [--drift A B] [--selftest]
                             [--region X,Y,W,H] [--ink T] [PATHS...]
 
 With no PATHS, measures every PNG in Artifacts/screenshots/.
@@ -71,6 +93,10 @@ except ImportError as exc:  # a probe that silently no-ops is worse than one tha
 
 MIN_DARK = 110      # min must be at or below this: a genuinely black pixel exists
 MIN_BRIGHT = 200    # max must be at or above this: a white ground exists
+
+# --drift, plan 04-06. Not flags, for the reason stated in the header.
+MAX_MEAN_DRIFT = 0.06   # the bar 02-05 recorded, kept at the value it was recorded at
+CONTENT_BAND_Y = 150    # everything below this row is content; above it is the status bar
 
 DEFAULT_GLOB = "Artifacts/screenshots/*.png"
 
@@ -143,6 +169,36 @@ def diff(a: str, b: str) -> tuple[int, int, float]:
     differing = sum(count for value, count in enumerate(d.histogram()) if value and count)
     total = ia.size[0] * ia.size[1]
     return differing, total, differing / total
+
+
+def drift(a: str, b: str) -> dict:
+    """Mean drift AND a positional check, because a mean cannot see a permutation.
+
+    Returns both numbers plus the bounding box of whatever changed in the content band, so a
+    breach names WHERE it is rather than only that it happened.
+    """
+    ia, ib = Image.open(a).convert("RGB"), Image.open(b).convert("RGB")
+    if ia.size != ib.size:
+        raise SystemExit(f"probe-frames: dimension mismatch {ia.size} vs {ib.size}")
+    mean_a = ImageStat.Stat(ia.convert("L")).mean[0]
+    mean_b = ImageStat.Stat(ib.convert("L")).mean[0]
+
+    d = ImageChops.difference(ia, ib).convert("L")
+    w, h = d.size
+    band = d.crop((0, min(CONTENT_BAND_Y, h), w, h))
+    content_px = sum(c for v, c in enumerate(band.histogram()) if v and c)
+    box = band.getbbox()
+    if box is not None:
+        box = (box[0], box[1] + CONTENT_BAND_Y, box[2], box[3] + CONTENT_BAND_Y)
+    return {
+        "a": a, "b": b,
+        "mean_a": round(mean_a, 4), "mean_b": round(mean_b, 4),
+        "mean_delta": round(abs(mean_a - mean_b), 4),
+        "content_px": content_px,
+        "content_bbox": box,
+        "mean_ok": abs(mean_a - mean_b) <= MAX_MEAN_DRIFT,
+        "content_ok": content_px == 0,
+    }
 
 
 def markdown_table(records: list[dict]) -> str:
@@ -228,6 +284,51 @@ def selftest() -> int:
               f"ink={white['ink']} (want 0) contrast={white['contrast']} (want 0)")
         ok &= hit
 
+        # --drift, plan 04-06. THE case that matters: a PERMUTATION. `left` and `right` hold
+        # the same two bands in opposite orders, so their means are identical to the last
+        # decimal and the +/-0.06 mean bar passes an image that has been completely rearranged.
+        # This is 04-05's finding, made permanently runnable: the mean bar is blind, the
+        # positional bar is not, and the assertions below check BOTH halves of that sentence.
+        left = os.path.join(tmp, "perm-a.png")
+        right = os.path.join(tmp, "perm-b.png")
+        a_img = Image.new("RGB", (100, 400), (255, 255, 255))
+        a_img.paste((0, 0, 0), (0, 150, 100, 250))          # dark band high, in the content area
+        a_img.save(left)
+        b_img = Image.new("RGB", (100, 400), (255, 255, 255))
+        b_img.paste((0, 0, 0), (0, 250, 100, 350))          # the same band, moved down
+        b_img.save(right)
+
+        rec = drift(left, right)
+        hit = rec["mean_delta"] == 0.0 and rec["mean_ok"]
+        print(f"selftest {'PASS' if hit else 'FAIL'}: --drift on a permutation — the MEAN bar is "
+              f"blind to it: mean_delta={rec['mean_delta']} (want 0.0) within "
+              f"{MAX_MEAN_DRIFT} -> mean_ok={rec['mean_ok']} (want True)")
+        ok &= hit
+        hit = rec["content_px"] == 20000 and not rec["content_ok"]
+        print(f"selftest {'PASS' if hit else 'FAIL'}: --drift on a permutation — the POSITIONAL "
+              f"bar catches it: content_px={rec['content_px']} (want 20000) "
+              f"bbox={rec['content_bbox']} -> content_ok={rec['content_ok']} (want False)")
+        ok &= hit
+
+        # And it must be able to say "identical", or a gate that always reddens is no gate.
+        same = drift(left, left)
+        hit = same["mean_delta"] == 0.0 and same["content_px"] == 0 and same["content_ok"]
+        print(f"selftest {'PASS' if hit else 'FAIL'}: --drift on a frame against itself -> "
+              f"content_px={same['content_px']} (want 0) content_ok={same['content_ok']}")
+        ok &= hit
+
+        # A change confined ABOVE the band (the status-bar clock) must NOT redden it — that is
+        # the whole reason the band exists, and it is what let 04-05 tell run 2 from run 3.
+        clock = os.path.join(tmp, "perm-a-clock.png")
+        c_img = a_img.copy()
+        c_img.paste((0, 0, 0), (10, 20, 60, 60))
+        c_img.save(clock)
+        above = drift(left, clock)
+        hit = above["content_px"] == 0 and above["content_ok"]
+        print(f"selftest {'PASS' if hit else 'FAIL'}: --drift ignores a change above "
+              f"y={CONTENT_BAND_Y} -> content_px={above['content_px']} (want 0)")
+        ok &= hit
+
         # A region that does not fit must refuse rather than clamp: a silently clamped region
         # measures a different box than the one named, which is how a fixed band stops being
         # fixed.
@@ -244,6 +345,25 @@ def main(argv: list[str]) -> int:
     args = argv[1:]
     if "--selftest" in args:
         return selftest()
+
+    if "--drift" in args:
+        i = args.index("--drift")
+        operands = args[i + 1:i + 3]
+        if len(operands) != 2:
+            print("probe-frames: --drift needs exactly two paths", file=sys.stderr)
+            return 2
+        rec = drift(*operands)
+        print(f"mean_a={rec['mean_a']} mean_b={rec['mean_b']} "
+              f"mean_delta={rec['mean_delta']} (bar {MAX_MEAN_DRIFT}) -> "
+              f"{'ok' if rec['mean_ok'] else 'BREACHED'}")
+        print(f"content_px={rec['content_px']} below y={CONTENT_BAND_Y} "
+              f"bbox={rec['content_bbox']} -> "
+              f"{'ok' if rec['content_ok'] else 'CHANGED'}")
+        if rec["mean_ok"] and rec["content_ok"]:
+            print("DRIFT: none")
+            return 0
+        print("DRIFT: the two frames are NOT the same state")
+        return 1
 
     if "--diff" in args:
         i = args.index("--diff")
