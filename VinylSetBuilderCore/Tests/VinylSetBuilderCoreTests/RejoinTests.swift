@@ -57,10 +57,14 @@ struct RejoinTests {
         let v3 = makeVinyl(3, bpms: [174], camelots: ["8B"])
         let unshuffled = v1 + v2 + v3
 
-        var rng = SeededRandom(seed: 12345)
+        // Seed 12345 was in the abandoned draft and produces the IDENTITY permutation of these
+        // three elements — the draft's own anti-vacuity guard caught it, correctly, on the day
+        // this file was promoted. Seed 7 actually shuffles. `SequencerDeterminismTests` carries
+        // the thorough version of this claim; what is here is the rejoin fixture's own check.
+        var rng = SeededRandom(seed: 7)
         let shuffled = unshuffled.shuffled(using: &rng)
         // A degenerate shuffle would defeat the point of this test.
-        #expect(shuffled != unshuffled)
+        #expect(shuffled.map(\.id) != unshuffled.map(\.id))
 
         let expected = BeamSearchSequencer().sequence(candidates: unshuffled, bpmTolerance: 4.0)
         let actual = BeamSearchSequencer().sequence(candidates: shuffled, bpmTolerance: 4.0)
