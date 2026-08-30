@@ -6,7 +6,7 @@ which is exactly why the screenshot matters.
 | # | Defect | Evidence | Severity | Owner |
 |---|--------|----------|----------|-------|
 | V1 | **"1 records"** — pluralisation not handled | `01-06-crate-list.png`, row "Sunday Chill — 1 records" | Low, but it is the first thing anyone notices | Phase 1 polish |
-| V2 | **Whole UI washed out to near-invisible grey** — title, rows and values all render at very low contrast against a white ground | `01-06-crate-list.png` — "Crates", both crate names and both counts are pale grey, not label-black | **Medium — an accessibility problem, not a taste one.** Fails contrast guidance and is hard to read on a bright screen, which is exactly where a DJ uses it | Phase 1 polish |
+| ~~V2~~ | ~~Whole UI washed out to near-invisible grey~~ | **NOT A DEFECT — RESOLVED 2026-08-30.** Re-captured after a 4-second settle delay: `sim-settled-crate-list.png` shows correct label-black title and rows with grey secondary counts. The original capture caught the **launch fade animation**. | — | Closed |
 
 ## V1 fix
 
@@ -18,7 +18,7 @@ Text("^[\(count) record](inflect: true)")   // "1 record" / "4 records"
 
 Automatic-grammar-agreement markdown; correct across locales without a manual branch.
 
-## V2 — diagnose before fixing
+## V2 — diagnosed, and the diagnosis mattered
 
 The pallor is uniform across every text element, which points at an inherited modifier
 rather than per-view styling. Check in this order:
@@ -31,8 +31,15 @@ rather than per-view styling. Check in this order:
    it is an artefact of the harness, not the app. **Re-screenshot after a short settle delay
    to rule this out before changing any code.**
 
-Do not restyle anything until cause 3 is excluded — otherwise you would be fixing a
-screenshot-timing artefact by damaging correct code.
+**Outcome: cause 3 was correct.** The pallor was the launch fade, not styling.
+
+This is why the rule exists. Restyling would have taken correct, well-contrasted code and
+damaged it to satisfy an artefact of the capture harness — a real regression introduced to fix
+an imaginary bug, and one that would have been very hard to trace back afterwards.
+
+**Therefore, mandatory from here on: every screenshot is taken after a settle delay of at
+least 3 seconds, and after confirming the app is actually running.** A screenshot taken during
+a transition is not evidence.
 
 ## Standing instruction
 
