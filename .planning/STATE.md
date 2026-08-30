@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
-stopped_at: Completed 02-05-PLAN.md — Phase 2 CLOSED
-last_updated: "2026-08-30T08:34:33.132Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-08-30T09:01:47.079Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 1
-  total_plans: 13
-  completed_plans: 11
+  total_plans: 18
+  completed_plans: 12
   percent: 85
 ---
 
@@ -105,6 +105,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 02 P03 | 55 min | 2 tasks | 5 files |
 | Phase 02 P04 | ~50 min | 2 tasks | 18 files |
 | Phase 02-crate-screens-stubbed P05 | 35m | 2 tasks | 22 files |
+| Phase 03 P02 | ~50 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -165,6 +166,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 02]: 02-05: V2's closure re-confirmed FUNCTIONALLY, not photometrically — the walk taps six controls and they all respond, and disabled content is not tappable, which no pixel measurement can match
 - [Phase 02]: 02-05: the requirement count was wrong in BOTH directions (counted reopened SEQ-03, omitted CRATE-03/04/05) and the two errors cancelled to a plausible 15/52 — corrected to 17/50, recount command written beside the figure
 - [Phase 02]: 02-05: the mktemp XXXXXX gate hit is reported, not filtered — narrowing the grep to manufacture a green exit code is exactly the gate-weakening the plan forbids
+- [Phase 03]: SEG-07 splitLine splits at the word midpoint (odd counts favour the first line) — a marked ceiling; a character index is the upgrade path
+- [Phase 03]: SegmentationDraft carries the tracks' Side through, so correcting a B-side read cannot republish it as A
+- [Phase 03]: OCR-04 keeps the untrusted 0.50/0.30 reads — the discarded row is the evidence a bad read needs
 
 ### Pending Todos
 
@@ -242,8 +246,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T08:33:38.864Z
-Stopped at: Completed 02-05-PLAN.md — Phase 2 CLOSED
+Last session: 2026-08-30T09:01:47.077Z
+Stopped at: Completed 03-02-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.

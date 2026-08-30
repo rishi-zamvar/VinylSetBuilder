@@ -37,7 +37,7 @@ key transitions, that re-optimises when you add more.
 - [ ] **OCR-01**: Each captured photo yields text observations with bounding boxes, per-observation confidence, and baseline angle
 - [ ] **OCR-02**: EXIF orientation is passed to `VNImageRequestHandler`, and the returned coordinates — which Vision reports in the ORIGINAL unrotated buffer space — are transformed into one documented convention exactly once
 - [ ] **OCR-03**: Recognition is seeded with a custom vocabulary of the owner's recurring label and artist names
-- [ ] **OCR-04**: Raw recognised text for a label can be inspected on screen, for debugging a bad read
+- [x] **OCR-04**: Raw recognised text for a label can be inspected on screen, for debugging a bad read
 - [ ] **OCR-05**: OCR runs off the main thread and never blocks the capture loop
 
 ### Segmentation
@@ -48,7 +48,7 @@ key transitions, that re-optimises when you add more.
 - [ ] **SEG-04**: A side or track marker splits tracks in preference to geometry — covering `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:` / `STEEL SIDE:` found in the fixtures
 - [ ] **SEG-05**: A parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one
 - [ ] **SEG-06**: The app infers whether an unscanned flip side probably exists, from side markers or their absence
-- [ ] **SEG-07**: User can correct any segmentation result — split a track, merge two, or type a track line by hand
+- [x] **SEG-07**: User can correct any segmentation result — split a track, merge two, or type a track line by hand
 - [ ] **SEG-08**: Only observations at the trusted confidence tier are used for track lines; the fixtures showed confidence is effectively binary (1.00 vs 0.50/0.30), so a fractional threshold is not a useful filter
 
 ### Metadata Resolution
@@ -167,8 +167,8 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | CAP-03 | Act I — Phase 3 | Pending |
 | CAP-05 | Act I — Phase 3 | Pending |
 | CAP-06 | Act I — Phase 3 | Pending |
-| OCR-04 | Act I — Phase 3 | Pending |
-| SEG-07 | Act I — Phase 3 | Pending |
+| OCR-04 | Act I — Phase 3 | Complete |
+| SEG-07 | Act I — Phase 3 | Complete |
 | OCR-01 | Act II — Phase 5 | Pending |
 | OCR-02 | Act II — Phase 5 | Pending |
 | OCR-03 | Act II — Phase 5 | Pending |
