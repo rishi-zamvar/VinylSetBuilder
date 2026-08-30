@@ -1,207 +1,489 @@
 # Roadmap: Vinyl Set Builder
 
-## Overview
+**Rebuilt 2026-08-30.** The previous roadmap was a six-phase capability list that had drifted
+into a non-linear order — the sequencer was pulled into Phase 1 ahead of the UI, "wiring" was
+declared to be a natural consequence rather than a phase, and the shell was never actually
+finished before engine work began. This replaces it entirely.
 
-Six phases carry this from an empty Xcode project to the owner's Definition of Done: scan 20
-vinyls, watch metadata mostly auto-resolve, get back a BPM-gated, Camelot-sensible set that
-re-optimises as more records are added, and find it all still there after a restart.
+## The throughline
 
-**Revised 2026-08-29 after the Phase 2 OCR spike was run early** against 12 real record
-photographs from the owner's own crate. It answered the project's original #1 risk — whether
-Vision can read text off a vinyl label at all — and passed, but disproved several of the
-spec's structural assumptions along the way (see `research/OCR-SPIKE.md`). This revision:
+Three acts, strictly linear. Each phase depends only on the phases before it. No interleaving.
 
-1. **Demotes Phase 2 from a go/no-go spike to ordinary work.** The captured unit turns out to
-   be a whole 12" sleeve, not a label close-up; concentric/curved text — the thing feared
-   most — barely appears in this collection; and OCR performance is a non-issue (~130 ms/image).
-   `SEG-01` (validating the segmentation algorithm against the 12 committed fixtures) moves
-   from Phase 2 into Phase 3, because it is now genuinely Segmentation's own validation work —
-   angle-cluster segmentation, the algorithm the spike recommends, is what Phase 3 builds.
-2. **Promotes Phase 4 to carry the project's new #1 go/no-go gate.** Apple Music
-   Understanding's accuracy on this owner's bass-heavy jungle/DnB audio is completely
-   unverified — the OS 27 API surface wasn't testable on the spike machine — and the
-   SoundCloud API only ever returns a 30-second preview, which may or may not be enough for a
-   reliable key read. Phase 4 now opens with an explicit accuracy spike against the bundled
-   29-track cached ground-truth set, before the app depends on the in-house audio analyser
-   unattended.
+> *"UI first then the engine then we wire everything in with tdd and proper workflow…
+> I want research verification, quality preset and a linear path, time isn't an issue…
+> quality is the main focal point… proper coding hygiene and a tight codebase."*
 
-The build order still does **not** follow the MVP-SPEC's own §3 UI-first sequence literally,
-for the same original reason:
+**ACT I — THE SHELL YOU CAN WALK** (Phases 1–4)
+Every screen exists and is navigable in the booted simulator, rendering from stubbed fixture
+data. Nothing real behind it. This is MVP-SPEC §3 Phase 0 exactly: *"you can walk the entire
+flow end to end with fake data."*
+**Act ship criterion:** committed screenshots of EVERY screen, taken in the booted simulator
+after a settle delay.
 
-1. **The sequencer is built and fully proven in Phase 1**, not Phase 4. It is pure logic over
-   `(vinylID, bpm, camelot)` tuples with zero dependency on camera, OCR, or network — and it
-   is the project's uncontested differentiator (label OCR is a commodity; nothing else models
-   one-track-per-physical-record with full re-optimisation). Phase 1 also builds every screen
-   against fixture data, so the whole crate-management flow (list, create, reorder, delete,
-   multi-crate membership) is real and demonstrable before a single real photograph is taken.
-2. **Camera + OCR (Phase 2) and Segmentation (Phase 3) stay split**, now simply because they
-   are different concerns — capture/recognition vs. clustering/parsing — not because one gates
-   the other's design. The spike already answered the design question for both.
+**ACT II — THE ENGINE, HEADLESS** (Phases 5–9)
+Each capability built behind the protocol seams the shell already consumes. Pure, testable,
+no UI. Dependency order: OCR → segmentation → identity resolution → BPM/key → sequencing.
+**Act ship criterion:** every phase closes on a *measured number* against real fixtures, never
+a green tick.
 
-No new phase was invented for "wiring it all together": because Phase 1 builds the real UI
-against protocol seams (not against ad-hoc stub code), each later phase simply replaces a stub
-implementation with a real one. By the end of Phase 5 the full loop already works on real data
-as a natural consequence of that architecture, not as separate integration work.
+**ACT III — THE WIRING** (Phases 10–14)
+Swap each stub for its real implementation, one at a time, verifying the app still walks after
+each swap. Then persistence, manual entry, and `vinylctl` — a macOS CLI over the same Core
+package that runs the whole pipeline on the owner's 12 real record photographs end to end.
+**Act ship criterion:** the app runs on real data, and `vinylctl` prints a real sequenced set.
+
+## Standing rules — every phase, no exceptions
+
+| Rule | What it means |
+|---|---|
+| **TDD** | Tests precede implementation. RED commit, then GREEN commit. |
+| **Measured ship criterion** | Every phase closes on a number, a rate, or a committed artefact. "Tests pass" is not a ship criterion. |
+| **Screenshots after a settle delay** | Any phase that renders UI captures into `Artifacts/screenshots/` *after* a settle delay, and files anything visible in it into `.planning/VISUAL-DEFECTS.md`. |
+| **Hygiene** | No dead code, no unused protocol conformances, no `TODO` left behind, consistent naming. The `CorePurityTests` guard stays green. Checked at the close of every phase, and swept explicitly in Phases 4 and 14. |
+| **Toolchain discipline** | iOS 26, the installed SDK. `MusicUnderstanding` does not exist here. No phase may be planned against an absent SDK. Simulator UDID `4B4E1C1F-BED6-4812-9238-C151337265DA`. |
+| **Research on** | Phases marked **Research: yes** open with an investigation step before any code. |
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
-
-- [ ] **Phase 1: Foundation, Domain Model & Sequencer** - Package, models, secrets, and the full crate-management UI navigable end-to-end against fixture data, with the beam-search sequencer built and proven correct in isolation
-- [ ] **Phase 2: Camera + OCR** - Continuous whole-sleeve capture and on-device OCR with the EXIF-orientation bug fixed, per the answered spike
-- [ ] **Phase 3: Segmentation** - One sleeve photo reliably split into its individual candidate tracks, using baseline-angle clustering validated against the 12 committed fixtures
-- [ ] **Phase 4: Metadata Resolution (identity + BPM/Key)** - Candidate tracks resolve to artist/title via the bundled corpus and Discogs/MusicBrainz, and to BPM/Camelot key via the bundled corpus and SoundCloud audio analysed by the app's own Accelerate/vDSP analyser — gated by a measured accuracy spike against 29 cached ground-truth tracks, the project's go/no-go checkpoint
-- [ ] **Phase 5: Manual Entry & Fast Correction** - A sub-15-second hand-entry path for anything automatic resolution misses, reachable from every relevant screen
-- [ ] **Phase 6: Persistence** - Crates, vinyls, candidates, photos and sequence order survive quitting and reopening the app, entirely on-device
+- [x] **Phase 1: Foundation & Protocol Seams** - Core package, purity guard, app target, build-time secrets — the compile-time skeleton every act hangs off
+- [ ] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
+- [ ] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
+- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, V1/V2 defects diagnosed and fixed, first hygiene sweep
+- [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
+- [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
+- [ ] **Phase 7: The Identity Resolver** - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
+- [ ] **Phase 8: The BPM & Key Ladder** - Bundled tier-0 corpus, SoundCloud audio acquisition, and the in-house Accelerate/vDSP analyser behind `AudioAnalyzing` — measured against the 29-track ground truth
+- [ ] **Phase 9: The Sequencer, Finished and Proven Deterministic** - Q1 answered, tolerance slider, rejoin-on-add, off-main-thread, beam divergence check — measured as determinism across seeded shuffles
+- [ ] **Phase 10: The Camera, Live** - Real `AVCaptureSession` behind the shell's capture screen, non-blocking shutter, 20-record session measured for memory and thermals
+- [ ] **Phase 11: The Swap** - Each stub replaced by its real implementation one at a time, the walk re-verified and re-screenshotted after every single swap
+- [ ] **Phase 12: Manual Entry** - The sub-15-second hand-entry path, reachable from the sequenced list and the not-included bucket, never overwritten by later automatic resolution
+- [ ] **Phase 13: Persistence** - SwiftData on-device, explicit integer ordering, every candidate retained — crates survive a restart intact
+- [ ] **Phase 14: `vinylctl` & Definition of Done** - A macOS CLI over the same Core package that runs the whole pipeline on the 12 real photographs, plus the final hygiene sweep
 
 ## Phase Details
 
-### Phase 1: Foundation, Domain Model & Sequencer
-**Goal**: The project compiles and runs on-device, the sequencing algorithm is provably correct in isolation, and every screen in the app is navigable end-to-end against fixture data — including a fully sequenced, reorderable crate view.
-**Depends on**: Nothing (first phase)
-**Requirements**: SETUP-01, SETUP-02, SETUP-03, SETUP-04, SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06, SEQ-07, SEQ-08, SEQ-09, SEQ-10, SEQ-11, CRATE-01, CRATE-02, CRATE-03, CRATE-04, CRATE-05, CRATE-06, CRATE-07
-**Success Criteria** (what must be TRUE):
-  1. The project builds and launches on the physical iPhone 14 Pro under the paid developer account, targeting iOS 26 — the installed SDK.
-  2. The full test suite, including the sequencer's unit tests, runs from the command line with no device, camera, or network — and a beam-width-50 run agrees with a wider-beam run on the same fixture, or a divergence is flagged.
-  3. Given a fixture set of `(vinylID, bpm, camelot)` tuples, the sequencer produces a one-track-per-vinyl, BPM-ascending sequence honouring `BPM_TOLERANCE` (slider 3-6, default 4.0), correctly excludes and later re-admits a vinyl when a bridging tuple is added, and breaks Camelot ties by lowest total hop distance.
-  4. User can walk the entire crate flow against fixture data — list crates, create and name a new one, land on a capture screen, open a crate to see a sequenced list with BPM/Camelot badges and a plain-language reason on each excluded/unresolved row, drag to reorder, add more, remove a vinyl, delete a crate.
-  5. The same fixture vinyl can be added to two different crates and carry a different selected track in each.
-**Plans**: 8 plans in 5 waves
+---
 
-Plans:
-- [x] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
-- [x] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
-- [x] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
-- [x] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
-- [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
-- [x] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
-- [x] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
-- [ ] 01-08-PLAN.md — Crate detail: running order, manual override, tolerance slider, Add More (CRATE-03, CRATE-04, CRATE-05, SEQ-05)
-
-Waves: 1 → [01-01]; 2 → [01-02, 01-03]; 3 → [01-04, 01-06, 01-07]; 4 → [01-05]; 5 → [01-08]
-**UI hint**: yes
-
-### Phase 2: Camera + OCR
-**Goal**: The camera captures whole sleeves continuously without ever blocking, and Vision OCR reads real sleeve/label text well enough to build on — the accuracy question is already answered (`research/OCR-SPIKE.md`); this phase implements it correctly, including the EXIF-orientation bug the spike found.
-**Depends on**: Phase 1
-**Requirements**: CAP-01, CAP-02, CAP-03, CAP-04, CAP-05, CAP-06, OCR-01, OCR-02, OCR-03, OCR-04, OCR-05
-**Success Criteria** (what must be TRUE):
-  1. User can shoot a sleeve and the shutter returns to a live camera view immediately, with no blocking spinner, across a 20-vinyl session with no stall, memory warning, or thermal throttle — a low-risk bar per the spike's measured ~130 ms/image after a 455 ms warm-up.
-  2. A framing guide sized for a whole 12" sleeve (not a label close-up) shows where to place it, and a thumbnail strip shows every vinyl scanned so far in the session with its per-item resolution status.
-  3. Each captured photo yields text observations with bounding box, baseline angle, and per-observation confidence: EXIF orientation is passed into `VNImageRequestHandler`, and the returned coordinates — which Vision reports in the ORIGINAL unrotated buffer space regardless — are transformed into one documented convention exactly once; recognition is seeded with a custom vocabulary of the owner's recurring label/artist names; OCR runs off the main thread; raw recognised text for a photo can be inspected on screen.
-  4. When a scan yields tracks for only one side, an inline prompt offers Scan or Skip without leaving the camera — suppressed when both sides were already read from a single photo, which the fixtures show is the common case; tapping Done leaves the capture loop and lands on the sequenced crate view.
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 3: Segmentation
-**Goal**: A photographed sleeve is reliably split into the individual tracks it actually contains, using baseline-angle clustering — separating sleeve text from label text by the angle each physical surface sits at, not by radial distance from a label centre.
-**Depends on**: Phase 2
-**Requirements**: SEG-01, SEG-02, SEG-03, SEG-04, SEG-05, SEG-06, SEG-07, SEG-08
-**Success Criteria** (what must be TRUE):
-  1. Given the 12 committed fixture photographs, the shipped angle-cluster segmentation reports per-fixture track-count accuracy, measured against the spike's own baseline (`research/OCR-SPIKE.md`: 6 clean / 5 partial / 1 fail — a usable track count on 9 of 12) — the implementation matches or improves on it, it does not merely re-assert it.
-  2. Observations are grouped by baseline angle into per-surface clusters (sleeve vs. label, e.g. −90° vs +150°) rather than by radial distance from a label centre — no centre detection, no circle finding, no polar unwrapping — and only observations at the trusted confidence tier (`conf >= 1.0`) are used to build track lines, since the spike found confidence is effectively binary (1.00 vs 0.50/0.30) and a fractional threshold is not a useful filter.
-  3. Non-track text is filtered before clustering — shop-price stickers via a currency/decimal regex, RPM, ℗/© lines, addresses, URLs and emails — while catalogue numbers are extracted and kept, not discarded. A side or track marker splits tracks in preference to geometry whenever present, covering `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:`/`STEEL SIDE:` found in the fixtures; a parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one.
-  4. The app infers whether an unscanned flip side probably exists from side markers or their absence, feeding the Phase 2 capture-loop prompt with a real signal.
-  5. User can correct any segmentation result — split a track, merge two, or type a track line by hand.
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 4: Metadata Resolution (identity + BPM/Key)
-**Goal**: Every candidate track resolves to a real artist, title, BPM and Camelot key wherever that data exists anywhere in reach — bundled corpus first, network last — gated by an explicit accuracy spike against known-good data before the app depends on the audio analyser unattended. This is the project's #1 go/no-go checkpoint, replacing the answered OCR spike. **It runs on the installed toolchain — no SDK wait.**
-**Depends on**: Phase 3
-**Requirements**: RES-01, RES-02, RES-03, RES-04, RES-05, RES-06, RES-07, RES-08, BPM-01, BPM-02, BPM-03, BPM-04, BPM-05, BPM-06, BPM-07, BPM-08, BPM-09
-**Success Criteria** (what must be TRUE):
-  1. An audio-analyser accuracy spike — the go/no-go gate — measures the app's own Accelerate/vDSP tempo and key extraction from a 30-second SoundCloud preview against 29 tracks whose true BPM and Camelot are already known and whose audio is already cached in `.local/` (built before this phase; do not rebuild). The report states measured tempo accuracy scored octave-aware, measured key accuracy by Camelot distance specifically from a 30-second window (which may land on an intro, breakdown or drum-only passage), and the real tier-0 hit rate for the 160–184 BPM jungle/DnB band the corpus is thin on (only 12% of it). This decides whether key stays fully automatic or degrades to a soft/manual field, before the rest of Phase 4 is built to depend on it. Runs entirely on Xcode 26.0.1 / iOS 26 — no unavailable SDK.
-  2. Each candidate track resolves to an artist and title — via the bundled corpus, then cache, then MusicBrainz, then Discogs, with a present catalogue number used as the primary Discogs key ahead of artist+title (it read cleanly on 6 of 12 fixtures and is more discriminating for white labels) — or is explicitly marked failed; resolution runs in the background with at most 3 requests in flight and per-item status visible, an HTTP 429 triggers backoff and retry rather than failure, and leaving a crate cancels its in-flight work.
-  3. A match above 0.75 normalised similarity is auto-accepted, 0.50-0.75 is queued for user confirmation, below 0.50 is rejected; resolution results are cached so re-running the sequencer never re-issues a network request.
-  4. Every resolved track carries a BPM and a Camelot key or is explicitly marked as lacking them: the bundled corpus is consulted first, SoundCloud audio — selected with a duration sanity bound and artist/title similarity scoring rather than the first search hit, since a live test returned a 79-minute DJ mix as result 2 — analysed on-device by the app's own Accelerate/vDSP analyser (behind the `AudioAnalyzing` protocol, so Apple's Music Understanding can swap in later without touching callers) is the fallback, a detected key is converted to Camelot notation, and any BPM under 100 is doubled unconditionally. If criterion 1's spike finds key accuracy poor, key degrades to a soft/manual field while BPM stays automatic — the sequencer tolerates this by design, since Camelot distance only orders survivors on the winning path and never excludes a vinyl on key alone.
-  5. A track whose BPM cannot be established by any route is surfaced for manual entry rather than silently dropped.
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 5: Manual Entry & Fast Correction
-**Goal**: When automatic resolution misses — expected to be common on white labels and dubplates, and more so if Phase 4's spike finds the real tier-0 hit rate low — completing a track by hand is fast enough that it never feels like a fallback.
-**Depends on**: Phase 4
-**Requirements**: MAN-01, MAN-02, MAN-03, MAN-04, MAN-05
-**Success Criteria** (what must be TRUE):
-  1. User can enter or correct artist, title, BPM and key for any track in under 15 seconds.
-  2. Camelot key is chosen from a tap grid, never typed; BPM entry pre-fills from a sensible neighbour value rather than starting empty.
-  3. A manually entered track is marked as such and is never silently overwritten by a later automatic resolution.
-  4. Manual entry is reachable directly from the sequenced list and from the excluded list, not only from a failure dialog.
-**Plans**: TBD
-**UI hint**: yes
-
-### Phase 6: Persistence
-**Goal**: Everything the app has built stays exactly as left, on-device only, across an app restart — including the order the owner set.
-**Depends on**: Phase 5
-**Requirements**: PERS-01, PERS-02, PERS-03, PERS-04
-**Success Criteria** (what must be TRUE):
-  1. Closing and reopening the app finds every crate, vinyl, candidate track, photo and sequence intact.
-  2. The saved order of tracks and candidates survives restart exactly as arranged, backed by explicit integer ordering fields rather than SwiftData relationship order.
-  3. Every candidate track — including ones not currently selected — remains stored, so the sequencer can re-run over all of them at any time.
-  4. Nothing the app stores is ever uploaded anywhere; all persistence is on-device.
-**Plans**: TBD
-
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation, Domain Model & Sequencer | 3/8 | In Progress|  |
-| 2. Camera + OCR | 0/TBD | Not started | - |
-| 3. Segmentation | 0/TBD | Not started | - |
-| 4. Metadata Resolution (identity + BPM/Key) | 0/TBD | Not started | - |
-| 5. Manual Entry & Fast Correction | 0/TBD | Not started | - |
-| 6. Persistence | 0/TBD | Not started | - |
+## ACT I — THE SHELL YOU CAN WALK
 
 ---
 
-## Phase 1.5 — `vinylctl`, the end-to-end proof harness
+### Phase 1: Foundation & Protocol Seams
+**Status**: COMPLETE (2026-08-30)
+**Goal**: The project compiles for the device SDK, algorithm code is structurally quarantined
+from the camera and the network, and secrets reach the binary without ever reaching git.
+**Depends on**: Nothing (first phase)
+**Requirements**: SETUP-01, SETUP-02, SETUP-03, SETUP-04
+**Success Criteria** (what must be TRUE):
+  1. ✅ `VinylSetBuilderCore` builds, and `CorePurityTests` **fails the build** if Core imports AVFoundation, Vision, UIKit, AppKit, SwiftUI or SwiftData, or mentions URLSession. Measured: 0 forbidden symbols.
+  2. ✅ `./Scripts/build-app.sh` compiles the app target against the iOS 26 device SDK with signing disabled, and the `Generate Secrets.swift` build phase writes real values into a gitignored, untracked file. Measured: BUILD SUCCEEDED; `generate-secrets.sh --check` passes.
+  3. ✅ `./Scripts/test.sh` runs the whole suite from the command line with no device, no camera and no network. Measured: 88 tests green.
+  4. ⏳ The app installs and launches on the physical iPhone 14 Pro. **UAT U1 — needs the owner** (Xcode signed into the Apple ID, phone connected and trusted). Signing-free device-SDK compilation already passes.
+**Plans**: 4 of 4 delivered
+  - [x] 01-01 — Core package, 7 domain value types, 3 protocol seams, purity guard (SETUP-02, SETUP-04)
+  - [x] 01-02 — XcodeGen app target, iOS 26, build-time `Secrets.swift` (SETUP-01, SETUP-03)
+**Carried out of this phase**: U1 (device install) stays open in `UAT-PENDING.md`.
 
-**Added 2026-08-29.** Not in the original roadmap. Justification below.
+---
 
-**Goal**: A macOS command-line tool, built on the *same* `VinylSetBuilderCore` package the iOS
-app uses, that runs the complete pipeline over real record photographs and prints a real
-sequenced set.
+### Phase 2: The Crate Screens, Stubbed
+**Goal**: The whole crate side of the app is real, navigable SwiftUI rendering from
+`FixtureCrates` — you can list, create, open, reorder, add to and delete a crate, and see a
+sequenced running order with badges and a reasoned not-included bucket, with nothing real
+behind any of it.
+**Depends on**: Phase 1
+**Requirements**: CRATE-01, CRATE-02, CRATE-03, CRATE-04, CRATE-05, CRATE-06, CRATE-07, SEQ-07, SEQ-11
+**Already delivered in this phase** (built during Phase 1's plans, mapped here because it is
+Act I work): CRATE-01, CRATE-02, CRATE-06, CRATE-07 (`CrateStore`, `FixtureCrates`,
+`CrateListView`, `NewCrateSheet`) and SEQ-07, SEQ-11 (`CrateRows` single not-included bucket,
+`TrackBadges`, `BadgePairView`, `SequencedRowView`, `NotIncludedSectionView`).
+**Still outstanding**: CRATE-03, CRATE-04, CRATE-05 — the crate detail screen itself.
+**Success Criteria** (what must be TRUE):
+  1. Opening a fixture crate shows its sequenced running order — every row carrying a BPM badge and a Camelot badge — with the single collapsed not-included section beneath it, each of its rows carrying its own plain-language reason string.
+  2. Dragging a row reorders the crate and the manual order survives navigating away and back, overriding whatever the stub sequencer returned.
+  3. "Add More" from an open crate re-enters the capture screen and returns to the same crate, not a new one.
+  4. The same fixture vinyl appears in two different crates with a different selected track in each — demonstrated on screen, not only in a unit test.
+  5. Deleting a crate, and removing a single vinyl from a crate, both work from the UI and the counts update correctly.
+**Ship criterion (measured)**: an XCUITest walks list → create → capture → detail → reorder →
+add more → remove vinyl → delete crate without a single stub throwing, and every one of those
+states is screenshotted into `Artifacts/screenshots/` after a settle delay.
+**Plans**: TBD
+**UI hint**: yes
 
-```
-vinylctl ~/Desktop/test/*.HEIC
-  → Vision OCR  → angle-cluster segmentation → identity resolution
-  → BPM/key     → beam-search sequencing
-  → prints: the ordered set, plus the not-included bucket with per-row reasons
-```
+---
 
-**Why this exists.** The iOS app cannot be run on this machine — no simulator runtime is
-installed and code signing needs a Team ID deliberately absent from the public repo. Without
-this harness the entire product would be verified only by unit tests and would never once
-have processed a real photograph end to end. That is an unacceptable amount of unproven
-system for something whose whole value is the output quality.
+### Phase 3: The Capture & Correction Screens, Stubbed
+**Goal**: The capture loop and the inspect/correct sheet exist as real, navigable screens
+driven by the 12 committed fixture photographs standing in for a live camera — so that when
+Act III swaps a real camera and a real OCR pipeline underneath them, no new UI is written.
+**Depends on**: Phase 2
+**Requirements**: CAP-02, CAP-03, CAP-05, CAP-06, OCR-04, SEG-07
+**Success Criteria** (what must be TRUE):
+  1. The capture screen shows a framing guide sized for a **whole 12" sleeve**, not a label close-up — the fixtures showed the label is under 10% of the frame and the sleeve is the captured unit.
+  2. A thumbnail strip along the bottom shows every vinyl "scanned" so far in the session, each with its own resolution status indicator, and it scrolls past 20 items without layout breaking.
+  3. Tapping a thumbnail opens the inspect/correct sheet: the raw recognised text for that photo is readable on screen (OCR-04), and the segmented track lines can be split, merged, or hand-typed (SEG-07) — all against fixture observations.
+  4. The flip-side prompt appears inline, without leaving the camera, offering Scan or Skip — and is **suppressed** when the fixture already yielded both sides from one photograph, which the spike found is common (`A:` / `AA:`).
+  5. "Done" leaves the capture loop and lands on the sequenced result for that crate.
+**Ship criterion (measured)**: all 12 fixture photographs load through the stubbed capture
+screen in one simulated session; the flip prompt fires on exactly the fixtures that lack a
+second side marker and on no others; every screen and sheet state is screenshotted after a
+settle delay.
+**Plans**: TBD
+**Research**: yes — confirm how the 12 fixture HEICs are injected into the simulator in place
+of a camera before designing the seam, so the same seam accepts a real `AVCapturePhotoOutput`
+in Phase 10 with no UI change.
+**UI hint**: yes
 
-**Why it is nearly free.** The Core package is pure Swift with no UIKit and no AVFoundation.
-`vinylctl` is a thin `main.swift` over it — the iOS app is a second, thicker client of the
-same library. If `vinylctl` produces a good set, the engine is proven and only the UI is
-unproven. Vision is available on macOS, so OCR runs natively.
+---
 
-**Success criteria**
-1. `vinylctl` processes all 12 committed fixture photographs without crashing
-2. It prints, per record, the OCR'd text, the extracted catalogue number, and the resolved
-   artist/title — or an explicit reason for failing to resolve
-3. It prints a sequenced set obeying the BPM gate and one-track-per-vinyl, plus the
-   not-included bucket with a plain-language reason on every row
-4. It runs with no network for the OCR and sequencing stages, so it is testable offline
-5. Its output for the 12 fixtures is committed as a baseline, so later changes are diffable
+### Phase 4: Act I Sign-off — Every Screen, Photographed
+**Goal**: Act I is provably complete: a committed screenshot of every screen in the app, taken
+in the booted simulator after a settle delay, with the two known visual defects diagnosed and
+fixed and the codebase swept clean before any engine work starts.
+**Depends on**: Phase 3
+**Requirements**: none — this is the act's verification and hygiene gate
+**Success Criteria** (what must be TRUE):
+  1. `Artifacts/screenshots/` contains one committed screenshot per screen and per significant sheet state, every one taken **after a settle delay**, and a script regenerates the whole set in one command.
+  2. **V2 is diagnosed before it is fixed.** The washed-out contrast is first tested against the launch-fade hypothesis by re-screenshotting with a settle delay. Only if the pallor survives that is the cause chased into the view tree — checking `.disabled(true)` on an enclosing view *first*, since that would mean the rows are not tappable and the defect is functional, not cosmetic. The finding is recorded either way.
+  3. **V1 is fixed**: `Text("^[\(count) record](inflect: true)")` — "1 record" / "4 records", correct without a manual branch.
+  4. Hygiene sweep: no dead code, no unused protocol conformances, no `TODO` comments, consistent naming across `App/` and `VinylSetBuilderCore/`, and `CorePurityTests` still green.
+**Ship criterion (measured)**: screenshot count equals screen count with zero screens missing;
+`VISUAL-DEFECTS.md` has zero rows at Medium or above still open; a grep for `TODO`/`FIXME`
+across `App/` and `VinylSetBuilderCore/Sources/` returns zero hits.
+**Plans**: TBD
+**UI hint**: yes
 
-**Requirements**: no new v1 requirements — this verifies existing ones through a second client.
+---
 
-**Depends on**: Phases 1–4 landing in the Core package. Built incrementally: each phase
-extends `vinylctl` as its Core capability lands, rather than as one late big-bang step.
+## ACT II — THE ENGINE, HEADLESS
 
-**Known finding to encode (measured 2026-08-29):** catalogue-number lookup resolved 5 of 6
-correctly against Discogs, but bare numeric numbers are ambiguous — `0-44904` returned a
-Tchaikovsky record instead of Abstract's "The Message". **Cross-check the candidate's artist
-against the OCR'd text before accepting a catalogue-number match.** Six of twelve fixtures had
-no readable catalogue number and must fall back to artist+title.
+Every phase in this act is pure logic behind a protocol the shell already consumes. No UI is
+touched. Each closes on a measured number against real fixtures.
+
+**A note on the purity guard.** Core may not import Vision or AVFoundation. The OCR and audio
+adapters therefore live outside Core, behind seams Core owns (`TextRecognizing`,
+`AudioAnalyzing`) — and each is exercised headlessly by a small measurement harness under
+`Tools/`. Those harnesses are the seed of `vinylctl` (Phase 14); write them so they compose.
+
+---
+
+### Phase 5: The OCR Engine
+**Goal**: A photograph goes in, trustworthy text observations with boxes, confidence and
+baseline angle come out — in one documented coordinate convention, off the main thread.
+**Depends on**: Phase 4
+**Requirements**: OCR-01, OCR-02, OCR-03, OCR-05
+**Success Criteria** (what must be TRUE):
+  1. Each fixture photograph yields observations carrying a bounding box, a per-observation confidence and a baseline angle, as Core value types with no Vision type leaking across the seam.
+  2. EXIF orientation is passed to the request handler explicitly. Vision returns coordinates in the **original unrotated buffer space** even when given an orientation; the transform into the project's single documented convention is applied **exactly once**, and a test proves a double-transform would fail.
+  3. Recognition is seeded with a custom vocabulary of the owner's recurring label and artist names, and the effect of that vocabulary is *measured* rather than assumed — `customWords` is a bias list, not a guarantee.
+  4. OCR runs off the main thread and a concurrent recognition never blocks a caller.
+**Ship criterion (measured)**: re-run against all 12 committed fixtures, scoring **at least the
+spike baseline of 6 clean / 5 partial / 1 fail** — a regression below that fails the phase.
+Per-image latency reported against the spike's ~130 ms (455 ms first-call warm-up) and
+committed to `research/OCR-SPIKE.md` as a second data point.
+**Plans**: TBD
+**Research**: yes — the spike used `VNRecognizeTextRequest` on macOS; confirm the Swift-native
+`RecognizeTextRequest` (iOS 18+, available at the iOS 26 target) reproduces the same EXIF and
+coordinate-space behaviour before committing to it.
+
+---
+
+### Phase 6: The Segmentation Engine
+**Goal**: One sleeve photograph becomes the right number of candidate track lines, by baseline
+angle — the algorithm the fixtures actually support, not the radial clustering the spec assumed.
+**Depends on**: Phase 5
+**Requirements**: SEG-01, SEG-02, SEG-03, SEG-04, SEG-05, SEG-06, SEG-08
+**Success Criteria** (what must be TRUE):
+  1. Observations are grouped by **baseline angle** to separate physical surfaces (rotated record label vs. sleeve), then grouped within each cluster. No label-centre detection, no circle finding, no polar unwrapping — the fixtures disproved the radial approach.
+  2. Non-track text is filtered before clustering — price stickers by a currency/decimal regex (`$10.00`, `6.00€`, `8.00%`), RPM, ℗/© lines, addresses, URLs, emails — while **catalogue numbers are extracted and kept** as first-class output (`TYME 012`, `tech008`, `CSI 006`, `EMF2029`).
+  3. A side or track marker splits tracks in preference to geometry, across the full observed vocabulary: `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:` / `STEEL SIDE:`.
+  4. A parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one.
+  5. Only the trusted confidence tier feeds track lines. Confidence is effectively binary in this collection (1.00 vs 0.50/0.30 — 88 of 104 observations were 1.00), so the filter is a tier, not a fraction — and a test asserts that.
+  6. The app infers whether an unscanned flip side probably exists, from side markers or their absence, and that inference is what drives Phase 3's flip prompt.
+**Ship criterion (measured)**: per-fixture track-count accuracy reported across all 12
+committed fixtures, with a hand-scored expected count per fixture committed alongside.
+Target ≥ 9/12 usable track counts, which is what the spike's read quality supports. The table
+goes into `research/` as the baseline every later change is measured against.
+**Plans**: TBD
+
+---
+
+### Phase 7: The Identity Resolver
+**Goal**: A candidate track line becomes an artist and a title — or is honestly marked failed —
+climbing the cheapest-first ladder and never spending a quota call on a datum available free.
+**Depends on**: Phase 6
+**Requirements**: RES-01, RES-02, RES-03, RES-04, RES-05, RES-06, RES-07, RES-08
+**Success Criteria** (what must be TRUE):
+  1. **A catalogue number, when present, is the primary Discogs key, ahead of artist+title.** It read cleanly on 6 of 12 fixtures and is far more discriminating for white labels. Artist+title is the fallback, not the other way round.
+  2. Discogs supplies release, artist, label and format; MusicBrainz is the fallback; every track ends `.resolved` or explicitly `.failed`, never silently dropped.
+  3. Match acceptance is banded: above 0.75 normalised similarity accepted, 0.50–0.75 queued for user confirmation, below 0.50 rejected — and the band boundaries are unit-tested at their edges.
+  4. At most 3 requests are in flight at once; HTTP 429 triggers backoff and retry rather than a failed resolution; cancelling or leaving a crate cancels that crate's in-flight work.
+  5. Results are cached such that re-running the sequencer issues **zero** network requests — proven by a test that counts requests through an injected transport.
+**Ship criterion (measured)**: catalogue-number resolution scored against the fixtures,
+holding **at least the measured baseline of 5 of 6 correct**. Overall auto-resolve rate across
+the 12 fixtures reported as a number, alongside a request count proving the cache and the
+concurrency bound. The MVP-SPEC's aspirational "70%+" is recorded as a target, not a gate —
+white labels genuinely absent from every database are not a resolver defect.
+**Plans**: TBD
+**Research**: yes — the SoundCloud probe returned a 79-minute DJ mix as the second hit for a
+correct artist query. Result selection needs a duration sanity bound plus similarity scoring
+before it is trusted; investigate the equivalent failure mode on Discogs search.
+
+---
+
+### Phase 8: The BPM & Key Ladder
+**Goal**: Every resolved track carries a BPM and a Camelot key, or is honestly marked as
+lacking them — via the cheapest route that can supply it. This phase carries the project's
+largest remaining unknown and closes on two separate measured gates.
+**Depends on**: Phase 7
+**Requirements**: BPM-01, BPM-02, BPM-03, BPM-04, BPM-05, BPM-06, BPM-07, BPM-08, BPM-09
+**Success Criteria** (what must be TRUE):
+  1. The bundled read-only 6,608-row tier-0 corpus (880 KB, `journal_mode=delete`, generated at build time and gitignored like `Secrets.swift`) is consulted **first, before any network call**, with punctuation-normalised matching and a documented tie-break for the known conflicting-key case (`The Rapture Pt. II` 3A vs `The Rapture, Pt. II` 2B).
+  2. On a tier-0 miss, audio is fetched from SoundCloud with the owner's existing OAuth credentials — accepting that client-credentials returns a **30-second preview**, which is ample for tempo (~85 beats at 170 BPM) and weaker for key.
+  3. Fetched audio is analysed on-device by the app's own **Accelerate/vDSP** analyser — onset envelope + autocorrelation for tempo, chromagram + Krumhansl-Schmuckler for key — and is **not retained** afterwards. A test asserts the audio buffer does not outlive the analysis.
+  4. The analyser sits behind an `AudioAnalyzing` protocol, so Apple's Music Understanding is a drop-in the day an iOS 27 SDK exists, with no caller changed. `MusicUnderstanding` is never imported — it is absent from this SDK and this system.
+  5. Any BPM below 100 is doubled unconditionally, exactly once, folding half-time reads into the genre's real range. A track whose BPM no route can establish is surfaced for manual entry, not dropped.
+**Ship criterion (measured)** — two gates, both numbers:
+  - **Gate A, tier-0 hit rate.** Measured against the real jungle/DnB fixture tracks, not assumed. The corpus skews house/techno — only 12% sits in the 160–184 BPM band — so a low hit rate is an expected outcome, not a failure; it reallocates weight onto Phase 12 (manual entry) and is recorded as such.
+  - **Gate B, analyser accuracy.** Scored against the 29-track cached ground truth in `.local/` (`truth.tsv`, `mu_dataset.json`, `mu_audio/*.mp3`), tempo scored **octave-aware** and key scored by **Camelot distance**, via `Tools/mu-validate.swift` retargeted from `MusicUnderstandingSession` to `AudioAnalyzing`. The SoundCloud match rate must hold at **≥ 72%**, the measured baseline.
+  - **Documented fallback, decided in advance:** if key accuracy from a 30 s preview proves poor, key degrades to a soft/manual field while BPM stays automatic. The sequencer tolerates this by construction — Camelot distance only *orders* survivors and never excludes.
+**Plans**: TBD
+**Research**: yes — this is the phase's whole first move. Do not build the ladder before Gate B
+has a number.
+
+---
+
+### Phase 9: The Sequencer, Finished and Proven Deterministic
+**Goal**: The project's differentiator is finished and, critically, **proven to give the same
+set from the same records** — because it re-runs on every vinyl added, an order-dependent
+sequencer would silently produce a different set each time.
+**Depends on**: Phase 8
+**Requirements**: SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06, SEQ-08, SEQ-09, SEQ-10
+**Already delivered** (Phase 1 plans 01-03 and 01-04, mapped here because sequencing is Act II
+work): SEQ-01 (`Camelot` flat hop count +1 for letter change), SEQ-02 (`Set<UUID>` enforcing
+one track per vinyl), SEQ-03 (BPM gate, non-decreasing), SEQ-04 (most vinyls wins, ties on
+lowest total Camelot distance), SEQ-06 (exclusion with a plain-language reason) —
+`BeamSearchSequencer`, width 50.
+**Still outstanding**: SEQ-05, SEQ-08, SEQ-09, SEQ-10, and **Q1**.
+**Success Criteria** (what must be TRUE):
+  1. **Q1 is answered.** `.planning/open-questions/Q1-sequencer-determinism.md` records that the rank tuple ends in `start-index asc`, derived from array position — so a shuffle may change which equal-ranked states survive pruning. A test builds a crate, sequences it, shuffles the candidate array with a **seeded** RNG, sequences again, and asserts the resulting **vinyl ID order** is identical — comparing IDs, not `Track` structs — across several seeds. The interrupted WIP test's `170 → 178 → 174` output must be explained: either the test was malformed (printing the input array) or the sequencer is genuinely order-dependent, and the answer is written down.
+  2. **If confirmed, it is fixed** by making the rank tuple a **total order** — appending a stable, position-independent tiebreaker, the track's UUID being the obvious candidate. `SEQ-03`'s non-decreasing guarantee is re-asserted on the fixed sequencer.
+  3. `BPM_TOLERANCE` is a slider from 3 to 6 defaulting to 4.0, and moving it re-optimises the whole sequence live.
+  4. Adding a vinyl re-runs the **whole** optimisation as a pure re-derivation with no memory of the prior run, and a previously excluded record **rejoins** when a new addition bridges the gap — proven on a hand-constructed fixture, not a random one.
+  5. Sequencing runs off the main thread, and beam width 50 is checked against a wider beam so a silently suboptimal path is *detectable* rather than assumed absent.
+**Ship criterion (measured)**: identical vinyl-ID order across **≥ 10 seeded shuffles** of the
+same crate; beam-50 vs beam-150 agreement on both vinyl count and total Camelot distance
+across every seeded fixture, with any disagreement reported as data rather than swallowed;
+p95 sequencing wall time at **100 vinyls / 400 candidates** reported as a number against the
+"feels instant" bar.
+**Plans**: TBD
+**Carried in**: Q1. This phase closes it or the phase does not ship.
+
+---
+
+## ACT III — THE WIRING
+
+---
+
+### Phase 10: The Camera, Live
+**Goal**: A real `AVCaptureSession` sits behind the capture screen Phase 3 already built, and
+the shutter never makes you wait.
+**Depends on**: Phase 9
+**Requirements**: CAP-01, CAP-04
+**Success Criteria** (what must be TRUE):
+  1. Session configuration and `startRunning()` run off the main thread (the call blocks), inside a dedicated `CameraController` — `@preconcurrency import AVFoundation` accepted at that one boundary rather than fought.
+  2. The next capture is issued only after the previous `didFinishProcessingPhoto:` callback fires — never overlapping, which `AVCapturePhotoOutput` handles unpredictably — with the delegate bridged through a `CheckedContinuation` so the call site is a plain `try await camera.capturePhoto()`.
+  3. The shutter returns to the camera immediately with **no blocking spinner**; OCR and resolution proceed in the background and the thumbnail strip updates independently as each completes.
+  4. No UI is rewritten. The real camera enters through the same seam the fixture photographs entered through in Phase 3.
+**Ship criterion (measured)**: a 20-record session on the device with shutter-to-ready latency
+reported as a number, peak memory reported, and thermal state sampled throughout. The spike
+measured OCR at ~130 ms/image, so the CAP-04 risk is expected to be small — the point is to
+*confirm that with a number*, not to assume it.
+**Plans**: TBD
+**UI hint**: yes
+**Carried out**: UAT U2 — the live capture *feel* across 20 real records still needs the owner
+and the physical phone. The simulator has no camera.
+
+---
+
+### Phase 11: The Swap
+**Goal**: Every stub is replaced by its real implementation, **one at a time**, with the app
+proven to still walk after each individual swap — so that when something breaks, exactly one
+change is responsible.
+**Depends on**: Phase 10
+**Requirements**: none — this is the act's integration gate
+**Success Criteria** (what must be TRUE):
+  1. Swaps land in dependency order — `TextRecognizing`, then `LabelSegmenting`, then `MetadataResolving`, then `AudioAnalyzing`, then `Sequencing` — as separate commits, never batched.
+  2. After **each** swap the XCUITest walk from Phase 2 and Phase 3 passes unchanged, and the full screenshot set is regenerated after a settle delay and compared against the Act I set.
+  3. Any stub that survives the swap is deleted, not left dormant. The fixture implementations remain **only** where a test needs them, and a test asserts no fixture type is reachable from the shipping app path.
+  4. The purity guard is still green after every swap — Vision and AVFoundation never migrate into Core on the way in.
+**Ship criterion (measured)**: five swaps, five green walks, five screenshot sets. Then the
+full app run end to end on the **12 real record photographs**, reporting: tracks segmented,
+tracks resolved, tracks with BPM and key, and length of the resulting sequence — four numbers,
+committed.
+**Plans**: TBD
+**UI hint**: yes
+
+---
+
+### Phase 12: Manual Entry
+**Goal**: The path for everything automatic resolution misses — which for a crate of white
+labels and dubplates is a first-class path, not an error state.
+**Depends on**: Phase 11
+**Requirements**: MAN-01, MAN-02, MAN-03, MAN-04, MAN-05
+**Success Criteria** (what must be TRUE):
+  1. Artist, title, BPM and key can be entered or corrected for any track **in under 15 seconds**, timed on the device — the requirement is a stopwatch, not a feeling.
+  2. Camelot key is chosen from a **tap grid**, never typed. BPM pre-fills from a sensible neighbour value rather than starting empty.
+  3. A manually entered track is marked as such and is **never silently overwritten** by a later automatic resolution — proven by a test that resolves over a manual entry and asserts the manual value survives.
+  4. Manual entry is reachable directly from the sequenced list **and** from the not-included bucket, not only from a failure dialog.
+**Ship criterion (measured)**: median wall-clock time to fully enter one track, measured across
+several real fixture tracks on the device, reported against the 15-second bar. Screenshots of
+the entry sheet, the Camelot tap grid and the manual badge, after a settle delay.
+**Plans**: TBD
+**UI hint**: yes
+
+---
+
+### Phase 13: Persistence
+**Goal**: Close the app, reopen it, find the crate intact — with ordering that survives
+because it is stored explicitly, not because a relationship happened to come back sorted.
+**Depends on**: Phase 12
+**Requirements**: PERS-01, PERS-02, PERS-03, PERS-04
+**Success Criteria** (what must be TRUE):
+  1. Crates, vinyls, candidate tracks, photos and sequence order all survive quitting and relaunching the app.
+  2. Ordered data uses **explicit integer ordering fields** and plain `[UUID]` scalar arrays — never `@Relationship` to-many array order, which Core Data backs with an `NSSet` and does not guarantee across a fetch. `Track.position` is the source of truth for in-vinyl order, sorted at the call site.
+  3. **Every** candidate track stays stored even when unselected, because the sequencer needs all of them on every re-run. A test deletes nothing and asserts the candidate count is unchanged after a save/load cycle.
+  4. All storage is on-device. Nothing is uploaded anywhere — asserted by the same style of guard that enforces Core purity.
+**Ship criterion (measured)**: a crate of 20 vinyls with all candidates is written, the app is
+terminated via `simctl` and relaunched, and the reloaded crate is compared field-by-field
+against the pre-quit snapshot — reporting zero diffs, including sequence order and the
+not-included bucket's reasons.
+**Plans**: TBD
+
+---
+
+### Phase 14: `vinylctl` & Definition of Done
+**Goal**: A first-class macOS CLI over the same `VinylSetBuilderCore` package, which runs the
+entire pipeline on the owner's 12 real record photographs and prints a real sequenced set —
+and the final hygiene sweep that closes the project.
+**Depends on**: Phase 13
+**Requirements**: none — this is the milestone's proof and final sweep
+**Success Criteria** (what must be TRUE):
+  1. `vinylctl` is a real executable target in the repo, built by the same `Scripts/` toolchain, composed from the Act II measurement harnesses rather than duplicating them. It links `VinylSetBuilderCore` and the same adapters the app does — **one pipeline, two front ends**, no second implementation.
+  2. `vinylctl sequence <photos…>` runs photographs → OCR → segmentation → resolution → BPM/key → sequence and prints the ordered set with per-track BPM and Camelot, plus the not-included bucket with each row's reason.
+  3. Subcommands expose each stage on its own (`ocr`, `segment`, `resolve`, `analyze`) so any future regression is bisectable to one stage from the command line, with no simulator involved.
+  4. **Definition of Done, walked end to end** (MVP-SPEC §9): create a crate and scan 20 vinyls without waiting on any screen; most auto-resolve and the rest hand-entered in under 15 s each; a sequenced set with ascending BPM and sensible harmonic neighbours; add 5 more and watch the sequence re-optimise **including a previously excluded record rejoining**; quit, reopen, crate intact.
+  5. Final hygiene sweep: zero dead code, zero unused protocol conformances, zero `TODO`/`FIXME`, consistent naming, purity guard green, and every stub from Act I deleted.
+**Ship criterion (measured)**: `vinylctl sequence` run over the 12 real photographs prints a
+non-empty sequenced set, and its output is committed as the project's closing artefact.
+The five Definition-of-Done steps each pass with the numbers recorded. Grep for
+`TODO|FIXME|XXX` across `App/`, `VinylSetBuilderCore/Sources/` and `Tools/` returns zero.
+**Plans**: TBD
+**Carried out**: UAT U4/U6 — whether the produced set is one the owner would actually play is
+irreducibly a human judgement, and it is the project's actual success criterion.
+
+---
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
+| 2. The Crate Screens, Stubbed | 4/TBD | In progress | - |
+| 3. The Capture & Correction Screens, Stubbed | 0/TBD | Not started | - |
+| 4. Act I Sign-off — Every Screen, Photographed | 0/TBD | Not started | - |
+| 5. The OCR Engine | 0/TBD | Not started | - |
+| 6. The Segmentation Engine | 0/TBD | Not started | - |
+| 7. The Identity Resolver | 0/TBD | Not started | - |
+| 8. The BPM & Key Ladder | 0/TBD | Not started | - |
+| 9. The Sequencer, Finished and Proven Deterministic | 2/TBD | In progress | - |
+| 10. The Camera, Live | 0/TBD | Not started | - |
+| 11. The Swap | 0/TBD | Not started | - |
+| 12. Manual Entry | 0/TBD | Not started | - |
+| 13. Persistence | 0/TBD | Not started | - |
+| 14. `vinylctl` & Definition of Done | 0/TBD | Not started | - |
+
+## Requirement Coverage
+
+**67 of 67 v1 requirements mapped. Zero orphans. Zero duplicates.**
+
+| Phase | Requirements | Count |
+|-------|--------------|-------|
+| 1 | SETUP-01, SETUP-02, SETUP-03, SETUP-04 | 4 |
+| 2 | CRATE-01…07, SEQ-07, SEQ-11 | 9 |
+| 3 | CAP-02, CAP-03, CAP-05, CAP-06, OCR-04, SEG-07 | 6 |
+| 4 | — (verification/hygiene gate) | 0 |
+| 5 | OCR-01, OCR-02, OCR-03, OCR-05 | 4 |
+| 6 | SEG-01…06, SEG-08 | 7 |
+| 7 | RES-01…08 | 8 |
+| 8 | BPM-01…09 | 9 |
+| 9 | SEQ-01…06, SEQ-08, SEQ-09, SEQ-10 | 9 |
+| 10 | CAP-01, CAP-04 | 2 |
+| 11 | — (integration gate) | 0 |
+| 12 | MAN-01…05 | 5 |
+| 13 | PERS-01…04 | 4 |
+| 14 | — (DoD proof + final sweep) | 0 |
+| **Total** | | **67** |
+
+**Already complete: 15 of 67.** SETUP-01/02/03/04, CRATE-01/02/06/07, SEQ-01/02/03/04/06/07/11.
+**Outstanding: 52 of 67.**
+
+### Two placement notes, stated openly
+
+- **CAP requirements are split across acts on purpose.** CAP-02/03/05/06 are *screens* and
+  belong to Act I, where they render from fixture photographs. CAP-01 (non-blocking shutter)
+  and CAP-04 (20 records without stalling or throttling) are *live-camera behaviours* that
+  cannot exist until a real `AVCaptureSession` does, so they sit in Act III Phase 10. The
+  simulator has no camera; pretending otherwise would put an unverifiable criterion in Act I.
+- **Manual entry is Act III, not Act I**, because the owner's own act structure names it
+  there. Its sheet is therefore the one screen Act I does not build — recorded here so it
+  reads as a decision rather than a gap.
+
+## Granularity Note
+
+`config.json` sets granularity `standard`, whose typical band is 5–8 phases. This roadmap has
+**14**. That is deliberate and it is the mandate's doing, not padding: three acts that may not
+interleave, a five-capability engine that must be built in dependency order, a swap phase that
+verifies one substitution at a time, and a quality preset that requires every phase to close
+on its own measured number. Compressing to 8 would mean either merging engine capabilities
+(losing the per-capability measured gate) or interleaving the acts (losing the throughline).
+Both were rejected. Time is not a constraint; quality is the focal point.
+
+---
+*Roadmap rebuilt: 2026-08-30 — three-act linear structure, 67/67 requirements mapped*
+
+---
+
+## AMENDMENT 2026-08-30 — the sequencer specification changed after this roadmap was written
+
+The owner revised the BPM rule. See `.planning/SEQUENCER-SPEC.md` for the full statement.
+
+**Was:** consecutive tracks within tolerance AND BPM never decreases.
+**Now:** consecutive tracks within tolerance **in either direction**. Monotonicity is gone.
+
+### Why this is not a small edit
+
+`BeamSearchSequencer` currently sorts candidates by BPM and makes a **single forward pass**.
+That is only correct because BPM could never go backwards — which made the search a DAG.
+Allowing backward steps turns it into a **general graph**, so:
+
+- The single forward pass cannot reach a legal sequence that steps down. It must be replaced
+  with expansion over the full neighbour set.
+- Beam width 50 was chosen against the DAG. It must be **re-validated** against the wider
+  space, and the beam-50-vs-150 divergence check (SEQ-10) becomes materially more important.
+- **Q1 (order-dependence) gets more likely, not less.** More equal-ranked states compete for
+  beam slots, so a tiebreaker derived from array position will break differently under a
+  shuffle. The total-order fix — append the track UUID as the final tiebreaker — is now
+  **mandatory**, not optional.
+
+### Effect on Phase 9
+
+- **SEQ-03 is REOPENED.** The shipped code enforces the old rule and its tests assert it.
+  Both are now wrong and must be replaced with adjacency-window assertions in both directions.
+- **SEQ-02, SEQ-04, SEQ-06 stay implemented but must be RE-VALIDATED** under bidirectional
+  search — one-track-per-vinyl and the maximise-count objective are unchanged as *rules*, but
+  they have never been exercised against a search that can step backwards.
+- Phase 9's canonical acceptance case, from the owner's own words: **`170 → 178 → 174`**
+  must be produced when the keys make it the better path.
+
+Requirements complete drops from **15 to 14**.

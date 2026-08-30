@@ -86,7 +86,7 @@ key transitions, that re-optimises when you add more.
 
 - [x] **SEQ-01**: Camelot distance is computed as flat hop count around the 12-position wheel, plus 1 for a letter change
 - [x] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
-- [x] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE, and BPM never decreases along the sequence
+- [ ] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE in EITHER direction — `|bpm[i+1] − bpm[i]| ≤ tolerance`. **The non-decreasing requirement is removed** (owner decision 2026-08-30, see `.planning/SEQUENCER-SPEC.md`). ⚠️ REOPENED — the shipped implementation enforces the old monotonic rule and its tests assert it, so both are now wrong
 - [x] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
 - [ ] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
 - [x] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
@@ -145,87 +145,104 @@ key transitions, that re-optimises when you add more.
 
 ## Traceability
 
+Mapped against the three-act roadmap rebuilt 2026-08-30. Every v1 requirement maps to exactly
+one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requirements.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase 1 | Complete |
-| SETUP-02 | Phase 1 | Complete |
-| SETUP-03 | Phase 1 | Complete |
-| SETUP-04 | Phase 1 | Complete |
-| SEQ-01 | Phase 1 | Complete |
-| SEQ-02 | Phase 1 | Complete |
-| SEQ-03 | Phase 1 | Complete |
-| SEQ-04 | Phase 1 | Complete |
-| SEQ-05 | Phase 1 | Pending |
-| SEQ-06 | Phase 1 | Complete |
-| SEQ-07 | Phase 1 | Complete |
-| SEQ-08 | Phase 1 | Pending |
-| SEQ-09 | Phase 1 | Pending |
-| SEQ-10 | Phase 1 | Pending |
-| SEQ-11 | Phase 1 | Complete |
-| CRATE-01 | Phase 1 | Complete |
-| CRATE-02 | Phase 1 | Complete |
-| CRATE-03 | Phase 1 | Pending |
-| CRATE-04 | Phase 1 | Pending |
-| CRATE-05 | Phase 1 | Pending |
-| CRATE-06 | Phase 1 | Complete |
-| CRATE-07 | Phase 1 | Complete |
-| CAP-01 | Phase 2 | Pending |
-| CAP-02 | Phase 2 | Pending |
-| CAP-03 | Phase 2 | Pending |
-| CAP-04 | Phase 2 | Pending |
-| CAP-05 | Phase 2 | Pending |
-| CAP-06 | Phase 2 | Pending |
-| OCR-01 | Phase 2 | Pending |
-| OCR-02 | Phase 2 | Pending |
-| OCR-03 | Phase 2 | Pending |
-| OCR-04 | Phase 2 | Pending |
-| OCR-05 | Phase 2 | Pending |
-| SEG-01 | Phase 3 | Pending |
-| SEG-02 | Phase 3 | Pending |
-| SEG-03 | Phase 3 | Pending |
-| SEG-04 | Phase 3 | Pending |
-| SEG-05 | Phase 3 | Pending |
-| SEG-06 | Phase 3 | Pending |
-| SEG-07 | Phase 3 | Pending |
-| SEG-08 | Phase 3 | Pending |
-| RES-01 | Phase 4 | Pending |
-| RES-02 | Phase 4 | Pending |
-| RES-03 | Phase 4 | Pending |
-| RES-08 | Phase 4 | Pending |
-| RES-04 | Phase 4 | Pending |
-| RES-05 | Phase 4 | Pending |
-| RES-06 | Phase 4 | Pending |
-| RES-07 | Phase 4 | Pending |
-| BPM-01 | Phase 4 | Pending |
-| BPM-02 | Phase 4 | Pending |
-| BPM-03 | Phase 4 | Pending |
-| BPM-04 | Phase 4 | Pending |
-| BPM-05 | Phase 4 | Pending |
-| BPM-06 | Phase 4 | Pending |
-| BPM-07 | Phase 4 | Pending |
-| BPM-08 | Phase 4 | Pending |
-| BPM-09 | Phase 4 | Pending |
-| MAN-01 | Phase 5 | Pending |
-| MAN-02 | Phase 5 | Pending |
-| MAN-03 | Phase 5 | Pending |
-| MAN-04 | Phase 5 | Pending |
-| MAN-05 | Phase 5 | Pending |
-| PERS-01 | Phase 6 | Pending |
-| PERS-02 | Phase 6 | Pending |
-| PERS-03 | Phase 6 | Pending |
-| PERS-04 | Phase 6 | Pending |
+| SETUP-01 | Act I — Phase 1 | Complete — 01-02 |
+| SETUP-02 | Act I — Phase 1 | Complete — 01-01 |
+| SETUP-03 | Act I — Phase 1 | Complete — 01-02 |
+| SETUP-04 | Act I — Phase 1 | Complete — 01-01 |
+| CRATE-01 | Act I — Phase 2 | Complete — 01-06 |
+| CRATE-02 | Act I — Phase 2 | Complete — 01-06 |
+| CRATE-03 | Act I — Phase 2 | Pending |
+| CRATE-04 | Act I — Phase 2 | Pending |
+| CRATE-05 | Act I — Phase 2 | Pending |
+| CRATE-06 | Act I — Phase 2 | Complete — 01-06 |
+| CRATE-07 | Act I — Phase 2 | Complete — 01-06 |
+| SEQ-07 | Act I — Phase 2 | Complete — 01-07 |
+| SEQ-11 | Act I — Phase 2 | Complete — 01-07 |
+| CAP-02 | Act I — Phase 3 | Pending |
+| CAP-03 | Act I — Phase 3 | Pending |
+| CAP-05 | Act I — Phase 3 | Pending |
+| CAP-06 | Act I — Phase 3 | Pending |
+| OCR-04 | Act I — Phase 3 | Pending |
+| SEG-07 | Act I — Phase 3 | Pending |
+| OCR-01 | Act II — Phase 5 | Pending |
+| OCR-02 | Act II — Phase 5 | Pending |
+| OCR-03 | Act II — Phase 5 | Pending |
+| OCR-05 | Act II — Phase 5 | Pending |
+| SEG-01 | Act II — Phase 6 | Pending |
+| SEG-02 | Act II — Phase 6 | Pending |
+| SEG-03 | Act II — Phase 6 | Pending |
+| SEG-04 | Act II — Phase 6 | Pending |
+| SEG-05 | Act II — Phase 6 | Pending |
+| SEG-06 | Act II — Phase 6 | Pending |
+| SEG-08 | Act II — Phase 6 | Pending |
+| RES-01 | Act II — Phase 7 | Pending |
+| RES-02 | Act II — Phase 7 | Pending |
+| RES-03 | Act II — Phase 7 | Pending |
+| RES-04 | Act II — Phase 7 | Pending |
+| RES-05 | Act II — Phase 7 | Pending |
+| RES-06 | Act II — Phase 7 | Pending |
+| RES-07 | Act II — Phase 7 | Pending |
+| RES-08 | Act II — Phase 7 | Pending |
+| BPM-01 | Act II — Phase 8 | Pending |
+| BPM-02 | Act II — Phase 8 | Pending |
+| BPM-03 | Act II — Phase 8 | Pending |
+| BPM-04 | Act II — Phase 8 | Pending |
+| BPM-05 | Act II — Phase 8 | Pending |
+| BPM-06 | Act II — Phase 8 | Pending |
+| BPM-07 | Act II — Phase 8 | Pending |
+| BPM-08 | Act II — Phase 8 | Pending |
+| BPM-09 | Act II — Phase 8 | Pending |
+| SEQ-01 | Act II — Phase 9 | Complete — 01-03 |
+| SEQ-02 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
+| SEQ-03 | Act II — Phase 9 | ⚠️ REOPENED — spec changed 2026-08-30 |
+| SEQ-04 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
+| SEQ-05 | Act II — Phase 9 | Pending |
+| SEQ-06 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
+| SEQ-08 | Act II — Phase 9 | Pending |
+| SEQ-09 | Act II — Phase 9 | Pending |
+| SEQ-10 | Act II — Phase 9 | Pending |
+| CAP-01 | Act III — Phase 10 | Pending |
+| CAP-04 | Act III — Phase 10 | Pending |
+| MAN-01 | Act III — Phase 12 | Pending |
+| MAN-02 | Act III — Phase 12 | Pending |
+| MAN-03 | Act III — Phase 12 | Pending |
+| MAN-04 | Act III — Phase 12 | Pending |
+| MAN-05 | Act III — Phase 12 | Pending |
+| PERS-01 | Act III — Phase 13 | Pending |
+| PERS-02 | Act III — Phase 13 | Pending |
+| PERS-03 | Act III — Phase 13 | Pending |
+| PERS-04 | Act III — Phase 13 | Pending |
 
 **Coverage:**
 - v1 requirements: 67 total
 - Mapped to phases: 67/67 ✓
 - Unmapped: 0
+- Complete: 15 (SETUP-01/02/03/04, CRATE-01/02/06/07, SEQ-01/02/03/04/06/07/11)
+- Outstanding: 52
 
-**Note:** `SEG-01` moved from Phase 2 into Phase 3 during the roadmap revision. The Phase 2
-OCR spike ran early (see `research/OCR-SPIKE.md`) and already answered the layout question
-(sleeve typography, not concentric label text) directly, so `SEG-01` is now genuinely
-Segmentation's own validation work — measuring the shipped angle-cluster algorithm against
-the 12 committed fixtures — rather than a gate Phase 3's design was waiting on.
+**Placement notes:**
+- `CAP-02/03/05/06` are screens and sit in Act I (Phase 3), rendered from the 12 fixture
+  photographs. `CAP-01` (non-blocking shutter) and `CAP-04` (20 records without stalling or
+  throttling) are live-camera behaviours and sit in Act III (Phase 10) — the simulator has no
+  camera, so they cannot be verified in Act I.
+- `OCR-04` (raw text inspectable on screen) and `SEG-07` (correct a segmentation) are the
+  inspect/correct *sheet*, built in Act I against fixture observations and fed real data by
+  the Act III swap. The engine requirements they sit next to (`OCR-01/02/03/05`,
+  `SEG-01…06/08`) are headless Act II work.
+- `SEQ-07` and `SEQ-11` are display concerns — the not-included bucket and the BPM/Camelot
+  badges — so they belong to the Act I shell, not to the Act II sequencer phase.
+- `MAN-01…05` sit in Act III per the mandated act structure, so the manual-entry sheet is the
+  one screen Act I does not build. Recorded as a decision, not a gap.
+
+**Open question carried into Phase 9:** `Q1` — `BeamSearchSequencer` may be order-dependent
+because its rank tuple ends in a position-derived `start-index asc`. See
+`.planning/open-questions/Q1-sequencer-determinism.md`. Phase 9 answers it or does not ship.
 
 ---
 *Requirements defined: 2026-08-29*
-*Last updated: 2026-08-29 after roadmap revision (post OCR-spike) — 65/65 requirements mapped to 6 phases*
+*Last updated: 2026-08-30 after the three-act roadmap rebuild — 67/67 mapped across 14 phases*

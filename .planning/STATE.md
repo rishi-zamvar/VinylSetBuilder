@@ -2,125 +2,173 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-08-30T07:12:21.989Z"
+status: planning
+stopped_at: Roadmap rebuilt into three linear acts (2026-08-30)
+last_updated: "2026-08-30T00:00:00.000Z"
 last_activity: 2026-08-30
 progress:
-  total_phases: 6
-  completed_phases: 0
-  total_plans: 8
-  completed_plans: 6
-  percent: 14
+  total_phases: 14
+  completed_phases: 1
+  total_plans: 4
+  completed_plans: 4
+  percent: 7
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-29)
+See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt 2026-08-30)
 
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
-**Current focus:** Phase 1 — Foundation, Domain Model & Sequencer
+
+**Current focus:** Act I, Phase 2 — The Crate Screens, Stubbed. Four of its nine requirements
+already landed during Phase 1's plans; CRATE-03/04/05 (the crate detail screen, manual
+reorder, Add More) are what remains before Act I can continue.
+
+## The shape of the work
+
+Three acts, strictly linear, no interleaving:
+
+| Act | Phases | What it is | Act ship criterion |
+|---|---|---|---|
+| **I — The shell you can walk** | 1–4 | Every screen navigable in the simulator on stubbed fixture data | Committed settle-delay screenshots of every screen |
+| **II — The engine, headless** | 5–9 | OCR → segmentation → identity → BPM/key → sequencing, pure and testable | A measured number per phase, never a green tick |
+| **III — The wiring** | 10–14 | One stub swapped at a time, then persistence, manual entry, `vinylctl` | The app runs on real data; `vinylctl` prints a real sequenced set |
 
 ## Current Position
 
-Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
-Plan: 7 of 7
-Status: Ready to execute
+Act: I of III
+Phase: 2 of 14 (The Crate Screens, Stubbed)
+Plan: not yet planned under the new roadmap
+Status: Ready to plan
 Last activity: 2026-08-30
-12 real fixture photos (65/65 requirements mapped, up from 63)
 
-Progress: [█░░░░░░░░░] 14%
+Progress: [█░░░░░░░░░] 7%
+
+**Requirements:** 67 total, 67 mapped, 15 complete, 52 outstanding.
+
+## What already exists — 88 tests green, committed
+
+Do not re-plan this. It is TDD'd and on disk.
+
+| Built | Requirements | Phase it now belongs to |
+|---|---|---|
+| `VinylSetBuilderCore` SPM package + `CorePurityTests` guard (build fails if Core imports AVFoundation/Vision/UIKit/AppKit/SwiftUI/SwiftData or mentions URLSession) | SETUP-02, SETUP-04 | 1 |
+| XcodeGen app target (iOS 26), build-time gitignored `Secrets.swift`, `Scripts/test.sh`, `Scripts/build-app.sh` | SETUP-01, SETUP-03 | 1 |
+| `CrateStore`, `FixtureCrates`, crate list/create/delete, multi-crate selection | CRATE-01, CRATE-02, CRATE-06, CRATE-07 | 2 |
+| `TrackBadges`, `CrateRows` (single not-included bucket) | SEQ-07, SEQ-11 | 2 |
+| `Camelot` + `BPMRules`, ported from the owner's own Python | SEQ-01 | 9 |
+| `BeamSearchSequencer` width 50, `Set<UUID>` one-track-per-vinyl | SEQ-02, SEQ-03, SEQ-04, SEQ-06 | 9 |
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: - min
-- Total execution time: 0 hours
+- Total plans completed: 4 (under the previous roadmap's Phase 1)
+- Average duration: ~17 min
+- Total execution time: ~1.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 (old 01-01) | 1 | 2 min | 2 min |
+| 1 (old 01-02) | 1 | 20 min | 20 min |
+| 9 (old 01-03) | 1 | 12 min | 12 min |
+| 9 (old 01-04) | 1 | 10 min | 10 min |
+| 2 (old 01-06) | 1 | 35 min | 35 min |
+| 2 (old 01-07) | 1 | 8 min | 8 min |
 
-**Recent Trend:**
-
-- Last 5 plans: -
-- Trend: -
-
-*Updated after each plan completion*
-| Phase 01 P01 | 2 | 3 tasks | 16 files |
-| Phase 01 P02 | 20min | 3 tasks | 11 files |
-| Phase 01 P03 | 12min | 2 tasks | 4 files |
-| Phase 01 P04 | 10 | 3 tasks | 3 files |
-| Phase 01 P07 | 8min | 3 tasks | 7 files |
-| Phase 01 P06 | 35min | 3 tasks | 14 files |
+*Plan numbering restarts under the new phase structure. The old `01-0x` plans are preserved
+in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of what was built.*
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
-- [Roadmap]: Sequencer pulled forward into Phase 1 (zero dependency on camera/OCR, is the
-  project's differentiator, de-risked early).
-
-- [Roadmap, revised 2026-08-29]: Phase 2's OCR spike ran early against 12 real fixtures and
-  passed — it is no longer a go/no-go gate, just ordinary Camera + OCR work. `SEG-01` moved
-  from Phase 2 into Phase 3, since validating the angle-cluster algorithm against fixtures is
-  genuinely Segmentation's own job now that the layout question is already answered.
-
-- [Roadmap, revised 2026-08-29]: The project's #1 go/no-go gate moved to Phase 4 — Apple
-  Music Understanding's tempo/key accuracy on this owner's jungle/DnB audio, and whether a
-  30-second SoundCloud preview is enough for a reliable key read, are both unverified and
-  must be measured against the bundled corpus before Phase 4 depends on them unattended.
-
-- [Roadmap]: No separate "integration/wiring" phase — Phase 1 builds real UI against protocol
-  seams, so each later phase's real implementation swaps in for a stub without new plumbing.
-
-- [Phase 01]: VinylSetBuilderCore SPM package created: 7 domain value types, 3 protocol seams (Sequencing/LabelSegmenting/MetadataResolving), 2 fixture stubs, purity guard test enforcing SETUP-02 (no AVFoundation/Vision/UIKit/AppKit/SwiftUI/SwiftData/URLSession in Core)
-- [Phase 01]: 01-02: DEVELOPMENT_TEAM recovered from local Apple Development signing identity (OU field) and set in project.yml, pushing device-signed build to succeed end-to-end; only the physically-disconnected iPhone now blocks install
-- [Phase 01-03]: Camelot distance = flat hop count + 1 for letter change (D1, locked); BPMRules.fold applies bpm<100 -> *2 exactly once (D6, locked)
-- [Phase 01]: BeamSearchSequencer (SEQ-02/03/04/06) shipped: width-50 beam, unresolved-vs-tempo-excluded reasons distinguished by whether ANY candidate has a BPM
-- [Phase 01]: SEQ-07: notIncluded stays one array (D7) — no excluded/unresolved split in CrateRows
-- [Phase 01]: SEQ-11: TrackBadges folds BPM via BPMRules.fold before formatting so the badge never contradicts the sequencer's ordering
-- [Phase 01]: 01-06: CrateStore reducer ships CRATE-01/02/06/07; build-app.sh fixed to pass explicit SYMROOT/OBJROOT so the app target reliably finds the local package's built module
+- [Roadmap rebuild, 2026-08-30]: **Three strictly linear acts** — shell, then engine, then
+  wiring. The previous roadmap's "no wiring phase needed, it's a natural consequence" claim
+  was replaced by an explicit swap phase (11) that substitutes one stub at a time.
+- [Roadmap rebuild]: **The sequencer moved out of Phase 1 into Act II Phase 9**, where the
+  engine belongs. Its already-built parts are marked complete there rather than re-planned.
+- [Roadmap rebuild]: **CAP split across acts.** CAP-02/03/05/06 are screens (Act I, Phase 3);
+  CAP-01 and CAP-04 are live-camera behaviours (Act III, Phase 10). The simulator has no
+  camera, so putting them in Act I would put an unverifiable criterion in Act I.
+- [Roadmap rebuild]: **Manual entry stays in Act III** per the owner's own act structure, so
+  its sheet is the one screen Act I does not build. Recorded as a decision, not a gap.
+- [Roadmap rebuild]: **14 phases against a `standard` granularity band of 5–8.** Deliberate.
+  Compressing would mean merging engine capabilities (losing per-capability measured gates)
+  or interleaving acts (losing the throughline). Time is not a constraint.
+- [Roadmap rebuild]: **Every phase closes on a measured number**, never "tests pass". Every
+  UI-bearing phase commits screenshots taken after a settle delay.
+- [Phase 1]: `VinylSetBuilderCore` — 7 domain value types, 3 protocol seams
+  (`Sequencing`/`LabelSegmenting`/`MetadataResolving`), 2 fixture stubs, purity guard.
+- [Phase 1]: `DEVELOPMENT_TEAM` recovered from the local Apple Development signing identity
+  and set in `project.yml`; device-signed build succeeds end to end.
+- [Phase 9 work already done]: Camelot distance = flat hop count + 1 for a letter change (D1,
+  locked). `BPMRules.fold` applies `bpm < 100 → ×2` exactly once (D6, locked).
+- [Phase 9 work already done]: `BeamSearchSequencer` distinguishes unresolved from
+  tempo-excluded by whether ANY candidate has a BPM.
+- [Phase 2 work already done]: `notIncluded` stays one array (D7) — no excluded/unresolved
+  split in `CrateRows`. `TrackBadges` folds BPM via `BPMRules.fold` before formatting so the
+  badge never contradicts the sequencer's ordering.
+- [Phase 1]: `build-app.sh` passes explicit `SYMROOT`/`OBJROOT` so the app target reliably
+  finds the local package's built module (was U7).
 
 ### Pending Todos
 
-None yet.
+- Re-file the interrupted WIP test `.planning/open-questions/RejoinTests.swift.wip` as a
+  proper seeded-shuffle determinism test when Phase 9 opens.
 
 ### Blockers/Concerns
 
-- Phase 4 opens with the project's new #1 go/no-go gate: Apple Music Understanding's tempo
-  and key accuracy on bass-heavy, distorted jungle/DnB audio is completely unverified (OS 27
-  API surface wasn't testable at spike time). The owner is updating the Mac to macOS 27,
-  which will make this testable against the 6,608-track `library.db` corpus as ground truth.
-  Documented fallback if key accuracy is poor: key degrades to a soft/manual field while BPM
-  stays automatic — the sequencer tolerates this since Camelot distance only orders survivors
-  and never excludes.
+- **Q1 — the sequencer may be order-dependent.** The beam's rank tuple ends in
+  `start-index asc`, derived from array position, so a shuffle can change which equal-ranked
+  states survive pruning. Because the sequencer re-runs on every vinyl added, this would
+  produce *different sets from the same records*. **Phase 9 must answer this**, and if
+  confirmed, fix it by making the rank tuple a total order with a position-independent
+  tiebreaker (the track UUID). See `.planning/open-questions/Q1-sequencer-determinism.md`.
 
-- Tier-0 hit rate against the real jungle/DnB collection is unmeasured — the bundled corpus
-  skews house/techno, with only 12% of it in the 160-184 BPM band. If it proves low, more
-  weight falls on Phase 5 (manual entry) than currently planned.
+- **V1 / V2 — visual defects, open.** "1 records" pluralisation, and the whole UI washed out
+  to near-invisible grey. **V2 must first rule out a launch-fade screenshot artefact** by
+  re-screenshotting after a settle delay, before any restyling; then check `.disabled(true)`
+  on an enclosing view, because that would make it a functional bug wearing a cosmetic
+  disguise. Both close in Phase 4. See `.planning/VISUAL-DEFECTS.md`.
 
-- SoundCloud search-result selection needs a duration sanity bound plus artist/title
-  similarity scoring — a live test returned a 79-minute DJ mix as result 2 for a correct
-  artist-1 query. "Take the first hit" is not sufficient (Phase 4).
+- **Measured baselines that must not regress** (Act II gates are scored against these):
+  - OCR: **6 clean / 5 partial / 1 fail** across the 12 fixtures — Phase 5.
+  - Catalogue-number resolution: **5 of 6 correct** — Phase 7.
+  - SoundCloud match rate: **72%** — Phase 8.
 
-- Segmentation's now-resolved risk (curved/concentric label text) turned out to barely exist
-  in this collection — no polar-unwrap preprocessing is being built (`SEG2-01` stays deferred
-  in v2, probably permanently).
+- **Phase 8 carries the largest remaining unknown.** The in-house Accelerate/vDSP analyser's
+  tempo and key accuracy on bass-heavy jungle/DnB is unmeasured, and SoundCloud only ever
+  returns a 30-second preview — ample for tempo, weaker for key. Gate B scores it against the
+  29 cached ground-truth tracks in `.local/`. Documented fallback: key degrades to a
+  soft/manual field while BPM stays automatic; the sequencer tolerates this because Camelot
+  distance only orders survivors and never excludes.
+
+- **Tier-0 hit rate is unmeasured.** The bundled 6,608-row corpus skews house/techno — only
+  12% sits in the 160–184 BPM band. A low hit rate is an expected outcome, not a failure; it
+  reallocates weight onto Phase 12 (manual entry).
+
+- **Toolchain, non-negotiable.** iOS 26 is the installed SDK. `MusicUnderstanding.framework`
+  does **not** exist on this machine — never import it. BPM/key come from the in-house
+  Accelerate/vDSP analyser behind `AudioAnalyzing`. Simulator UDID
+  `4B4E1C1F-BED6-4812-9238-C151337265DA` is installed and bootable.
+
+- **Still needs the owner:** U1 (install on the physical iPhone 14 Pro — Xcode signed into the
+  Apple ID, phone connected and trusted), U2 (live capture feel across 20 real records),
+  U4/U6 (whether the produced set is one you would actually play — the project's real
+  success criterion).
 
 ## Session Continuity
 
-Last session: 2026-08-30T07:12:21.986Z
-Stopped at: Completed 01-06-PLAN.md
-updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
+Last session: 2026-08-30 — roadmap rebuilt from scratch into three linear acts.
+Stopped at: `.planning/ROADMAP.md` replaced; `REQUIREMENTS.md` traceability and `STATE.md`
+updated. 67/67 requirements mapped across 14 phases, 15 complete.
+Next: `/gsd:plan-phase 2` — the crate detail screen (CRATE-03, CRATE-04, CRATE-05).
 Resume file: None
