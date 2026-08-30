@@ -42,10 +42,14 @@ public enum FixtureCrates {
                                         candidates: [excludedTrack], position: 1)
 
         // No BPM at all — the unresolved bucket.
+        // V5: position 3, not 2. `sharedVinyl` below already holds 2, and `VinylEntry.label`
+        // falls back to "Vinyl \(position + 1)", so both rendered "Vinyl 3". Only one of the
+        // two ever reaches the not-included bucket, which is why no photograph caught it.
+        // `FixtureCratesTests` now asserts label uniqueness across every crate here.
         let unresolvedTrack = Track(id: id(300), vinylID: id(30), position: 0,
                                      artist: "Unknown Artist", title: "Untitled")
         let unresolvedVinyl = VinylEntry(id: id(30), capturedAt: fixedDate,
-                                          candidates: [unresolvedTrack], position: 2)
+                                          candidates: [unresolvedTrack], position: 3)
 
         return Crate(id: id(1), name: "Friday Warehouse", createdAt: fixedDate,
                       vinyls: [inWindowVinyl, excludedVinyl, unresolvedVinyl, sharedVinyl],

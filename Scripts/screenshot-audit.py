@@ -55,7 +55,7 @@ MEAN_BAND = 0.1                   # two frames are only compared if their means 
 CONTENT_TOP = 150                 # px; below this row is app content, above it is the status bar
 
 # Globs the current UI suite writes. Scripts/screenshots.sh purges exactly this list.
-REGENERABLE_PREFIXES = ("02-smoke-", "02-walk-", "03-03-", "03-04-", "03-walk-")
+REGENERABLE_PREFIXES = ("02-smoke-", "02-walk-", "03-03-", "03-04-", "03-walk-", "04-badge-")
 
 # Citation search excludes this phase's own directory: a file cited only by the plan that
 # classifies it is not independently cited, and counting it would be circular.
@@ -416,7 +416,15 @@ def write_manifest(d: dict) -> str:
     L.append("")
     L.append("## Headline numbers")
     L.append("")
-    L.append(f"- **{n} files** on disk, all {d['records'][0]['w']}x{d['records'][0]['h']} px")
+    # NOT "all NxM px": 04-badge-*.png are ELEMENT screenshots (one badge pair each), so the
+    # set stopped being uniform the moment V4 became measurable. Printing a single size would
+    # have been a false claim in a document whose whole job is to carry true numbers.
+    sizes: dict[tuple[int, int], int] = {}
+    for r in d["records"]:
+        sizes[(r["w"], r["h"])] = sizes.get((r["w"], r["h"]), 0) + 1
+    L.append(f"- **{n} files** on disk, in "
+             + ", ".join(f"{c}x {w}x{h} px" for (w, h), c in
+                         sorted(sizes.items(), key=lambda kv: -kv[1])))
     L.append(f"- **{len(ident)} declared IDENTICAL pairs**, collapsing into "
              f"{len(d['groups'])} duplicate group(s)")
     L.append(f"- **{d['distinct']} distinct screen states**")

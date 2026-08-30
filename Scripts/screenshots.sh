@@ -28,7 +28,7 @@ BUNDLE="build/ui.xcresult"
 # Historical-evidence frames (01-06-*, 02-01-*, 02-03-*) are NOT purged — they are cited by
 # defect rows in .planning/VISUAL-DEFECTS.md and no current test can reproduce them.
 PURGE_GLOBS=(-name '02-smoke-*.png' -o -name '02-walk-*.png' -o -name '03-03-*.png'
-             -o -name '03-04-*.png' -o -name '03-walk-*.png')
+             -o -name '03-04-*.png' -o -name '03-walk-*.png' -o -name '04-badge-*.png')
 
 echo "==> 1/5 purging the regenerable set from the host"
 mkdir -p Artifacts/screenshots
