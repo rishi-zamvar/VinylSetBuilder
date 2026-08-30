@@ -84,3 +84,35 @@ then add `export DEVELOPMENT_TEAM=373D7DZ9NM` to `~/.config/keys/.env`, which
 `Scripts/generate-secrets.sh` already sources. Re-run `xcodegen generate` and rebuild.
 
 **If you are happy leaving it**, nothing to do — the build keeps working as-is.
+
+---
+
+### D-1 update — team ID investigated 2026-08-30
+
+Owner asked to use the team registered to `rishizamvar@icloud.com`. Investigated:
+
+```
+security find-identity -p codesigning -v
+  1) Apple Development: RISHI RAJESH ZAMVAR (VQBD68K343)      ← the ONLY identity
+     cert OU = 373D7DZ9NM      O = RISHI RAJESH ZAMVAR
+```
+
+**There is exactly one signing team on this machine, and it is already the one configured**
+in `project.yml` (`373D7DZ9NM`). It is a personal team under the owner's own name, so it is
+most likely already the `rishizamvar@icloud.com` account's team.
+
+**Cannot be confirmed from here.** Xcode is signed into no Apple ID:
+
+```
+defaults read com.apple.dt.Xcode IDEProvisioningTeams   → empty
+~/Library/MobileDevice/Provisioning Profiles/           → 0 profiles
+```
+
+**If `rishizamvar@icloud.com` has a different team**, it is not on this Mac. Sign in
+(Xcode ▸ Settings ▸ Accounts) and the correct team ID appears there; change the one line in
+`project.yml` and re-run `xcodegen generate`.
+
+**Consequence for U1 (device install):** blocked on three things, all needing the owner —
+(1) Xcode signed into the Apple ID, (2) the iPhone connected and trusted, (3) automatic
+provisioning allowed to mint a profile, since there are currently zero. Signing-free
+compilation is unaffected and continues to pass.
