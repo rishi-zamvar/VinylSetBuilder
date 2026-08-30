@@ -85,8 +85,8 @@ func test_givenTitleLikeText_whenExtracted_thenNoCatalogueNumberIsClaimed() {
 @Test("SEG-04: every side marker form the fixtures actually contain is recognised")
 func test_givenARealSideMarker_whenParsed_thenTheSideAndItsTitleComeBack() {
     let cases: [(String, String, String)] = [
-        ("A \"Dragstar\"", "A", "DRAGSTAR\""),
-        ("AA \"Elementz\"", "AA", "ELEMENTZ\""),
+        ("A \"Dragstar\"", "A", "DRAGSTAR"),
+        ("AA \"Elementz\"", "AA", "ELEMENTZ"),
         ("A: High Down", "A", "HIGH DOWN"),
         ("AAA: Strange Nat ure", "AAA", "STRANGE NAT URE"),
         ("SIDE A", "A", ""),
