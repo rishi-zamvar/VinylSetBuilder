@@ -29,3 +29,24 @@ xcodebuild test \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGN_IDENTITY="" \
   "$@"
+
+# ── Zero-test guard ────────────────────────────────────────────────────────────
+# Added 2026-08-30 after this script exited 0 having run ZERO tests — twice, both
+# on the first invocation after a UI-test file was edited (`totalTestCount: 0` in
+# the result bundle). A green exit code was NOT evidence that anything ran, which
+# silently weakened every "N UI tests green" claim made through this script.
+#
+# Measured twice before adding this guard. Do not remove it: a suite that runs no
+# tests must fail, not pass quietly.
+RC=$?
+COUNT=$(xcrun xcresulttool get test-results summary \
+          --path build/ui.xcresult --format json 2>/dev/null \
+        | python3 -c 'import sys,json; print(json.load(sys.stdin).get("totalTestCount",0))' 2>/dev/null || echo 0)
+echo "ui-test.sh: totalTestCount=${COUNT}"
+if [ "${COUNT:-0}" -eq 0 ]; then
+  echo "ui-test.sh: FAIL — the bundle reports ZERO tests executed." >&2
+  echo "            Re-run; the first invocation after editing a UI-test file" >&2
+  echo "            can build without running anything." >&2
+  exit 1
+fi
+exit $RC
