@@ -144,3 +144,54 @@ Matching must normalise punctuation, and conflicting hits need a tie-break rule.
 **Not committed to git.** At 880 KB it would publish the owner's entire music library listing
 to a public repo. It is generated at build time from the local source, same pattern as
 `Secrets.swift`. Build artifact path is gitignored.
+
+---
+
+## SoundCloud → audio pipeline — WORKS, with a 30-second ceiling ✅⚠️
+
+Tested with the owner's `SOUNDCLOUD_CLIENT_ID` / `SOUNDCLOUD_CLIENT_SECRET`
+(`~/.config/keys/.env`, 32 chars each), `client_credentials` grant.
+
+| Step | Result |
+|------|--------|
+| `POST /oauth2/token` (client_credentials) | ✅ 200, JWT access token issued |
+| `GET /tracks?q=…` search | ✅ 200, real results for a jungle query |
+| `GET /tracks/{id}/stream` | ✅ **200, `audio/mpeg`, real bytes** |
+
+Fetched two different tracks (`700598662` Congo Natty — Jungle Souljah, and `14403090`
+a Congo Natty ragga jungle mix):
+
+```
+bytes=476,471   content-type=audio/mpeg
+MPEG ADTS, layer III, v1, 128 kbps, 44.1 kHz, JntStereo
+duration=29.779438s
+```
+
+MD5s differ (`77162ea8…` vs `67e75937…`) — these are **two genuinely different previews**,
+not a shared placeholder. The identical byte count is just constant-bitrate maths:
+30 s × 128 kbps ≈ 476 KB.
+
+### The ceiling
+
+**Client-credentials auth returns 30-second previews, not full tracks.** Every result
+carried `downloadable: false`, and even official artist uploads reported `access: preview`.
+A user-uploaded 79-minute mix returned the same 30 s clip.
+
+### Why this is still fine
+
+- **Tempo:** 30 s at ~170 BPM is roughly 85 beats / 21 bars. Music Understanding needs two
+  beats minimum. Tempo detection is comfortably served.
+- **Key:** adequate but weaker. A 30 s window may land on an intro, a breakdown or a drum-only
+  passage with little tonal content, giving a low-confidence or wrong key. **Measure this in
+  the Phase 3 spike** against the tier-0 corpus as ground truth — do not assume it.
+
+### Implications for the roadmap
+
+1. `BPM-03` / `BPM-04` are **validated as feasible** — the audio path works today.
+2. Add an explicit spike measuring **key accuracy from a 30 s preview** versus the full-track
+   ground truth in the tier-0 corpus. If key accuracy is poor, key becomes a
+   soft/manual field while BPM stays automatic — which the sequencer tolerates by design,
+   since Camelot distance only *orders* survivors and never excludes.
+3. Search-result matching is its own problem: query one returned the right artist but the
+   second hit was a 79-minute DJ mix, not a track. Result filtering needs a duration sanity
+   bound and artist/title similarity scoring, not just "take the first hit".
