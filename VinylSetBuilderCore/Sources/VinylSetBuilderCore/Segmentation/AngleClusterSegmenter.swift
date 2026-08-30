@@ -12,13 +12,19 @@ import Foundation
 public struct AngleClusterSegmenter: LabelSegmenting {
     /// Two observations join the same surface within this much baseline difference. 20° is
     /// comfortably wider than the ±3° a single printed line wanders and far narrower than the
-    /// smallest surface separation the corpus contains (26°, IMG_0505).
+    /// smallest surface separation the corpus contains (26°, IMG_0505). Measured: 10°, 15°, 20°
+    /// and 25° all score 9 of 12; 30° and 40° score 8, where the two surfaces start to merge.
     public let angleTolerance: Double
     /// A line break is a perpendicular gap wider than this many median cap heights.
     ///
-    /// **The one tuned constant in this phase.** Measured over the twelve fixtures:
-    /// 0.3 → 8 usable, 0.4 → 8, **0.5 → 10**, 0.6 → 9, 0.8 → 7. It was tuned on these twelve
-    /// and there is no held-out set.
+    /// **The one tuned constant in this phase.** Measured over the twelve fixtures with this
+    /// implementation: 0.2 → 8 usable, 0.3 → 8, **0.4/0.5/0.6/0.7 → 9**, 0.8 → 7, 1.5 → 6. The
+    /// chosen value sits in the middle of a four-wide plateau rather than on a spike, which is
+    /// the only reason to trust a constant fitted to its own corpus at all — and it WAS fitted
+    /// to these twelve, with no held-out set.
+    ///
+    /// (An earlier throwaway sketch of this pipeline scored 10 at 0.5. It differed on IMG_0500
+    /// only, and the number that counts is this implementation's.)
     public let lineGapFactor: Double
     /// The EXIF orientation the observations were read at. Applied here and nowhere else
     /// (OCR-02). All twelve fixtures are `.right`, which is why that is the default.

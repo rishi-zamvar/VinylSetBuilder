@@ -115,3 +115,20 @@ func test_givenAnOCRMisread_whenComparedFuzzily_thenItMatchesButUnrelatedTextDoe
     #expect(!FuzzyMatch.isClose("", "ANYTHING"))
     #expect(FuzzyMatch.isClose("DALICK", "DALICH"))
 }
+
+// MARK: - the acceptance gate's own matcher
+
+@Test("OCR gate: a needle is found inside the run of everything one photograph returned")
+func test_givenAConcatenatedRead_whenSearchedApproximately_thenRealTitlesAreFound() {
+    // IMG_0506's trusted run, alphanumeric and concatenated, in reading order.
+    let haystack = "COLDSTEETCSI006STEELSIDEGSQUADCOLDSIDEWIDEOPBY"
+    #expect(FuzzyMatch.containsApproximately("WIDEOPEN", in: haystack))     // 2 edits / 8
+    #expect(FuzzyMatch.containsApproximately("GSQUAD", in: haystack))       // exact
+    #expect(!FuzzyMatch.containsApproximately("GIVEITTOME", in: haystack))
+    #expect(!FuzzyMatch.containsApproximately("DUBTRACK", in: haystack))
+    // Negative control on the matcher itself: an empty haystack finds nothing, and a needle
+    // longer than everything returned cannot be satisfied by a short read.
+    #expect(!FuzzyMatch.containsApproximately("WIDEOPEN", in: ""))
+    #expect(FuzzyMatch.approximateDistance(of: "ABCD", in: "ZZABCDZZ") == 0)
+    #expect(FuzzyMatch.approximateDistance(of: "ABCD", in: "ZZZZ") == 4)
+}

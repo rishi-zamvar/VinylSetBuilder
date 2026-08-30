@@ -26,6 +26,35 @@ public enum FuzzyMatch {
         return previous[right.count]
     }
 
+    /// The fewest edits that turn `needle` into SOME window of `haystack` — Sellers' variant,
+    /// which is ordinary Levenshtein with a free start position.
+    ///
+    /// This is what scores the acceptance gate: `WIDE OPEN` has to be findable inside the run
+    /// of everything one photograph returned, not compared against it whole.
+    public static func approximateDistance(of needle: String, in haystack: String) -> Int {
+        let pattern = Array(needle), text = Array(haystack)
+        guard !pattern.isEmpty else { return 0 }
+        guard !text.isEmpty else { return pattern.count }
+        var previous = Array(repeating: 0, count: text.count + 1)   // a free start anywhere
+        var current = previous
+        for i in 1...pattern.count {
+            current[0] = i
+            for j in 1...text.count {
+                current[j] = min(previous[j] + 1,
+                                 current[j - 1] + 1,
+                                 previous[j - 1] + (pattern[i - 1] == text[j - 1] ? 0 : 1))
+            }
+            swap(&previous, &current)
+        }
+        return previous.min() ?? pattern.count
+    }
+
+    /// `needle` appears in `haystack` to within one edit per four characters.
+    public static func containsApproximately(_ needle: String, in haystack: String) -> Bool {
+        guard !needle.isEmpty, !haystack.isEmpty else { return false }
+        return approximateDistance(of: needle, in: haystack) <= needle.count / 4
+    }
+
     /// One edit per four characters, floored.
     ///
     /// The ratio is calibrated on the spike's own worst accepted read: `WIDE OPBY` for
