@@ -16,7 +16,7 @@ struct RootView: View {
         case .crateList:
             CrateListView(model: model)
         case .capture(let crateID):
-            CapturePlaceholderView(model: model, crateID: crateID)
+            CaptureView(model: model, crateID: crateID)
         case .crateDetail(let crateID):
             CrateDetailView(model: model, crateID: crateID)
         }
