@@ -1,0 +1,885 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.xctest/Contents/MacOS/VinylSetBuilderCorePackageTests",
+      "packagePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore",
+      "productName" : "VinylSetBuilderCorePackageTests"
+    }
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.VinylSetBuilderCore-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/sources",
+      "importPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Crate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/ResolutionState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/SequenceResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Side.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/TextObservation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Track.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/VinylEntry.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/FixtureMetadataResolver.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/NaiveBPMSortSequencer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Resolution/MetadataResolving.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Segmentation/LabelSegmenting.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/Sequencing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/VinylSetBuilderCore.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "VinylSetBuilderCore",
+      "moduleOutputPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCore.swiftmodule",
+      "objects" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Crate.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/ResolutionState.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/SequenceResult.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Side.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/TextObservation.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Track.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylEntry.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/FixtureMetadataResolver.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/NaiveBPMSortSequencer.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/MetadataResolving.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/LabelSegmenting.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Sequencing.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylSetBuilderCore.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j11",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/include/VinylSetBuilderCore-Swift.h",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "vinylsetbuildercore"
+      ],
+      "outputFileMapPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Crate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/ResolutionState.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/SequenceResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Side.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/TextObservation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Track.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylEntry.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/FixtureMetadataResolver.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/NaiveBPMSortSequencer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/MetadataResolving.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/LabelSegmenting.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Sequencing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylSetBuilderCore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCore.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Crate.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/ResolutionState.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/SequenceResult.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Side.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/TextObservation.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Track.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/VinylEntry.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/FixtureMetadataResolver.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/NaiveBPMSortSequencer.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Resolution/MetadataResolving.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Segmentation/LabelSegmenting.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/Sequencing.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/VinylSetBuilderCore.swift"
+      ],
+      "tempsPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.VinylSetBuilderCorePackageTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/sources",
+      "importPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCoreTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "VinylSetBuilderCorePackageTests",
+      "moduleOutputPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCorePackageTests.swiftmodule",
+      "objects" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j11",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/include/VinylSetBuilderCorePackageTests-Swift.h",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "vinylsetbuildercore"
+      ],
+      "outputFileMapPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCorePackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.VinylSetBuilderCoreTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/sources",
+      "importPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/CorePurityTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/DomainTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCore.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "VinylSetBuilderCoreTests",
+      "moduleOutputPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCoreTests.swiftmodule",
+      "objects" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/CorePurityTests.swift.o",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/DomainTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j11",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "vinylsetbuildercore"
+      ],
+      "outputFileMapPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/CorePurityTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/DomainTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules/VinylSetBuilderCoreTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/CorePurityTests.swift",
+        "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/DomainTests.swift"
+      ],
+      "tempsPath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "VinylSetBuilderCore" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "VinylSetBuilderCore",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-c",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Crate.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/ResolutionState.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/SequenceResult.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Side.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/TextObservation.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Track.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/VinylEntry.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/FixtureMetadataResolver.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/NaiveBPMSortSequencer.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Resolution/MetadataResolving.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Segmentation/LabelSegmenting.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/Sequencing.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/VinylSetBuilderCore.swift",
+      "-I",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j11",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/include/VinylSetBuilderCore-Swift.h",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "VinylSetBuilderCorePackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "VinylSetBuilderCorePackageTests",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-c",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift",
+      "-I",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j11",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/include/VinylSetBuilderCorePackageTests-Swift.h",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "VinylSetBuilderCoreTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "VinylSetBuilderCoreTests",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-c",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/CorePurityTests.swift",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/DomainTests.swift",
+      "-I",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j11",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "vinylsetbuildercore",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "VinylSetBuilderCore" : [
+
+    ],
+    "VinylSetBuilderCorePackageTests" : [
+      "VinylSetBuilderCoreTests",
+      "VinylSetBuilderCore"
+    ],
+    "VinylSetBuilderCoreTests" : [
+      "VinylSetBuilderCore"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Crate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/ResolutionState.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/SequenceResult.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Side.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/TextObservation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/Track.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Domain/VinylEntry.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/FixtureMetadataResolver.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Fixtures/NaiveBPMSortSequencer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Resolution/MetadataResolving.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Segmentation/LabelSegmenting.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/Sequencing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Sources/VinylSetBuilderCore/VinylSetBuilderCore.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/sources"
+    },
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/sources"
+    },
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Crate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/FixtureMetadataResolver.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/LabelSegmenting.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/MetadataResolving.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/NaiveBPMSortSequencer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/ResolutionState.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/SequenceResult.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Sequencing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Side.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/TextObservation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/Track.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylEntry.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCore.build/VinylSetBuilderCore.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/CorePurityTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/DomainTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCorePackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/CorePurityTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/Tests/VinylSetBuilderCoreTests/DomainTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/VinylSetBuilderCoreTests.build/sources"
+    },
+    "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/rishizamvar/Documents/Projects/VinylSetBuilder/VinylSetBuilderCore/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

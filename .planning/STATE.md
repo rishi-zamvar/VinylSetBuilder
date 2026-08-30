@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: planning
+stopped_at: ROADMAP.md revised and rewritten; STATE.md updated; REQUIREMENTS.md traceability
+last_updated: "2026-08-30T06:48:02.937Z"
+last_activity: 2026-08-29 — Roadmap revised after the Phase 2 OCR spike ran early against
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 7
+  completed_plans: 1
+  percent: 14
+---
+
 # Project State
 
 ## Project Reference
@@ -16,11 +32,12 @@ Status: Ready to plan
 Last activity: 2026-08-29 — Roadmap revised after the Phase 2 OCR spike ran early against
 12 real fixture photos (65/65 requirements mapped, up from 63)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 14%
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: - min
 - Total execution time: 0 hours
@@ -32,6 +49,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: -
 - Trend: -
 
@@ -46,14 +64,17 @@ Recent decisions affecting current work:
 
 - [Roadmap]: Sequencer pulled forward into Phase 1 (zero dependency on camera/OCR, is the
   project's differentiator, de-risked early).
+
 - [Roadmap, revised 2026-08-29]: Phase 2's OCR spike ran early against 12 real fixtures and
   passed — it is no longer a go/no-go gate, just ordinary Camera + OCR work. `SEG-01` moved
   from Phase 2 into Phase 3, since validating the angle-cluster algorithm against fixtures is
   genuinely Segmentation's own job now that the layout question is already answered.
+
 - [Roadmap, revised 2026-08-29]: The project's #1 go/no-go gate moved to Phase 4 — Apple
   Music Understanding's tempo/key accuracy on this owner's jungle/DnB audio, and whether a
   30-second SoundCloud preview is enough for a reliable key read, are both unverified and
   must be measured against the bundled corpus before Phase 4 depends on them unattended.
+
 - [Roadmap]: No separate "integration/wiring" phase — Phase 1 builds real UI against protocol
   seams, so each later phase's real implementation swaps in for a stub without new plumbing.
 
@@ -70,12 +91,15 @@ None yet.
   Documented fallback if key accuracy is poor: key degrades to a soft/manual field while BPM
   stays automatic — the sequencer tolerates this since Camelot distance only orders survivors
   and never excludes.
+
 - Tier-0 hit rate against the real jungle/DnB collection is unmeasured — the bundled corpus
   skews house/techno, with only 12% of it in the 160-184 BPM band. If it proves low, more
   weight falls on Phase 5 (manual entry) than currently planned.
+
 - SoundCloud search-result selection needs a duration sanity bound plus artist/title
   similarity scoring — a live test returned a 79-minute DJ mix as result 2 for a correct
   artist-1 query. "Take the first hit" is not sufficient (Phase 4).
+
 - Segmentation's now-resolved risk (curved/concentric label text) turned out to barely exist
   in this collection — no polar-unwrap preprocessing is being built (`SEG2-01` stays deferred
   in v2, probably permanently).

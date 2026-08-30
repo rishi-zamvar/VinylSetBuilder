@@ -63,12 +63,23 @@ as a natural consequence of that architecture, not as separate integration work.
 **Depends on**: Nothing (first phase)
 **Requirements**: SETUP-01, SETUP-02, SETUP-03, SETUP-04, SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06, SEQ-07, SEQ-08, SEQ-09, SEQ-10, SEQ-11, CRATE-01, CRATE-02, CRATE-03, CRATE-04, CRATE-05, CRATE-06, CRATE-07
 **Success Criteria** (what must be TRUE):
-  1. The project builds and launches on the physical iPhone 14 Pro under the paid developer account, targeting iOS 27.
+  1. The project builds and launches on the physical iPhone 14 Pro under the paid developer account, targeting iOS 26 — the installed SDK.
   2. The full test suite, including the sequencer's unit tests, runs from the command line with no device, camera, or network — and a beam-width-50 run agrees with a wider-beam run on the same fixture, or a divergence is flagged.
   3. Given a fixture set of `(vinylID, bpm, camelot)` tuples, the sequencer produces a one-track-per-vinyl, BPM-ascending sequence honouring `BPM_TOLERANCE` (slider 3-6, default 4.0), correctly excludes and later re-admits a vinyl when a bridging tuple is added, and breaks Camelot ties by lowest total hop distance.
   4. User can walk the entire crate flow against fixture data — list crates, create and name a new one, land on a capture screen, open a crate to see a sequenced list with BPM/Camelot badges and a plain-language reason on each excluded/unresolved row, drag to reorder, add more, remove a vinyl, delete a crate.
   5. The same fixture vinyl can be added to two different crates and carry a different selected track in each.
-**Plans**: TBD
+**Plans**: 7 plans in 4 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
+- [ ] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
+- [ ] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
+- [ ] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
+- [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
+- [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
+- [ ] 01-07-PLAN.md — Sequenced crate detail: badges, one-bucket exclusions, reorder, tolerance slider (CRATE-03, CRATE-04, CRATE-05, SEQ-05, SEQ-07, SEQ-11)
+
+Waves: 1 → [01-01]; 2 → [01-02, 01-03]; 3 → [01-04, 01-06]; 4 → [01-05, 01-07]
 **UI hint**: yes
 
 ### Phase 2: Camera + OCR
@@ -139,9 +150,57 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation, Domain Model & Sequencer | 0/TBD | Not started | - |
+| 1. Foundation, Domain Model & Sequencer | 0/7 | Not started | - |
 | 2. Camera + OCR | 0/TBD | Not started | - |
 | 3. Segmentation | 0/TBD | Not started | - |
 | 4. Metadata Resolution (identity + BPM/Key) | 0/TBD | Not started | - |
 | 5. Manual Entry & Fast Correction | 0/TBD | Not started | - |
 | 6. Persistence | 0/TBD | Not started | - |
+
+---
+
+## Phase 1.5 — `vinylctl`, the end-to-end proof harness
+
+**Added 2026-08-29.** Not in the original roadmap. Justification below.
+
+**Goal**: A macOS command-line tool, built on the *same* `VinylSetBuilderCore` package the iOS
+app uses, that runs the complete pipeline over real record photographs and prints a real
+sequenced set.
+
+```
+vinylctl ~/Desktop/test/*.HEIC
+  → Vision OCR  → angle-cluster segmentation → identity resolution
+  → BPM/key     → beam-search sequencing
+  → prints: the ordered set, plus the not-included bucket with per-row reasons
+```
+
+**Why this exists.** The iOS app cannot be run on this machine — no simulator runtime is
+installed and code signing needs a Team ID deliberately absent from the public repo. Without
+this harness the entire product would be verified only by unit tests and would never once
+have processed a real photograph end to end. That is an unacceptable amount of unproven
+system for something whose whole value is the output quality.
+
+**Why it is nearly free.** The Core package is pure Swift with no UIKit and no AVFoundation.
+`vinylctl` is a thin `main.swift` over it — the iOS app is a second, thicker client of the
+same library. If `vinylctl` produces a good set, the engine is proven and only the UI is
+unproven. Vision is available on macOS, so OCR runs natively.
+
+**Success criteria**
+1. `vinylctl` processes all 12 committed fixture photographs without crashing
+2. It prints, per record, the OCR'd text, the extracted catalogue number, and the resolved
+   artist/title — or an explicit reason for failing to resolve
+3. It prints a sequenced set obeying the BPM gate and one-track-per-vinyl, plus the
+   not-included bucket with a plain-language reason on every row
+4. It runs with no network for the OCR and sequencing stages, so it is testable offline
+5. Its output for the 12 fixtures is committed as a baseline, so later changes are diffable
+
+**Requirements**: no new v1 requirements — this verifies existing ones through a second client.
+
+**Depends on**: Phases 1–4 landing in the Core package. Built incrementally: each phase
+extends `vinylctl` as its Core capability lands, rather than as one late big-bang step.
+
+**Known finding to encode (measured 2026-08-29):** catalogue-number lookup resolved 5 of 6
+correctly against Discogs, but bare numeric numbers are ambiguous — `0-44904` returned a
+Tchaikovsky record instead of Abstract's "The Message". **Cross-check the candidate's artist
+against the OCR'd text before accepting a catalogue-number match.** Six of twelve fixtures had
+no readable catalogue number and must fall back to artist+title.
