@@ -63,6 +63,31 @@ func test_givenAnItemWithNoTrustedText_whenNamed_thenItFallsBackToThePhotoRef() 
     #expect(subject.displayLabel == "IMG_0507.HEIC")
 }
 
+@Test("V12: a price-sticker fragment does not title a record")
+func test_givenAFixtureWhoseFirstTrustedReadIsASticker_whenNamed_thenItSkipsIt() throws {
+    // IMG_0503's FIRST trusted observation is "Zzz." — a two-syllable shard of a shop price
+    // sticker — and for the whole of Act I it was this record's name on the thumbnail strip,
+    // the flip prompt and the inspect sheet. The photograph also reads "Cause 4 Concern-" at
+    // 1.00, four observations later in spatial reading order.
+    let fixture = try #require(FixtureObservations.all.first { $0.file == "IMG_0503.HEIC" })
+    #expect(fixture.observations.first?.text == "Zzz.", "the defect's own precondition moved")
+
+    let subject = item(photoRef: fixture.file, observations: fixture.observations)
+    #expect(subject.displayLabel != "Zzz.")
+    #expect(subject.displayLabel == "Cause 4 Concern-")
+}
+
+@Test("V12: no fixture is named by anything the SEG-03 noise filter rejects")
+func test_givenTheTwelveFixtures_whenNamed_thenNoNameIsFilteredNoise() {
+    for (offset, fixture) in FixtureObservations.all.enumerated() {
+        let name = item(index: offset + 1, photoRef: fixture.file,
+                        observations: fixture.observations).displayLabel
+        // The photo reference is the documented fallback and is not a reading at all.
+        guard name != fixture.file else { continue }
+        #expect(!TrackTextFilter.isNoise(name), "\(fixture.file) is named \(name)")
+    }
+}
+
 @Test("D-03-6: no fixture ever renders as \"Vinyl N\" — V3 is kept out of the capture screens")
 func test_givenTheTwelveFixtures_whenNamed_thenNoneRendersAsVinylN() throws {
     let vinylN = try Regex(#"^Vinyl \d+$"#)
