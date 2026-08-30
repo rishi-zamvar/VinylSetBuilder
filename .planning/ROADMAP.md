@@ -176,8 +176,22 @@ fixed and the codebase swept clean before any engine work starts.
 **Ship criterion (measured)**: screenshot count equals screen count with zero screens missing;
 `VISUAL-DEFECTS.md` has zero rows at Medium or above still open; a grep for `TODO`/`FIXME`
 across `App/` and `VinylSetBuilderCore/Sources/` returns zero hits.
-**Plans**: TBD
+**Plans**: 5 planned, 0 delivered
+  - [ ] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
+  - [ ] 04-02 — `Scripts/hygiene.sh`: eight gates each proven able to fail, plus the carried-debt inventory corrected (S5/S6)
+  - [ ] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
+  - [ ] 04-04 — the defect ledger adjudicated row by row, `Scripts/ledger-check.py` as gate G9, U11 filed (S7)
+  - [ ] 04-05 — the clean double re-run, the four-command recount, and the verdict: sign-off or refusal (S1-S7)
 **UI hint**: yes
+**Planned 2026-08-30 against four facts.** (1) The phase owns **zero requirements** — its
+deliverables are a verdict and a clean ledger, and its gates are numbered S1-S7 in
+`.planning/phases/04-act-i-signoff/CONTEXT.md`. (2) **V3 is NOT fixed here** (D-04-1): both
+candidate fixes are a product call, asked as U8, unanswered. (3) The ship criterion above is a
+**three-part conjunction** and 04-05 reports it clause by clause — the Medium-or-above clause is
+expected to read NOT MET, with V3 blocked on the owner and V12 owned by Phase 6, which is what
+makes the verdict `SIGNED OFF WITH NAMED CARRY` rather than a pass. (4) **A REFUSAL is a valid
+outcome** and the rules for choosing between the three verdicts were fixed in CONTEXT.md before
+plan 04-01 ran a single command.
 
 ---
 
@@ -417,7 +431,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
 | 2. The Crate Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
 | 3. The Capture & Correction Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
-| 4. Act I Sign-off — Every Screen, Photographed | 0/TBD | Not started | - |
+| 4. Act I Sign-off — Every Screen, Photographed | 0/5 | Planned | - |
 | 5. The OCR Engine | 0/TBD | Not started | - |
 | 6. The Segmentation Engine | 0/TBD | Not started | - |
 | 7. The Identity Resolver | 0/TBD | Not started | - |
