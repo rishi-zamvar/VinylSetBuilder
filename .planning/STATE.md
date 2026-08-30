@@ -13,7 +13,8 @@ key transitions, that re-optimises when you add more.
 Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
 Plan: Not yet planned
 Status: Ready to plan
-Last activity: 2026-08-29 — Roadmap created (6 phases, 63/63 requirements mapped)
+Last activity: 2026-08-29 — Roadmap revised after the Phase 2 OCR spike ran early against
+12 real fixture photos (65/65 requirements mapped, up from 63)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -44,9 +45,15 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - [Roadmap]: Sequencer pulled forward into Phase 1 (zero dependency on camera/OCR, is the
-  project's differentiator, de-risked while camera/OCR spike is still pending).
-- [Roadmap]: `SEG-01` (concentric-vs-horizontal label spike) grouped into Phase 2, not
-  Phase 3's Segmentation category — its output gates Phase 3's design.
+  project's differentiator, de-risked early).
+- [Roadmap, revised 2026-08-29]: Phase 2's OCR spike ran early against 12 real fixtures and
+  passed — it is no longer a go/no-go gate, just ordinary Camera + OCR work. `SEG-01` moved
+  from Phase 2 into Phase 3, since validating the angle-cluster algorithm against fixtures is
+  genuinely Segmentation's own job now that the layout question is already answered.
+- [Roadmap, revised 2026-08-29]: The project's #1 go/no-go gate moved to Phase 4 — Apple
+  Music Understanding's tempo/key accuracy on this owner's jungle/DnB audio, and whether a
+  30-second SoundCloud preview is enough for a reliable key read, are both unverified and
+  must be measured against the bundled corpus before Phase 4 depends on them unattended.
 - [Roadmap]: No separate "integration/wiring" phase — Phase 1 builds real UI against protocol
   seams, so each later phase's real implementation swaps in for a stub without new plumbing.
 
@@ -56,16 +63,26 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 2 contains the project's #1 go/no-go gate: whether Vision can read curved/concentric
-  label text at all. If the spike shows it fails badly, Phase 3 needs budgeted scope for a
-  polar-unwrap preprocessing step (known technique, not novel, but real added work).
-- Phase 4 depends on two unverified empirical assumptions: SoundCloud hit-rate on this
-  owner's white-label/dubplate collection, and Music Understanding's accuracy on bass-heavy,
-  distorted jungle/DnB source audio (no published benchmark exists — framework is WWDC26-new).
-  Both must be measured against the bundled corpus before Phase 4 is trusted unattended.
+- Phase 4 opens with the project's new #1 go/no-go gate: Apple Music Understanding's tempo
+  and key accuracy on bass-heavy, distorted jungle/DnB audio is completely unverified (OS 27
+  API surface wasn't testable at spike time). The owner is updating the Mac to macOS 27,
+  which will make this testable against the 6,608-track `library.db` corpus as ground truth.
+  Documented fallback if key accuracy is poor: key degrades to a soft/manual field while BPM
+  stays automatic — the sequencer tolerates this since Camelot distance only orders survivors
+  and never excludes.
+- Tier-0 hit rate against the real jungle/DnB collection is unmeasured — the bundled corpus
+  skews house/techno, with only 12% of it in the 160-184 BPM band. If it proves low, more
+  weight falls on Phase 5 (manual entry) than currently planned.
+- SoundCloud search-result selection needs a duration sanity bound plus artist/title
+  similarity scoring — a live test returned a 79-minute DJ mix as result 2 for a correct
+  artist-1 query. "Take the first hit" is not sufficient (Phase 4).
+- Segmentation's now-resolved risk (curved/concentric label text) turned out to barely exist
+  in this collection — no polar-unwrap preprocessing is being built (`SEG2-01` stays deferred
+  in v2, probably permanently).
 
 ## Session Continuity
 
 Last session: 2026-08-29
-Stopped at: ROADMAP.md, STATE.md written; REQUIREMENTS.md traceability updated.
+Stopped at: ROADMAP.md revised and rewritten; STATE.md updated; REQUIREMENTS.md traceability
+updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
 Resume file: None

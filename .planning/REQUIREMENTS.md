@@ -178,16 +178,18 @@ key transitions, that re-optimises when you add more.
 | OCR-03 | Phase 2 | Pending |
 | OCR-04 | Phase 2 | Pending |
 | OCR-05 | Phase 2 | Pending |
-| SEG-01 | Phase 2 | Pending |
+| SEG-01 | Phase 3 | Pending |
 | SEG-02 | Phase 3 | Pending |
 | SEG-03 | Phase 3 | Pending |
 | SEG-04 | Phase 3 | Pending |
 | SEG-05 | Phase 3 | Pending |
 | SEG-06 | Phase 3 | Pending |
 | SEG-07 | Phase 3 | Pending |
+| SEG-08 | Phase 3 | Pending |
 | RES-01 | Phase 4 | Pending |
 | RES-02 | Phase 4 | Pending |
 | RES-03 | Phase 4 | Pending |
+| RES-08 | Phase 4 | Pending |
 | RES-04 | Phase 4 | Pending |
 | RES-05 | Phase 4 | Pending |
 | RES-06 | Phase 4 | Pending |
@@ -211,13 +213,15 @@ key transitions, that re-optimises when you add more.
 
 **Coverage:**
 - v1 requirements: 65 total
-- Mapped to phases: pending re-roadmap after OCR spike
-- Unmapped: 2 (SEG-08, RES-08) ⚠️
+- Mapped to phases: 65/65 ✓
+- Unmapped: 0
 
-**Note:** `SEG-01` is grouped into Phase 2 (Camera + OCR) rather than alongside the rest of
-the Segmentation category — its output (the concentric-vs-horizontal layout spike) is the
-go/no-go input Phase 3's design depends on, so it belongs with the phase that produces it.
+**Note:** `SEG-01` moved from Phase 2 into Phase 3 during the roadmap revision. The Phase 2
+OCR spike ran early (see `research/OCR-SPIKE.md`) and already answered the layout question
+(sleeve typography, not concentric label text) directly, so `SEG-01` is now genuinely
+Segmentation's own validation work — measuring the shipped angle-cluster algorithm against
+the 12 committed fixtures — rather than a gate Phase 3's design was waiting on.
 
 ---
 *Requirements defined: 2026-08-29*
-*Last updated: 2026-08-29 after roadmap creation — 63/63 requirements mapped to 6 phases*
+*Last updated: 2026-08-29 after roadmap revision (post OCR-spike) — 65/65 requirements mapped to 6 phases*
