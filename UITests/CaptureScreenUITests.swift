@@ -67,6 +67,8 @@ final class CaptureScreenUITests: XCTestCase {
 
         let status1 = app.staticTexts["capture-thumb-status-1"]
         XCTAssertTrue(status1.exists, "CAP-03: the first tile carries no status indicator")
+        // CAP-01: the tile arrives before the read does, so the verdict is waited for.
+        waitForRead(1)
         XCTAssertEqual(status1.label, "Read",
                        "CAP-03: fixture 1 (IMG_0498) scored .read in the spike; the tile says '\(status1.label)'")
 
@@ -103,6 +105,7 @@ final class CaptureScreenUITests: XCTestCase {
         app.buttons["capture-shutter-button"].tap()
         XCTAssertTrue(app.buttons["capture-thumb-2"].waitForExistence(timeout: 10),
                       "CAP-03: the second shutter press put nothing in the strip")
+        waitForRead(2)
         XCTAssertEqual(app.staticTexts["capture-thumb-status-2"].label, "Read",
                        "CAP-03: fixture 2 (IMG_0499) scored .read in the spike")
         XCTAssertFalse(app.buttons["capture-thumb-3"].exists,
@@ -110,6 +113,20 @@ final class CaptureScreenUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["capture-flip-prompt"].waitForNonExistence(timeout: 5),
                       "CAP-05: the prompt fired on a photograph that already read TWO sides")
         capture("03-03-capture-flip-suppressed")
+    }
+
+    /// A tile carries `Reading` until Vision answers; the element exists throughout, so it is
+    /// the LABEL that has to be polled rather than the existence.
+    @discardableResult
+    private func waitForRead(_ index: Int, timeout: TimeInterval = 90) -> String {
+        let status = app.staticTexts["capture-thumb-status-\(index)"]
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let label = status.label
+            if !label.isEmpty, label != "Reading" { return label }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+        return status.label
     }
 
     /// The same guard the walk uses: every state goes through `ScreenshotRecorder`, never

@@ -195,90 +195,46 @@ func test_givenAnItemInASession_whenTurnedIntoAVinylEntry_thenItKeepsItsIdentity
     #expect(session.vinylEntry(for: UUID(), segmenter: CountingSegmenter()) == nil)
 }
 
-// MARK: - D-03-3 / CAP-03 / CAP-05: the twelve-fixture source
+// MARK: - CAP-05 / SEG-04: the flip set, derived rather than transcribed
 //
-// This is the phase's ground truth, hand-scored in CONTEXT.md §3 from the owner's own OCR run.
-// Every number below is a NAMED SET or a NAMED STRING, never a bare count: a table that
-// suppressed the flip prompt on the wrong three records would still produce a count of three.
+// `FixturePhotoSource` is DELETED. It dealt out a hand-written table of readings with a
+// hand-scored verdict and a hand-normalised side marker per record; the app now photographs,
+// reads and segments for real, so these assertions run the SHIPPING segmenter over the twelve
+// recorded reads and check the answers it arrives at on its own.
+//
+// Every number is a NAMED SET or a NAMED STRING, never a bare count: a rule that suppressed the
+// flip prompt on the wrong three records would still produce a count of three.
 
-private func captureAll(_ n: Int, from source: FixturePhotoSource) async -> [CaptureItem] {
-    var captured: [CaptureItem] = []
-    for _ in 0..<n {
-        if let item = await source.capture() { captured.append(item) }
-    }
-    return captured
+private func derivedSides(_ file: String) throws -> [String] {
+    let fixture = try #require(FixtureObservations.all.first { $0.file == file })
+    return AngleClusterSegmenter().segment(fixture.observations, vinylID: UUID(), side: .a).sides
 }
 
-@Test("CAP-03: the source deals the twelve real photographs in order, once each")
-func test_givenTheFixtureSource_whenShotTwelveTimes_thenItYieldsTheTwelveRecordsInOrder() async {
-    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
-
-    #expect(items.count == 12)
-    #expect(items.map(\.photoRef) == FixtureObservations.all.map(\.file))
-    #expect(items.map(\.index) == Array(1...12))
-    #expect(Set(items.map(\.id)).count == 12, "two captures shared an id")
-}
-
-@Test("CAP-03: the twelve read 6 clean / 5 partial / 1 unread, exactly as the spike measured")
-func test_givenTheTwelveFixtures_whenTallied_thenSixReadFivePartialOneUnread() async {
-    var session = CaptureSession(crateID: UUID())
-    for item in await captureAll(12, from: FixturePhotoSource(crateID: UUID())) {
-        session.append(item)
+@Test("CAP-05: the flip prompt is suppressed on exactly the three sleeves that state two sides")
+func test_givenTheTwelveFixtures_whenSidesAreDerived_thenExactlyThreeStateBothSides() throws {
+    var suppressed: [String] = []
+    var prompting: [String] = []
+    for fixture in FixtureObservations.all {
+        let sides = try derivedSides(fixture.file)
+        if sides.count < 2 { prompting.append(fixture.file) } else { suppressed.append(fixture.file) }
     }
 
-    #expect(session.statusTally == [.read: 6, .partial: 5, .unread: 1])
-    #expect(session.statusTally.values.reduce(0, +) == 12)
+    // Both sets, not both counts, and both directions — a rule that never suppressed anything
+    // would pass a `prompting` assertion vacuously if the two were folded into one check.
+    #expect(suppressed == ["IMG_0499.HEIC", "IMG_0503.HEIC", "IMG_0506.HEIC"])
+    #expect(prompting == ["IMG_0498.HEIC", "IMG_0500.HEIC", "IMG_0501.HEIC", "IMG_0502.HEIC",
+                          "IMG_0504.HEIC", "IMG_0505.HEIC", "IMG_0507.HEIC", "IMG_0508.HEIC",
+                          "IMG_0509.HEIC"])
+    #expect(suppressed.count + prompting.count == 12)
 }
 
-@Test("CAP-05: the flip prompt fires on nine named fixtures and is suppressed on {2, 6, 9}")
-func test_givenTheTwelveFixtures_whenAskedAboutFlips_thenExactlyTwoSixAndNineAreSuppressed() async {
-    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
-
-    let prompting = Set(items.filter(\.shouldPromptForFlip).map(\.index))
-    let suppressed = Set(items.filter { !$0.shouldPromptForFlip }.map(\.index))
-
-    // Both sets, not both counts. A count-only assertion passes on the wrong nine.
-    #expect(prompting == [1, 3, 4, 5, 7, 8, 10, 11, 12])
-    #expect(suppressed == [2, 6, 9])
-    #expect(prompting.isDisjoint(with: suppressed))
-}
-
-@Test("CAP-05: the three suppressed records are suppressed for the markers they actually read")
-func test_givenTheSuppressedFixtures_whenInspected_thenTheyCarryTheirRealSideMarkers() async throws {
-    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
-
-    func markers(_ index: Int) throws -> [String] {
-        try #require(items.first { $0.index == index }).sideMarkers
-    }
-
-    #expect(try items.first { $0.index == 6 }?.photoRef == "IMG_0503.HEIC")
-    #expect(try markers(6) == ["A", "AA"])
-    #expect(try items.first { $0.index == 9 }?.photoRef == "IMG_0506.HEIC")
-    #expect(try markers(9) == ["COLD", "STEEL"])
-    // One-sided reading is not the same as no reading: fixture 3 read "Side One" and only that.
-    #expect(try markers(3) == ["ONE"])
-    #expect(try markers(1).isEmpty)
-}
-
-@Test("CAP-03: the source wraps, so a session longer than twelve shots is reachable")
-func test_givenTwelveShotsTaken_whenTheThirteenthIsShot_thenTheSourceWrapsAndKeepsCounting() async throws {
-    let source = FixturePhotoSource(crateID: UUID())
-    let items = await captureAll(13, from: source)
-
-    let thirteenth = try #require(items.last)
-    #expect(thirteenth.photoRef == "IMG_0498.HEIC")
-    #expect(thirteenth.index == 13)
-    #expect(thirteenth.id != items[0].id, "the wrapped shot reused the first item's identity")
-}
-
-@Test("D-03-1: every dealt item carries the real observations, unmodified")
-func test_givenTheFixtureSource_whenItemsAreDealt_thenTheirTextIsTheGeneratedTable() async {
-    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
-
-    for (item, fixture) in zip(items, FixtureObservations.all) {
-        #expect(!item.observations.isEmpty)
-        #expect(item.observations == fixture.observations, "\(fixture.file) drifted from the table")
-    }
+@Test("SEG-04: the derived side markers are the ones actually printed on those sleeves")
+func test_givenTheSuppressedFixtures_whenSidesAreDerived_thenTheyAreTheMarkersOnTheSleeve() throws {
+    #expect(try derivedSides("IMG_0503.HEIC") == ["A", "AAA"])
+    #expect(try derivedSides("IMG_0506.HEIC") == ["COLD", "STEEL"])
+    // One-sided reading is not the same as no reading: IMG_0500 states one side and only one.
+    #expect(try derivedSides("IMG_0500.HEIC") == ["ONE"])
+    #expect(try derivedSides("IMG_0498.HEIC").isEmpty)
 }
 
 // MARK: - Phase 8, swap 1: the real segmenter is what the capture screen now uses

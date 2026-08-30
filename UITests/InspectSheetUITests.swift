@@ -57,14 +57,23 @@ final class InspectSheetUITests: XCTestCase {
                       "Add More did not reach the capture screen")
     }
 
-    /// `FixturePhotoSource` walks the twelve in filename order, so N presses puts fixtures 1…N in
+    /// `SleevePhotoSource` walks the twelve in filename order, so N presses puts fixtures 1…N in
     /// the strip. The flip prompt fires on some of them and never blocks the shutter (proved in
     /// `CaptureScreenUITests`), so nothing is dismissed here.
+    ///
+    /// Each shot is waited out to its verdict: the shutter returns before Vision has read
+    /// anything (CAP-01), so a sheet opened on a `Reading` tile would show an empty draft.
     private func shoot(times: Int) {
         for n in 1...times {
             app.buttons["capture-shutter-button"].tap()
             XCTAssertTrue(app.buttons["capture-thumb-\(n)"].waitForExistence(timeout: 10),
                           "CAP-03: shutter press \(n) put nothing in the strip")
+            let status = app.staticTexts["capture-thumb-status-\(n)"]
+            let deadline = Date().addingTimeInterval(90)
+            while Date() < deadline, status.label.isEmpty || status.label == "Reading" {
+                Thread.sleep(forTimeInterval: 0.25)
+            }
+            XCTAssertNotEqual(status.label, "Reading", "CAP-01: shot \(n) never finished reading")
         }
         XCTAssertFalse(app.buttons["capture-thumb-\(times + 1)"].exists,
                        "CAP-03: \(times) shutter presses produced a \(times + 1)th thumbnail")
@@ -97,8 +106,11 @@ final class InspectSheetUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["inspect-raw-obs-1"].waitForExistence(timeout: 5),
                       "OCR-04: expanding the raw-text section showed nothing")
 
+        // **Recorded, not pinned.** The macOS spike recorded 11 observations for IMG_0498; live
+        // Vision on iOS does not return the same number for every sleeve (IMG_0505 gives 13 here
+        // against 12 there). OCR-04's claim is the inequality below, and that is what is asserted.
         let raw = rawRowCount()
-        XCTAssertEqual(raw, 11, "IMG_0498 produced 11 observations; the sheet lists \(raw)")
+        print("OCR04 IMG_0498: \(raw) raw observations against \(lines) draft lines")
         XCTAssertTrue(app.staticTexts["inspect-raw-obs-\(raw)"].exists)
         XCTAssertFalse(app.staticTexts["inspect-raw-obs-\(raw + 1)"].exists,
                        "the inspect-raw-obs family is not contiguous — row \(raw + 1) resolved")
@@ -109,13 +121,21 @@ final class InspectSheetUITests: XCTestCase {
                              "OCR-04: the raw list (\(raw)) is not keeping the observations the segmenter dropped (\(lines) lines)")
 
         // …and the dropped rows are the LOW-confidence ones, asserted in both directions so a
-        // list that silently hid them, or one that showed nothing but them, both redden.
-        XCTAssertTrue(app.staticTexts["inspect-raw-obs-4"].label.contains("0.30"),
-                      "OCR-04: observation 4 came back at 0.30; the sheet says '\(app.staticTexts["inspect-raw-obs-4"].label)'")
-        XCTAssertTrue(app.staticTexts["inspect-raw-obs-10"].label.contains("0.30"),
-                      "OCR-04: observation 10 came back at 0.30; the sheet says '\(app.staticTexts["inspect-raw-obs-10"].label)'")
-        XCTAssertTrue(app.staticTexts["inspect-raw-obs-1"].label.contains("1.00"),
-                      "OCR-04: observation 1 came back at 1.00; the sheet says '\(app.staticTexts["inspect-raw-obs-1"].label)'")
+        // list that silently hid them, or one that showed nothing but them, both redden. By
+        // EXISTENCE rather than by row index: the row a given reading lands on is a property of
+        // the reader's output order, which is not stable across OS versions, but "this sheet
+        // shows readings the segmenter would not trust, alongside ones it would" is the
+        // requirement and does not move.
+        var confidences: [String] = []
+        for n in 1...raw { confidences.append(app.staticTexts["inspect-raw-obs-\(n)"].label) }
+        print("OCR04 IMG_0498 rows = \(confidences)")
+        // Untrusted means "not 1.00" — that is the whole of `TrackTextFilter.isTrusted`. The
+        // live reader returns 0.50 where the macOS spike returned 0.30 on the same photograph,
+        // so the number itself is an OS detail and the tier is the requirement.
+        XCTAssertTrue(confidences.contains { !$0.contains("1.00") },
+                      "OCR-04: no untrusted reading is on screen, so the raw list is showing only what survived")
+        XCTAssertTrue(confidences.contains { $0.contains("1.00") },
+                      "OCR-04: no trusted reading is on screen either — the raw list is not showing the reader's output")
 
         assertNegativeControls()
         capture("03-04-sheet-raw-text")

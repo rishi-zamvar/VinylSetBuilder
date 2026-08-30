@@ -13,6 +13,14 @@ targets:
     platform: iOS
     sources:
       - path: App
+      # CAP-01/CAP-04: the simulator has no camera, so the owner's twelve real photographs are
+      # bundled and read through the SAME Vision + segmentation path a live capture takes.
+      # A folder reference, so the twelve land at Labels/ inside the bundle.
+      # ponytail: 25 MB of HEIC in the app. Drop this entry once the device path is the only
+      # one being exercised — nothing but SleevePhotoSource.bundledFixtures() reads it.
+      - path: Tests/Fixtures/Labels
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: VinylSetBuilderCore
         product: VinylSetBuilderCore
@@ -22,6 +30,7 @@ targets:
         UILaunchScreen: {}
         CFBundleDisplayName: Vinyl Set Builder
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        NSCameraUsageDescription: Vinyl Set Builder photographs your record labels to read their track listings. Photographs are read on device and are not kept.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rishizamvar.VinylSetBuilder

@@ -23,9 +23,9 @@ struct CaptureView: View {
     /// committed to the store immediately, so leaving and returning loses nothing real.
     @State private var session: CaptureSession
 
-    /// One source per screen appearance, so the strip fills in fixture order (IMG_0498 first)
-    /// rather than restarting or skipping. An `actor` — `capture()` advances a counter.
-    @State private var source: FixturePhotoSource
+    /// One source per screen appearance, so the strip fills in order rather than restarting or
+    /// skipping. An `actor` — `capture()` advances a counter and holds the unread photographs.
+    @State private var source: SleevePhotoSource
 
     /// The captured item whose inspect/correct sheet is open, if any. OCR-04 / SEG-07.
     @State private var inspecting: CaptureItem?
@@ -34,7 +34,7 @@ struct CaptureView: View {
         self.model = model
         self.crateID = crateID
         _session = State(initialValue: CaptureSession(crateID: crateID))
-        _source = State(initialValue: FixturePhotoSource(crateID: crateID))
+        _source = State(initialValue: SleevePhotoSource())
     }
 
     var body: some View {
@@ -72,7 +72,7 @@ struct CaptureView: View {
             // Same pattern as `CrateDetailView.load()`: rebuild the screen's own state from
             // scratch whenever the crate it is about changes.
             session = CaptureSession(crateID: crateID)
-            source = FixturePhotoSource(crateID: crateID)
+            source = SleevePhotoSource()
         }
     }
 
@@ -149,18 +149,31 @@ struct CaptureView: View {
         .padding(.horizontal, 24)
     }
 
-    /// One shutter press: pull from the seam, record it in the session, and commit it to the
-    /// crate. Names come from `CaptureItem.displayLabel` — the vinyl entry's own `label`
-    /// is never called from this screen (D-03-6, defect V3).
+    /// One shutter press, in two phases, and the split IS **CAP-01**.
+    ///
+    /// The tile is in the strip after `capture()` — bytes only, no recognition — so the shutter
+    /// is live again immediately and nothing blocks. The read follows and the tile updates in
+    /// place. There is no spinner anywhere in this function because there is nothing to wait on.
+    ///
+    /// The vinyl reaches the crate at the END, when there is something to put in it: committing
+    /// a `.reading` item would file a record with no candidate lines and then have to correct it.
+    ///
+    /// **Swap 1 (Phase 8).** `FixtureLineSegmenter` — one line per trusted observation — is gone.
+    /// This is the segmenter Phase 6 measured at 9 of 12 usable track counts and 6 of 6 catalogue
+    /// numbers, built with the orientation the READER returned rather than the corpus's, so a
+    /// photograph taken any other way up still segments (OCR-02).
+    ///
+    /// Names come from `CaptureItem.displayLabel` — the vinyl entry's own `label` is never
+    /// called from this screen (D-03-6, defect V3).
     private func shoot() async {
         guard let item = await source.capture() else { return }
         session.append(item)
-        // **Swap 1 (Phase 8).** `FixtureLineSegmenter` — one line per trusted observation — is
-        // gone. This is the segmenter Phase 6 measured at 9 of 12 usable track counts and 6 of 6
-        // catalogue numbers, and it is built with the orientation the READER returned rather
-        // than the corpus's, so a photograph taken any other way up still segments (OCR-02).
-        let segmenter = AngleClusterSegmenter(orientation: item.orientation)
-        guard let entry = session.vinylEntry(for: item.id, segmenter: segmenter) else { return }
+
+        guard let read = await source.read(item.id, index: item.index) else { return }
+        session.replace(read)
+
+        let segmenter = AngleClusterSegmenter(orientation: read.orientation)
+        guard let entry = session.vinylEntry(for: read.id, segmenter: segmenter) else { return }
         model.store.addVinyl(entry, to: crateID)
     }
 }

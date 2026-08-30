@@ -1,0 +1,24 @@
+CAP01 shutter->tile over 12 presses: [10, 13, 12, 13, 16, 16, 17, 17, 18, 18, 20, 21]ms, slowest 21ms
+CAP01 tiles seen still READING (the shutter did not wait for Vision): [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+CAP04 read latency first-5 mean 68ms -> last-5 mean 27ms
+CAP04 shutter->tile ms: [1388, 1401, 1393, 1441, 1363, 1437, 1413, 1412, 1414, 1397, 1422, 1422, 1419, 1420, 1425, 1442, 1433, 1442, 1454, 1447, 1457]
+CAP04 tile->verdict ms: [283, 15, 11, 15, 14, 16, 17, 13, 19, 19, 20, 22, 17, 19, 21, 24, 23, 26, 28, 28, 31]
+OCR04 IMG_0498 rows = [
+OCR04 IMG_0498: 11 raw observations against 2 draft lines
+WALK12 fixture 1 tile='IMG_0498.HEIC' status='Read'
+WALK12 fixture 10 tile='IMG_0507.HEIC' status='Partial'
+WALK12 fixture 11 tile='IMG_0508.HEIC' status='Partial'
+WALK12 fixture 12 tile='IMG_0509.HEIC' status='Partial'
+WALK12 fixture 2 tile='IMG_0499.HEIC' status='Read'
+WALK12 fixture 3 tile='IMG_0500.HEIC' status='Read'
+WALK12 fixture 4 tile='IMG_0501.HEIC' status='Partial'
+WALK12 fixture 5 tile='IMG_0502.HEIC' status='Partial'
+WALK12 fixture 6 tile='IMG_0503.HEIC' status='Read'
+WALK12 fixture 7 tile='IMG_0504.HEIC' status='Partial'
+WALK12 fixture 8 tile='IMG_0505.HEIC' status='Read'
+WALK12 fixture 9 tile='IMG_0506.HEIC' status='Read'
+WALK12 OCR04 IMG_0505: 13 raw observations against 2 draft lines
+WALK12 OCR04 longest raw row is 3: 122 chars, 70.74649047851562pt, 'THE 151 135Y 2ENTRE UNIT 61 8321182EY STRE1PE9 E30 SASSUINETECHNIOUERECORDINGS CO.UK/DRUMSOUNDATECHNIQUERECORDINOS.CO 0.50'
+WALK12 V15 control: 12 chars, field 221.33333333333331x22.0pt, 'JA22 IX ROFD'
+WALK12 V15 IMG_0500 line 1: 63 chars, 66.00000000000003pt, 'Invocación JJU vs. UFO! unckatecks* Gide One / Oríginal Version'
+WALK12 V16 IMG_0505 duplicate line texts = []

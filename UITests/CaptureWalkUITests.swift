@@ -20,7 +20,7 @@ import XCTest
 /// all reddens here instead of passing vacuously on an empty `fired` array.
 ///
 /// Second-observation discipline: 03-01's Core unit tests assert both the flip set and the 6/5/1
-/// tally against `FixturePhotoSource` directly. This file asserts the same two facts against
+/// tally against the shipping segmenter directly. This file asserts the same two facts against
 /// real prompts and real tile labels in a real session. Two independent observations, by
 /// construction rather than by re-running the same check twice.
 ///
@@ -37,8 +37,18 @@ final class CaptureWalkUITests: XCTestCase {
     private static let expectedFired = [1, 3, 4, 5, 7, 8, 10, 11, 12]
     private static let expectedSuppressed = [2, 6, 9]
 
-    /// The spike's own 6 clean / 5 partial / 1 fail, keyed on `CaptureItemStatus.label`.
-    private static let expectedTally = ["Read": 6, "Partial": 5, "Unread": 1]
+    /// **Phase 8, swap 2 — MEASURED against the live pipeline, and it moved by one record.**
+    ///
+    /// This was `["Read": 6, "Partial": 5, "Unread": 1]`: CONTEXT.md §3's hand score, which the
+    /// derived rule reproduces EXACTLY when it is run over the recorded macOS observations
+    /// (`test_givenTheTwelveFixtures_whenStatusIsDerived_...` in Core asserts that).
+    ///
+    /// Running Vision live inside the app on the iOS 26 simulator disagrees on exactly one
+    /// photograph. IMG_0507 — the dubplate the macOS spike could get nothing usable off — reads
+    /// well enough on iOS for the segmenter to keep a line, so it scores Partial rather than
+    /// Unread. Eleven of twelve are identical, and the disagreement is in the generous
+    /// direction. The live number is the one that goes here, because this suite runs the app.
+    private static let expectedTally = ["Read": 6, "Partial": 6]
 
     override func setUp() {
         continueAfterFailure = false
@@ -82,12 +92,22 @@ final class CaptureWalkUITests: XCTestCase {
         var suppressed: [Int] = []
         var tally: [String: Int] = [:]
 
+        var shutterToTile: [TimeInterval] = []
+        var sawReading: [Int] = []
         for i in 1...12 {
+            let pressed = Date()
             app.buttons["capture-shutter-button"].tap()
 
+            // **CAP-01, measured — and NOT with `waitForExistence`.** That polls at one-second
+            // granularity, so it reported 1.4s for every single press on this suite's first
+            // swap-2 run: a property of the harness, not of the app. A 20ms poll measures the
+            // app. It also catches the intermediate state, which is the actual claim: the tile
+            // is in the strip carrying `Reading` while recognition is still running.
+            let (latency, reading) = awaitTile(i)
             let thumb = app.buttons["capture-thumb-\(i)"]
-            XCTAssertTrue(thumb.waitForExistence(timeout: 15),
-                          "CAP-03: shutter press \(i) put nothing in the strip")
+            XCTAssertTrue(thumb.exists, "CAP-03: shutter press \(i) put nothing in the strip")
+            shutterToTile.append(latency)
+            if reading { sawReading.append(i) }
             // Two-sided. A one-sided existence check passes on a strip that added two tiles.
             XCTAssertFalse(app.buttons["capture-thumb-\(i + 1)"].exists,
                            "CAP-03: shutter press \(i) produced a tile \(i + 1)")
@@ -99,8 +119,13 @@ final class CaptureWalkUITests: XCTestCase {
             XCTAssertNil(tileName.range(of: "^Vinyl [0-9]+$", options: .regularExpression),
                          "D-03-6: tile \(i) is named '\(tileName)' — VinylEntry.label leaked into the strip")
 
-            // The prompt is set in the same mutation that appends the item, so it is on screen
-            // by the time the tile is. The wait is for render lag, not for a race.
+            // **The read has to land before either the prompt or the status means anything.**
+            // Recognition is off the main actor and takes far longer than the shutter, which is
+            // the point; a check placed here without this wait would be timing Vision.
+            let statusLabel = waitForRead(i)
+            XCTAssertNotEqual(statusLabel, "Reading",
+                              "CAP-01: fixture \(i) never finished reading")
+
             let prompt = app.otherElements["capture-flip-prompt"]
             if prompt.waitForExistence(timeout: 3) {
                 fired.append(i)
@@ -119,9 +144,8 @@ final class CaptureWalkUITests: XCTestCase {
                 if i == 2 { capture("03-walk-03-flip-suppressed") }
             }
 
-            let status = app.staticTexts["capture-thumb-status-\(i)"]
-            XCTAssertTrue(status.exists, "CAP-03: tile \(i) carries no status indicator")
-            let statusLabel = status.label
+            XCTAssertTrue(app.staticTexts["capture-thumb-status-\(i)"].exists,
+                          "CAP-03: tile \(i) carries no status indicator")
             XCTAssertFalse(statusLabel.isEmpty, "CAP-03: tile \(i)'s status rendered blank")
             tally[statusLabel, default: 0] += 1
             print("WALK12 fixture \(i) tile='\(tileName)' status='\(statusLabel)'")
@@ -134,6 +158,14 @@ final class CaptureWalkUITests: XCTestCase {
                 XCTAssertFalse(one.contains("1 records"), "the session count is not inflecting: '\(one)'")
             }
         }
+
+        // ------------------------------------------------------- CAP-01, the shutter's own number
+        let slowest = shutterToTile.max() ?? 0
+        print("CAP01 shutter->tile over 12 presses: \(shutterToTile.map { Int($0 * 1000) })ms, "
+              + "slowest \(Int(slowest * 1000))ms")
+        print("CAP01 tiles seen still READING (the shutter did not wait for Vision): \(sawReading)")
+        XCTAssertLessThan(slowest, 2.0,
+                          "CAP-01: the slowest shutter press waited \(slowest)s for its tile — the shutter is blocking on the read")
 
         // ------------------------------------------------------------------ the two numbers
         // Ascending-order array equality, which is set equality plus ordering — strictly
@@ -202,18 +234,41 @@ final class CaptureWalkUITests: XCTestCase {
 
         // Measured with no prompt on screen, at both ends, so the two widths are read under the
         // same layout conditions. (The prompt shrinks the *preview* — defect V10 — never a tile.)
-        shootOnce(1)
+        var shutterLatency: [TimeInterval] = []
+        var readLatency: [TimeInterval] = []
+        let first = shootOnce(1)
+        shutterLatency.append(first.0); readLatency.append(first.1)
         dismissAnyFlipPrompt()
         let widthAtOne = app.buttons["capture-thumb-1"].frame.width
         XCTAssertGreaterThan(widthAtOne, 0, "tile 1 has no width at one item")
 
-        // `FixturePhotoSource` wraps past the twelfth, so shots 13…21 are fixtures 1…9 again
+        // `SleevePhotoSource` wraps past the twelfth, so shots 13…21 are fixtures 1…9 again
         // with fresh, still-ascending indices. No screenshot per tap: twenty-one settles at
         // three seconds each is a minute of dead time for frames nobody will look at.
         for i in 2...21 {
-            shootOnce(i)
+            let (shutter, read) = shootOnce(i)
+            shutterLatency.append(shutter); readLatency.append(read)
             dismissAnyFlipPrompt()
         }
+
+        // **CAP-04, as far as a machine with no camera can take it.** Twenty-one real captures,
+        // each one a full HEIC decode plus a Vision pass, back to back. What the simulator CAN
+        // show is that the loop does not degrade: a leak or an unbounded queue shows up as
+        // latency that climbs shot after shot. What it CANNOT show is memory or thermals — the
+        // simulator shares the Mac's, and there is no camera pipeline to load. That half is
+        // recorded in UAT-PENDING.md as device-only and is NOT claimed here.
+        func mean(_ values: ArraySlice<TimeInterval>) -> TimeInterval {
+            values.reduce(0, +) / TimeInterval(values.count)
+        }
+        let firstFive = mean(readLatency.prefix(5))
+        let lastFive = mean(readLatency.suffix(5))
+        print("CAP04 shutter->tile ms: \(shutterLatency.map { Int($0 * 1000) })")
+        print("CAP04 tile->verdict ms: \(readLatency.map { Int($0 * 1000) })")
+        print("CAP04 read latency first-5 mean \(Int(firstFive * 1000))ms -> last-5 mean \(Int(lastFive * 1000))ms")
+        XCTAssertLessThan(shutterLatency.max() ?? 0, 2.0,
+                          "CAP-01: the slowest of 21 shutter presses waited \(shutterLatency.max() ?? 0)s for its tile")
+        XCTAssertLessThan(lastFive, firstFive * 3,
+                          "CAP-04: recognition slowed from \(firstFive)s to \(lastFive)s over 21 captures — the loop is degrading")
 
         XCTAssertTrue(app.buttons["capture-thumb-21"].exists, "CAP-03: the twenty-first tile is missing")
         XCTAssertFalse(app.buttons["capture-thumb-22"].exists, "CAP-03: a twenty-second tile appeared after 21 presses")
@@ -248,56 +303,59 @@ final class CaptureWalkUITests: XCTestCase {
 
     // MARK: The two sheet states
 
-    /// **State 5 — defect V15, closed by measurement rather than by assertion.**
+    /// **State 5 — defect V15, closed by measurement.**
     ///
     /// V15: the correction field truncated the corpus's longest read at about 22 characters in
-    /// a 237.3pt single-line `TextField`. Swap 1 made that WORSE and not better — the premise
-    /// for handing V15 to Phase 6 was that SEG-03's filter would shorten the long lines, and
-    /// the opposite happened: `AngleClusterSegmenter` JOINS a cluster's readings into one track
-    /// line, so the longest draft line in the corpus went from 44 characters to 57 (IMG_0500,
-    /// fixture 3). The fix is `axis: .vertical` on the field.
+    /// a 237.3pt single-line `TextField`. Swap 1 made that WORSE, not better — the premise for
+    /// handing V15 to Phase 6 was that SEG-03's filter would shorten the long lines, and the
+    /// opposite happened: `AngleClusterSegmenter` JOINS a cluster's readings into one track
+    /// line, so the longest draft line grew from 44 characters to 57 on the recorded corpus.
+    /// The fix is `axis: .vertical` with the rounded-border style dropped, because that style
+    /// silently caps growth at two lines.
     ///
-    /// Measured with a control in the same run, because "it is tall" means nothing on its own:
-    /// fixture 5's single 29-character line is the one-line control and fixture 3's 57-character
-    /// line has to be visibly taller than it.
+    /// **The character counts are RECORDED, not fixed.** Live Vision on iOS does not return
+    /// byte-identical text to the macOS spike — IMG_0502 reads `JA22 •MAIATCIN DAVE ANCEL MIX`
+    /// (29 characters) there and `JA22 IX ROFD` (12) here — so pinning a count would be pinning
+    /// an OS version. What is asserted is the defect: a materially longer value has to be drawn
+    /// materially taller than a one-line control, and both are measured in the same run.
     private func inspectLongestLineWraps() {
         openThumb(5)
         XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
                       "tapping tile 5 did not present the inspect sheet")
-        XCTAssertEqual(lineCount(), 1, "IMG_0502 segments to one track line")
         let control = app.textFields["inspect-line-field-1"]
+        XCTAssertTrue(control.exists, "IMG_0502 drafted no line at all")
         let controlValue = (control.value as? String) ?? ""
         let controlHeight = control.frame.height
         print("WALK12 V15 control: \(controlValue.count) chars, field \(control.frame.width)x\(controlHeight)pt, '\(controlValue)'")
-        XCTAssertEqual(controlValue.count, 29,
-                       "the one-line control is \(controlValue.count) characters ('\(controlValue)'), not 29")
+        XCTAssertFalse(controlValue.isEmpty, "the one-line control field is empty")
         closeSheet()
 
         openThumb(3)
         XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
                       "tapping tile 3 did not present the inspect sheet")
         let lines = lineCount()
-        XCTAssertEqual(lines, 1, "IMG_0500 segments to one track line; the draft opened with \(lines)")
+        XCTAssertGreaterThan(lines, 0, "IMG_0500 drafted no lines")
         XCTAssertFalse(app.otherElements["inspect-line-\(lines + 1)"].exists,
                        "the inspect-line family is not contiguous — line \(lines + 1) resolved")
         XCTAssertFalse(app.otherElements["inspect-line-99"].exists,
                        "a nonsense inspect-line identifier resolved — the line count is not discriminating")
 
-        let longest = app.textFields["inspect-line-field-1"]
-        let value = (longest.value as? String) ?? ""
-        print("WALK12 V15 longest: \(value.count) chars, field \(longest.frame.width)x\(longest.frame.height)pt, '\(value)'")
-        // The value is intact — that was never in doubt, V15 was always about legibility.
-        XCTAssertEqual(value.count, 57,
-                       "expected the corpus's longest draft line at 57 characters; the field holds \(value.count) ('\(value)')")
-        // …and it is now DRAWN, not cut off. A single-line field would render both at the same
-        // height, which is exactly what V15 was.
-        // At least one whole rendered line taller than the control. Measured: a line is 22pt,
-        // the 29-character control wraps to two (44pt) and the 57-character line to three
-        // (66pt). `* 1.5` was tried first and is EXACTLY the 2:3 ratio, so it failed on a
-        // floating-point ulp — 66.00000000000003 against 66.00000000000004 — while measuring
-        // the right thing. A whole-line margin says what is meant and has slack.
-        XCTAssertGreaterThan(longest.frame.height, controlHeight + 10,
-                             "V15: the 57-character line renders at \(longest.frame.height)pt against the 29-character control's \(controlHeight)pt — it is still being truncated")
+        var widest = ""
+        var widestHeight: CGFloat = 0
+        for n in 1...lines {
+            let field = app.textFields["inspect-line-field-\(n)"]
+            let value = (field.value as? String) ?? ""
+            print("WALK12 V15 IMG_0500 line \(n): \(value.count) chars, \(field.frame.height)pt, '\(value)'")
+            if value.count > widest.count { widest = value; widestHeight = field.frame.height }
+        }
+        // The record this state exists for: the sleeve whose reading joins into the corpus's
+        // longest single draft line.
+        XCTAssertGreaterThan(widest.count, controlValue.count + 15,
+                             "V15: the longest line here is \(widest.count) characters against a \(controlValue.count)-character control — this fixture no longer carries a long line, so the frame proves nothing")
+        // …and it is DRAWN, not cut off. A single-line field renders both at the same height,
+        // which is exactly what V15 was.
+        XCTAssertGreaterThan(widestHeight, controlHeight + 10,
+                             "V15: the \(widest.count)-character line renders at \(widestHeight)pt against the \(controlValue.count)-character control's \(controlHeight)pt — it is still being truncated")
 
         capture("03-walk-05-inspect-sheet")
         closeSheet()
@@ -337,32 +395,48 @@ final class CaptureWalkUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["inspect-raw-obs-1"].waitForExistence(timeout: 5),
                       "OCR-04: expanding the raw-text section showed nothing")
 
+        // **The COUNT is recorded, not pinned.** Live Vision on iOS returns 13 observations for
+        // IMG_0505 where the macOS spike recorded 12; pinning it would be pinning an OS version.
+        // OCR-04's actual claim is the inequality, and that is asserted.
         let raw = rawRowCount()
-        XCTAssertEqual(raw, 12, "IMG_0505 produced 12 observations; the sheet lists \(raw)")
+        print("WALK12 OCR04 IMG_0505: \(raw) raw observations against \(lines) draft lines")
         XCTAssertGreaterThan(raw, lines,
-                             "OCR-04: the raw list (\(raw)) is not keeping the observation the segmenter dropped (\(lines) lines)")
+                             "OCR-04: the raw list (\(raw)) is not keeping the observations the segmenter dropped (\(lines) lines)")
         XCTAssertFalse(app.staticTexts["inspect-raw-obs-999"].exists,
                        "a nonsense inspect-raw-obs identifier resolved — the raw count is not discriminating")
 
-        // Row 3 is the 106-character read, at 0.30. Both halves asserted: it is present, and it
-        // is present *as untrusted*, so a list that silently promoted it would redden too.
-        let row3 = app.staticTexts["inspect-raw-obs-3"].label
-        print("WALK12 V13 raw row 3: \(row3.count) chars, '\(row3)'")
-        XCTAssertTrue(row3.contains("0.30"), "OCR-04: observation 3 came back at 0.30; the sheet says '\(row3)'")
-        XCTAssertGreaterThan(row3.count, 100,
-                             "V13: expected the 106-character read on row 3; got \(row3.count) characters")
+        // The 106-character read. Found by LENGTH rather than by row index, because the live
+        // reader does not return the observations in the recorded order or the recorded number.
+        // Both halves asserted: it is present, and it is present *as untrusted*, so a list that
+        // silently promoted it would redden too.
+        var longestRow = ""
+        var longestRowIndex = 0
+        var shortestRowHeight = CGFloat.greatestFiniteMagnitude
+        var longestRowHeight: CGFloat = 0
+        for n in 1...raw {
+            let row = app.staticTexts["inspect-raw-obs-\(n)"]
+            if row.label.count > longestRow.count {
+                longestRow = row.label; longestRowIndex = n; longestRowHeight = row.frame.height
+            }
+            shortestRowHeight = min(shortestRowHeight, row.frame.height)
+        }
+        print("WALK12 OCR04 longest raw row is \(longestRowIndex): \(longestRow.count) chars, \(longestRowHeight)pt, '\(longestRow)'")
+        // UNTRUSTED, not "0.30". The trusted tier is confidence 1.00 and nothing else
+        // (`TrackTextFilter.isTrusted`), and the live reader scores this read 0.50 where the
+        // macOS spike scored it 0.30. What OCR-04 is about is that it is on screen at all
+        // despite the segmenter having thrown it away, and that is what this asserts.
+        XCTAssertFalse(longestRow.contains("1.00"),
+                       "OCR-04: the longest read is a TRUSTED one, so this row is not evidence the sheet keeps what the segmenter dropped; row \(longestRowIndex) says '\(longestRow)'")
+        XCTAssertGreaterThan(longestRow.count, 100,
+                             "V13: expected the 106-character read; the longest row is \(longestRow.count) characters")
 
         // **V13, the half a photograph cannot answer.** Row 3 sits at the bottom edge of the
         // frame, so whether the 106-character read WRAPS onto further lines or is cut off is not
         // visible in the picture. Height answers it: a wrapped row is several times taller than
         // a one-line row, and rows 1 and 2 are the one-line control.
-        for n in 1...3 {
-            print("WALK12 V13 raw row \(n) height = \(app.staticTexts["inspect-raw-obs-\(n)"].frame.height)pt")
-        }
-        let oneLine = app.staticTexts["inspect-raw-obs-1"].frame.height
-        let longRow = app.staticTexts["inspect-raw-obs-3"].frame.height
-        XCTAssertGreaterThan(longRow, oneLine * 1.5,
-                             "V13: the 106-character read renders at \(longRow)pt against a one-line row's \(oneLine)pt — it is being cut off, not wrapped")
+        print("WALK12 V13 shortest raw row \(shortestRowHeight)pt, longest \(longestRowHeight)pt")
+        XCTAssertGreaterThan(longestRowHeight, shortestRowHeight * 1.5,
+                             "V13: the \(longestRow.count)-character read renders at \(longestRowHeight)pt against a one-line row's \(shortestRowHeight)pt — it is being cut off, not wrapped")
 
         capture("03-walk-06-inspect-raw-text")
         closeSheet()
@@ -416,10 +490,50 @@ final class CaptureWalkUITests: XCTestCase {
 
     // MARK: Helpers
 
-    private func shootOnce(_ index: Int) {
+    /// Returns (shutter -> tile, tile -> verdict). The first is CAP-01; the second is how long
+    /// Vision took, which is exactly the work the first one proves the shutter does not wait for.
+    @discardableResult
+    private func shootOnce(_ index: Int) -> (TimeInterval, TimeInterval) {
         app.buttons["capture-shutter-button"].tap()
-        XCTAssertTrue(app.buttons["capture-thumb-\(index)"].waitForExistence(timeout: 15),
+        // The same 20ms poll the twelve-shot walk uses. `waitForExistence` reported 1.4s for
+        // every press here purely because it checks once a second — measured side by side with
+        // the poll's 10-21ms on the identical code path.
+        let (shutterLatency, _) = awaitTile(index)
+        XCTAssertTrue(app.buttons["capture-thumb-\(index)"].exists,
                       "CAP-03: shutter press \(index) put nothing in the strip")
+        let tiled = Date()
+        let verdict = waitForRead(index)
+        XCTAssertNotEqual(verdict, "Reading", "CAP-01: shot \(index) never finished reading")
+        return (shutterLatency, Date().timeIntervalSince(tiled))
+    }
+
+    /// Poll for the tile at 20ms and report whether it was first seen still `Reading`.
+    ///
+    /// `waitForExistence` cannot answer either question: it checks once a second, which is three
+    /// times longer than a whole Vision pass on this corpus, so it both inflates the latency and
+    /// steps straight over the intermediate state.
+    private func awaitTile(_ index: Int, timeout: TimeInterval = 15) -> (TimeInterval, Bool) {
+        let thumb = app.buttons["capture-thumb-\(index)"]
+        let status = app.staticTexts["capture-thumb-status-\(index)"]
+        let started = Date()
+        while Date().timeIntervalSince(started) < timeout {
+            if thumb.exists { return (Date().timeIntervalSince(started), status.label == "Reading") }
+            Thread.sleep(forTimeInterval: 0.02)
+        }
+        return (timeout, false)
+    }
+
+    /// A tile carries `Reading` until Vision answers. Polls rather than using
+    /// `waitForExistence`, because the element exists throughout — it is its LABEL that changes.
+    private func waitForRead(_ index: Int, timeout: TimeInterval = 90) -> String {
+        let status = app.staticTexts["capture-thumb-status-\(index)"]
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let label = status.label
+            if !label.isEmpty, label != "Reading" { return label }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+        return status.label
     }
 
     private func dismissAnyFlipPrompt() {
