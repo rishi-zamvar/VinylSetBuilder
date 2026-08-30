@@ -125,8 +125,18 @@ public struct TrackResolver: MetadataResolving {
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
         guard parts.count > 1 else { return release.title }
-        return parts.max { MatchScoring.similarity($0, text) < MatchScoring.similarity($1, text) }
-            ?? release.title
+        // CONTAINMENT, not whole-string similarity. The line the reader returned carries sleeve
+        // furniture the title does not — `COLD: WIDE OPBY` for `Wide Open Spaces` — and scoring
+        // the strings whole let the SHORTER part win on length alone: the first live run picked
+        // `Monitor` over `Wide Open Spaces` for exactly that reason.
+        let haystack = TrackTextFilter.alphanumeric(text)
+        func coverage(_ part: String) -> Double {
+            let needle = TrackTextFilter.alphanumeric(part)
+            guard !needle.isEmpty, !haystack.isEmpty else { return 0 }
+            let distance = Double(FuzzyMatch.approximateDistance(of: needle, in: haystack))
+            return max(0, 1 - distance / Double(needle.count))
+        }
+        return parts.max { coverage($0) < coverage($1) } ?? release.title
     }
 
     /// The side marker is sleeve furniture, not part of the title the databases hold:

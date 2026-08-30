@@ -24,8 +24,17 @@ public struct DiscogsClient: Sendable {
     /// result ONE, carrying catalogue number `C 0449-0450`. Discogs treats `catno` as a fuzzy
     /// hint. Taking the first result is how a symphony ends up in a jungle set.
     public func searchByCatalogueNumber(_ catalogueNumber: String) async throws -> [ReleaseCandidate] {
-        let all = try await search([URLQueryItem(name: "catno", value: catalogueNumber)])
-        return all.filter { Self.catalogueMatches($0.catalogueNumber ?? "", catalogueNumber) }
+        try await searchByCatalogueNumberUnfiltered(catalogueNumber)
+            .filter { Self.catalogueMatches($0.catalogueNumber ?? "", catalogueNumber) }
+    }
+
+    /// Exactly what Discogs said, filter and all removed.
+    ///
+    /// Public because the acceptance gate uses it as its own negative control: a gate that only
+    /// ever sees filtered output cannot show that the filter does anything. Run live, this
+    /// returns the Tchaikovsky pressing first for `0-44904` — and that is the proof.
+    public func searchByCatalogueNumberUnfiltered(_ catalogueNumber: String) async throws -> [ReleaseCandidate] {
+        try await search([URLQueryItem(name: "catno", value: catalogueNumber)])
     }
 
     public func searchByArtistTitle(artist: String, title: String) async throws -> [ReleaseCandidate] {

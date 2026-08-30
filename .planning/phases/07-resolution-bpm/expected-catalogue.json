@@ -1,0 +1,12 @@
+{
+  "note": "Ground truth for GATE 1. The six catalogue numbers are the ones the SHIPPED segmenter actually extracts from the twelve photographs (Artifacts/ocr/score-run1.json), not the six the spike happened to try. Each expected artist was confirmed by hand against the record itself and against a live Discogs lookup on 2026-08-30.",
+  "fixtures": [
+    { "file": "IMG_0498.HEIC", "catalogue": "0-44904", "artist": "Abstract" },
+    { "file": "IMG_0499.HEIC", "catalogue": "EMF2029", "artist": "Accidental Heroes" },
+    { "file": "IMG_0500.HEIC", "catalogue": "0-44845", "artist": "Phunckateck" },
+    { "file": "IMG_0503.HEIC", "catalogue": "TYME012", "artist": "Cause 4 Concern" },
+    { "file": "IMG_0505.HEIC", "catalogue": "TECH008", "artist": "Drumsound" },
+    { "file": "IMG_0506.HEIC", "catalogue": "CSI006", "artist": "G Squad" }
+  ],
+  "baseline": { "correct": 5, "of": 6 }
+}

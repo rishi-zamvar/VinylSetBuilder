@@ -1,0 +1,68 @@
+[
+  {
+    "catalogue" : "0-44904",
+    "correct" : true,
+    "expectedArtist" : "Abstract",
+    "file" : "IMG_0498.HEIC",
+    "milliseconds" : 606,
+    "resolvedArtist" : "Abstract",
+    "resolvedTitle" : "The Message – Fuck Willie Brown",
+    "segmentedCatalogue" : "0-44904",
+    "source" : "musicbrainz"
+  },
+  {
+    "catalogue" : "EMF2029",
+    "correct" : true,
+    "expectedArtist" : "Accidental Heroes",
+    "file" : "IMG_0499.HEIC",
+    "milliseconds" : 2836,
+    "resolvedArtist" : "The Accidental Heroes",
+    "resolvedTitle" : "Dragstar",
+    "segmentedCatalogue" : "EMF2029",
+    "source" : "discogs"
+  },
+  {
+    "catalogue" : "0-44845",
+    "correct" : true,
+    "expectedArtist" : "Phunckateck",
+    "file" : "IMG_0500.HEIC",
+    "milliseconds" : 2822,
+    "resolvedArtist" : "Phunckateck's Juju* vs. UFO! \/ Juju Featuring Lisa Talev",
+    "resolvedTitle" : "Invocación",
+    "segmentedCatalogue" : "0-44845",
+    "source" : "discogs"
+  },
+  {
+    "catalogue" : "TYME012",
+    "correct" : true,
+    "expectedArtist" : "Cause 4 Concern",
+    "file" : "IMG_0503.HEIC",
+    "milliseconds" : 2846,
+    "resolvedArtist" : "Cause 4 Concern",
+    "resolvedTitle" : "High Down",
+    "segmentedCatalogue" : "TYME012",
+    "source" : "discogs"
+  },
+  {
+    "catalogue" : "TECH008",
+    "correct" : true,
+    "expectedArtist" : "Drumsound",
+    "file" : "IMG_0505.HEIC",
+    "milliseconds" : 1778,
+    "resolvedArtist" : "Drumsound & Simon 'Bassline' Smith",
+    "resolvedTitle" : "Dubtrack",
+    "segmentedCatalogue" : "TECH008",
+    "source" : "musicbrainz"
+  },
+  {
+    "catalogue" : "CSI006",
+    "correct" : true,
+    "expectedArtist" : "G Squad",
+    "file" : "IMG_0506.HEIC",
+    "milliseconds" : 1146,
+    "resolvedArtist" : "G Squad",
+    "resolvedTitle" : "Wide Open Spaces",
+    "segmentedCatalogue" : "CSI006",
+    "source" : "musicbrainz"
+  }
+]

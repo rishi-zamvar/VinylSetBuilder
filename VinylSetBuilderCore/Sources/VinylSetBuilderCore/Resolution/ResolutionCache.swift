@@ -23,4 +23,9 @@ public actor ResolutionCache {
     }
 
     public var count: Int { entries.count }
+
+    /// Every distinct lookup this cache holds, hits and misses alike. The gate harnesses read
+    /// it to report WHICH rung answered — a ladder that cannot say where its answers came from
+    /// cannot show that the free rung is carrying the work.
+    public func snapshot() -> [String: ReleaseCandidate?] { entries }
 }
