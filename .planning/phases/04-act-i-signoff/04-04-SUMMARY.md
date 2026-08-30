@@ -297,6 +297,13 @@ item.**
 - Recorded because the *human table* said Phase 4 and now says Phase 6. Phase 4 never re-opens the
   correction sheet, so the pre-existing owner was a carry to nobody.
 
+**8. `requirements mark-complete S7` was deliberately NOT run**
+- The plan's frontmatter says `requirements: [S7]`. **S7 is not a requirement ID** — it is a
+  sign-off gate from `CONTEXT.md`, and `grep -c 'S7' .planning/REQUIREMENTS.md` returns **0**.
+  Marking it complete would either be a no-op or would corrupt a file whose counts gate G7
+  pins at 23 / 44 / 67 and whose recount is explicitly 04-05's. Verified after the state
+  update: G7 still reads `23 complete + 44 outstanding = 67 total = 67 distinct`.
+
 ### Not deviated from, deliberately
 
 - **Nothing was fixed.** No code file was modified: `git diff --stat App/ VinylSetBuilderCore/`
