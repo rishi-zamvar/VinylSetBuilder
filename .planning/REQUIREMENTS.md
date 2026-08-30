@@ -17,9 +17,9 @@ key transitions, that re-optimises when you add more.
 
 - [x] **CRATE-01**: User can see a list of every saved crate with its name and record count
 - [x] **CRATE-02**: User can create a new crate, name it, and land directly in the camera
-- [ ] **CRATE-03**: User can open a crate and see its sequenced running order
-- [ ] **CRATE-04**: User can manually reorder tracks in a crate, overriding the sequencer
-- [ ] **CRATE-05**: User can re-enter the capture loop from an existing crate via "Add More"
+- [x] **CRATE-03**: User can open a crate and see its sequenced running order
+- [x] **CRATE-04**: User can manually reorder tracks in a crate, overriding the sequencer
+- [x] **CRATE-05**: User can re-enter the capture loop from an existing crate via "Add More"
 - [x] **CRATE-06**: User can delete a crate, and can remove a single vinyl from a crate
 - [x] **CRATE-07**: The same vinyl can belong to several crates with a different selected track in each
 
@@ -156,9 +156,9 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SETUP-04 | Act I — Phase 1 | Complete — 01-01 |
 | CRATE-01 | Act I — Phase 2 | Complete — 01-06 |
 | CRATE-02 | Act I — Phase 2 | Complete — 01-06 |
-| CRATE-03 | Act I — Phase 2 | Pending |
-| CRATE-04 | Act I — Phase 2 | Pending |
-| CRATE-05 | Act I — Phase 2 | Pending |
+| CRATE-03 | Act I — Phase 2 | Complete |
+| CRATE-04 | Act I — Phase 2 | Complete |
+| CRATE-05 | Act I — Phase 2 | Complete |
 | CRATE-06 | Act I — Phase 2 | Complete — 01-06 |
 | CRATE-07 | Act I — Phase 2 | Complete — 01-06 |
 | SEQ-07 | Act I — Phase 2 | Complete — 01-07 |

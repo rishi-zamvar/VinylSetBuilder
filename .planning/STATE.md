@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Roadmap rebuilt into three linear acts (2026-08-30)
-last_updated: "2026-08-30T00:00:00.000Z"
+status: executing
+stopped_at: `CrateDetailModel` + `OrderingMode` + `CrateStore.addMore`/`update` shipped,
+last_updated: "2026-08-30T07:45:51.133Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 7
+  completed_phases: 0
+  total_plans: 13
+  completed_plans: 7
+  percent: 8
 ---
 
 # Project State
@@ -41,15 +41,19 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 2 of 14 (The Crate Screens, Stubbed)
-Plan: not yet planned under the new roadmap
-Status: Ready to plan
+Plan: 02-01 complete (of 3 planned for Phase 2)
+Status: In progress — 02-02 and 02-03 outstanding
 Last activity: 2026-08-30
 
-Progress: [█░░░░░░░░░] 7%
+Progress: [█░░░░░░░░░] 8%
 
-**Requirements:** 67 total, 67 mapped, 15 complete, 52 outstanding.
+**Requirements:** 67 total, 67 mapped, 19 complete, 48 outstanding.
 
-## What already exists — 88 tests green, committed
+> CRATE-03/04/05 are checked off at the **Core value-type** layer (plan 02-01). The
+> crate detail screen that makes them user-visible is plan 02-03; the phase does not
+> ship until its XCUITest walk and 15 screenshots are green.
+
+## What already exists — 113 tests green, committed
 
 Do not re-plan this. It is TDD'd and on disk.
 
@@ -66,9 +70,9 @@ Do not re-plan this. It is TDD'd and on disk.
 
 **Velocity:**
 
-- Total plans completed: 4 (under the previous roadmap's Phase 1)
-- Average duration: ~17 min
-- Total execution time: ~1.5 hours
+- Total plans completed: 5 (4 under the previous roadmap's Phase 1, plus 02-01)
+- Average duration: ~20 min
+- Total execution time: ~2 hours
 
 **By Phase:**
 
@@ -80,6 +84,7 @@ Do not re-plan this. It is TDD'd and on disk.
 | 9 (old 01-04) | 1 | 10 min | 10 min |
 | 2 (old 01-06) | 1 | 35 min | 35 min |
 | 2 (old 01-07) | 1 | 8 min | 8 min |
+| 2 (02-01) | 1 | 35 min | 35 min |
 
 *Plan numbering restarts under the new phase structure. The old `01-0x` plans are preserved
 in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of what was built.*
@@ -93,31 +98,45 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Roadmap rebuild, 2026-08-30]: **Three strictly linear acts** — shell, then engine, then
   wiring. The previous roadmap's "no wiring phase needed, it's a natural consequence" claim
   was replaced by an explicit swap phase (11) that substitutes one stub at a time.
+
 - [Roadmap rebuild]: **The sequencer moved out of Phase 1 into Act II Phase 9**, where the
   engine belongs. Its already-built parts are marked complete there rather than re-planned.
+
 - [Roadmap rebuild]: **CAP split across acts.** CAP-02/03/05/06 are screens (Act I, Phase 3);
   CAP-01 and CAP-04 are live-camera behaviours (Act III, Phase 10). The simulator has no
   camera, so putting them in Act I would put an unverifiable criterion in Act I.
+
 - [Roadmap rebuild]: **Manual entry stays in Act III** per the owner's own act structure, so
   its sheet is the one screen Act I does not build. Recorded as a decision, not a gap.
+
 - [Roadmap rebuild]: **14 phases against a `standard` granularity band of 5–8.** Deliberate.
   Compressing would mean merging engine capabilities (losing per-capability measured gates)
   or interleaving acts (losing the throughline). Time is not a constraint.
+
 - [Roadmap rebuild]: **Every phase closes on a measured number**, never "tests pass". Every
   UI-bearing phase commits screenshots taken after a settle delay.
+
 - [Phase 1]: `VinylSetBuilderCore` — 7 domain value types, 3 protocol seams
   (`Sequencing`/`LabelSegmenting`/`MetadataResolving`), 2 fixture stubs, purity guard.
+
 - [Phase 1]: `DEVELOPMENT_TEAM` recovered from the local Apple Development signing identity
   and set in `project.yml`; device-signed build succeeds end to end.
+
 - [Phase 9 work already done]: Camelot distance = flat hop count + 1 for a letter change (D1,
   locked). `BPMRules.fold` applies `bpm < 100 → ×2` exactly once (D6, locked).
+
 - [Phase 9 work already done]: `BeamSearchSequencer` distinguishes unresolved from
   tempo-excluded by whether ANY candidate has a BPM.
+
 - [Phase 2 work already done]: `notIncluded` stays one array (D7) — no excluded/unresolved
   split in `CrateRows`. `TrackBadges` folds BPM via `BPMRules.fold` before formatting so the
   badge never contradicts the sequencer's ordering.
+
 - [Phase 1]: `build-app.sh` passes explicit `SYMROOT`/`OBJROOT` so the app target reliably
   finds the local package's built module (was U7).
+
+- [Phase 02]: Membership is the sequencer's, arrangement is the user's — a manual order survives a re-sequence filtered to survivors, newcomers append, one call restores (D2-1)
+- [Phase 02]: moveRows hand-rolls the offset shift: SwiftUI's move(fromOffsets:toOffset:) is unreachable from Core under the D2-6 purity scan
 
 ### Pending Todos
 
@@ -167,8 +186,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30 — roadmap rebuilt from scratch into three linear acts.
-Stopped at: `.planning/ROADMAP.md` replaced; `REQUIREMENTS.md` traceability and `STATE.md`
-updated. 67/67 requirements mapped across 14 phases, 15 complete.
-Next: `/gsd:plan-phase 2` — the crate detail screen (CRATE-03, CRATE-04, CRATE-05).
+Last session: 2026-08-30 — executed plan 02-01.
+Stopped at: `CrateDetailModel` + `OrderingMode` + `CrateStore.addMore`/`update` shipped,
+88 -> 113 tests green, V1 pluralisation fixed and closed.
+Next: plans 02-02 and 02-03 — the crate detail screen and the XCUITest walk.
 Resume file: None
