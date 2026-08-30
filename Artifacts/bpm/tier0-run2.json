@@ -1,0 +1,143 @@
+[
+  {
+    "artist" : "Abstract",
+    "file" : "IMG_0498.HEIC",
+    "rawLine" : "Abstract",
+    "state" : "pending",
+    "title" : "The Message – Fuck Willie Brown"
+  },
+  {
+    "artist" : "Abstract",
+    "file" : "IMG_0498.HEIC",
+    "rawLine" : "The Message - Brown Gtauno Originat Mix!",
+    "state" : "pending",
+    "title" : "The Message – Fuck Willie Brown"
+  },
+  {
+    "artist" : "The Accidental Heroes",
+    "file" : "IMG_0499.HEIC",
+    "rawLine" : "A: DRAGSTAR",
+    "state" : "resolved",
+    "title" : "Dragstar"
+  },
+  {
+    "artist" : "The Accidental Heroes",
+    "file" : "IMG_0499.HEIC",
+    "rawLine" : "AA: ELEMENTZ",
+    "state" : "resolved",
+    "title" : "Elements"
+  },
+  {
+    "artist" : "Phunckateck's Juju",
+    "file" : "IMG_0500.HEIC",
+    "rawLine" : "JUvS. Invocación inckatecks* Gide One \/ Oríginal Versionk",
+    "state" : "pending",
+    "title" : "Invocación"
+  },
+  {
+    "artist" : "Gregaress",
+    "file" : "IMG_0501.HEIC",
+    "rawLine" : "LINU ME",
+    "state" : "pending",
+    "title" : "Linus Rides With Me Everyday"
+  },
+  {
+    "artist" : "Hiroshi Takano (高野寛)",
+    "file" : "IMG_0501.HEIC",
+    "rawLine" : "STAY",
+    "state" : "pending",
+    "title" : "Stay, Stay, Stay"
+  },
+  {
+    "file" : "IMG_0501.HEIC",
+    "rawLine" : "eFOCUSED",
+    "state" : "failed"
+  },
+  {
+    "file" : "IMG_0502.HEIC",
+    "rawLine" : "JA22 •MAIATCIN DAVE ANCEL MIX",
+    "state" : "failed"
+  },
+  {
+    "artist" : "Cause 4 Concern",
+    "file" : "IMG_0503.HEIC",
+    "rawLine" : "A: HIGH DOWN",
+    "state" : "resolved",
+    "title" : "High Down"
+  },
+  {
+    "artist" : "Cause 4 Concern",
+    "file" : "IMG_0503.HEIC",
+    "rawLine" : "AAA: STRANGE NAT URE",
+    "state" : "resolved",
+    "title" : "Strange Nature"
+  },
+  {
+    "file" : "IMG_0504.HEIC",
+    "rawLine" : "xtasia",
+    "state" : "failed"
+  },
+  {
+    "artist" : "Lizz Wright",
+    "file" : "IMG_0504.HEIC",
+    "rawLine" : "fellowship",
+    "state" : "resolved",
+    "title" : "Fellowship"
+  },
+  {
+    "artist" : "Xstasia",
+    "file" : "IMG_0504.HEIC",
+    "rawLine" : "'sweetness'",
+    "state" : "resolved",
+    "title" : "Sweetness"
+  },
+  {
+    "artist" : "Drumsound & Simon 'Bassline' Smith",
+    "file" : "IMG_0505.HEIC",
+    "rawLine" : "DUBTRACK",
+    "state" : "resolved",
+    "title" : "Dubtrack"
+  },
+  {
+    "artist" : "Drumsound & Simon 'Bassline' Smith",
+    "file" : "IMG_0505.HEIC",
+    "rawLine" : "SUPERSONIC",
+    "state" : "resolved",
+    "title" : "Supersonic"
+  },
+  {
+    "artist" : "G Squad",
+    "file" : "IMG_0506.HEIC",
+    "rawLine" : "COLD: WIDE OPBY",
+    "state" : "pending",
+    "title" : "Wide Open Spaces"
+  },
+  {
+    "artist" : "G Squad",
+    "file" : "IMG_0506.HEIC",
+    "rawLine" : "STEEL",
+    "state" : "pending",
+    "title" : "Wide Open Spaces"
+  },
+  {
+    "artist" : "Dirty Game Records",
+    "file" : "IMG_0508.HEIC",
+    "rawLine" : "Da Lick",
+    "state" : "pending",
+    "title" : "What da Lick Read?"
+  },
+  {
+    "artist" : "Xanno Gallois",
+    "file" : "IMG_0509.HEIC",
+    "rawLine" : "SONIC",
+    "state" : "pending",
+    "title" : "Sonic Sonic"
+  },
+  {
+    "artist" : "Navene K",
+    "file" : "IMG_0509.HEIC",
+    "rawLine" : "\"SMADON MIND",
+    "state" : "pending",
+    "title" : "Mind"
+  }
+]
