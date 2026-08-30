@@ -77,7 +77,7 @@ Plans:
 - [x] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
 - [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
 - [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
-- [ ] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
+- [x] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
 - [ ] 01-08-PLAN.md — Crate detail: running order, manual override, tolerance slider, Add More (CRATE-03, CRATE-04, CRATE-05, SEQ-05)
 
 Waves: 1 → [01-01]; 2 → [01-02, 01-03]; 3 → [01-04, 01-06, 01-07]; 4 → [01-05]; 5 → [01-08]

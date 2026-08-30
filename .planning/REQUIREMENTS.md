@@ -90,11 +90,11 @@ key transitions, that re-optimises when you add more.
 - [x] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
 - [ ] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
 - [x] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
-- [ ] **SEQ-07**: Unresolved and excluded records share one collapsed section, each row carrying its own reason
+- [x] **SEQ-07**: Unresolved and excluded records share one collapsed section, each row carrying its own reason
 - [ ] **SEQ-08**: Adding a vinyl re-runs the whole optimisation, and a previously excluded record rejoins if a new addition bridges the gap
 - [ ] **SEQ-09**: Sequencing runs off the main thread and completes fast enough to feel instant at 100 vinyls / 400 candidates
 - [ ] **SEQ-10**: Beam search is checked against a wider beam for divergence, so a silently suboptimal path is detectable
-- [ ] **SEQ-11**: Every track in a crate shows its BPM and Camelot key as a badge in the sequenced list
+- [x] **SEQ-11**: Every track in a crate shows its BPM and Camelot key as a badge in the sequenced list
 
 ### Persistence
 
@@ -157,11 +157,11 @@ key transitions, that re-optimises when you add more.
 | SEQ-04 | Phase 1 | Complete |
 | SEQ-05 | Phase 1 | Pending |
 | SEQ-06 | Phase 1 | Complete |
-| SEQ-07 | Phase 1 | Pending |
+| SEQ-07 | Phase 1 | Complete |
 | SEQ-08 | Phase 1 | Pending |
 | SEQ-09 | Phase 1 | Pending |
 | SEQ-10 | Phase 1 | Pending |
-| SEQ-11 | Phase 1 | Pending |
+| SEQ-11 | Phase 1 | Complete |
 | CRATE-01 | Phase 1 | Pending |
 | CRATE-02 | Phase 1 | Pending |
 | CRATE-03 | Phase 1 | Pending |

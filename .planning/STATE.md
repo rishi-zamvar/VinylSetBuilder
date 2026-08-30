@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-08-30T07:04:27.429Z"
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-08-30T07:08:36.623Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 4
+  completed_plans: 5
   percent: 14
 ---
 
@@ -27,7 +27,7 @@ key transitions, that re-optimises when you add more.
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
-Plan: 5 of 7
+Plan: 6 of 7
 Status: Ready to execute
 Last activity: 2026-08-30
 12 real fixture photos (65/65 requirements mapped, up from 63)
@@ -58,6 +58,7 @@ Progress: [█░░░░░░░░░] 14%
 | Phase 01 P02 | 20min | 3 tasks | 11 files |
 | Phase 01 P03 | 12min | 2 tasks | 4 files |
 | Phase 01 P04 | 10 | 3 tasks | 3 files |
+| Phase 01 P07 | 8min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-02: DEVELOPMENT_TEAM recovered from local Apple Development signing identity (OU field) and set in project.yml, pushing device-signed build to succeed end-to-end; only the physically-disconnected iPhone now blocks install
 - [Phase 01-03]: Camelot distance = flat hop count + 1 for letter change (D1, locked); BPMRules.fold applies bpm<100 -> *2 exactly once (D6, locked)
 - [Phase 01]: BeamSearchSequencer (SEQ-02/03/04/06) shipped: width-50 beam, unresolved-vs-tempo-excluded reasons distinguished by whether ANY candidate has a BPM
+- [Phase 01]: SEQ-07: notIncluded stays one array (D7) — no excluded/unresolved split in CrateRows
+- [Phase 01]: SEQ-11: TrackBadges folds BPM via BPMRules.fold before formatting so the badge never contradicts the sequencer's ordering
 
 ### Pending Todos
 
@@ -115,7 +118,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-30T07:04:27.422Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-08-30T07:08:36.620Z
+Stopped at: Completed 01-07-PLAN.md
 updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
 Resume file: None
