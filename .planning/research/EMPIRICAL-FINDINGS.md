@@ -94,3 +94,53 @@ zero latency, and it is the *only* tier with no external dependency at all.
 | Spotify | ✅ present, ❌ audio-features 403 | `~/.config/keys/.env` |
 | SoundCloud | ✅ present (working OAuth + download path proven in CrateDig) | `~/.config/keys/.env` |
 | GetSongBPM | ❌ not issued — blocked on the backlink problem above | — |
+
+---
+
+## Tier-0 Corpus — BUILT, but a genre caveat ⚠️
+
+Pruned `walkman-dj/data/library.db` → a bundleable read-only SQLite.
+
+```sql
+SELECT lower(trim(artist)), lower(trim(title)), artist, title, bpm, camelot
+FROM recordings
+WHERE bpm IS NOT NULL AND camelot IS NOT NULL AND artist <> '' AND title <> ''
+GROUP BY lower(trim(artist)), lower(trim(title));
+```
+
+| Property | Value |
+|----------|-------|
+| Unique (artist, title) rows | **6,608** (down from 7,010 — 402 were case/whitespace dupes) |
+| File size | **880 KB** — trivially bundleable |
+| `journal_mode` | `delete` — the WAL→DELETE conversion the stack research flagged is done |
+| Indexes | `(artist_norm, title_norm)` and `(title_norm)` |
+
+### ⚠️ Correction to an earlier claim
+
+PROJECT.md originally stated this corpus is in "the same genres as the vinyl collection
+(jungle / DnB / garage)". **The data does not support that.** Tempo distribution:
+
+| Band | Tracks | Share |
+|------|--------|-------|
+| 100–139 BPM (house / techno) | 3,612 | **55%** |
+| 140–159 BPM | 1,304 | 20% |
+| < 100 BPM | 903 | 14% |
+| **160–184 BPM (jungle / DnB)** | **789** | **12%** |
+
+The `artist_genres` column is empty for effectively every row (6,496 `(none)`, 514 `[]`), and
+a text search for jungle / drum & bass / garage / breakbeat returns **0 rows**, so tempo is
+the only available proxy. Spot-checking artists (`&ME`, melodic house) confirms the skew.
+
+**Implication:** tier 0 is still worth bundling — it is 880 KB, free, offline and instant —
+but its expected hit rate against a *jungle/DnB vinyl crate* is likely modest, not high.
+The real load will fall on the SoundCloud → Music Understanding tier and on manual entry.
+Weight the roadmap accordingly, and measure the actual tier-0 hit rate early rather than
+assuming it.
+
+**Data-quality note:** near-duplicate titles can carry different keys — e.g.
+`The Rapture Pt. II` → 3A and `The Rapture, Pt. II` → 2B, the same track punctuated two ways.
+Matching must normalise punctuation, and conflicting hits need a tie-break rule.
+
+**Not committed to git.** At 880 KB it would publish the owner's entire music library listing
+to a public repo. It is generated at build time from the local source, same pattern as
+`Secrets.swift`. Build artifact path is gitignored.

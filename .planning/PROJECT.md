@@ -66,9 +66,15 @@ ports to Swift; the librosa/allin1 audio half has no role here.
 **An unusually good local data source exists.** `walkman-dj/data/library.db` holds 7,098
 recordings, of which **7,010 have both a BPM and a Camelot key** — DSP-derived from the
 owner's own collection, in the same jungle/DnB/garage genres as the vinyls being scanned.
-Pruned to `(artist, title, bpm, camelot)` this is a small read-only SQLite that can be
-bundled into the app, giving instant offline resolution with zero network calls for a
-meaningful share of lookups. This is tier 0 of the resolution ladder.
+Pruned and deduplicated to `(artist, title, bpm, camelot)` this is an **880 KB** read-only
+SQLite (6,608 unique rows) that bundles into the app for instant offline resolution with
+zero network calls. This is tier 0 of the resolution ladder.
+
+**Caveat, measured not assumed:** the corpus skews house/techno, not jungle. Only 12% of it
+sits in the 160–184 BPM band; 55% is 100–139. The genre column is empty throughout, so tempo
+is the only proxy available. Tier 0 is worth bundling because it is free and instant, but the
+real resolution load will fall on the SoundCloud → Music Understanding tier and on manual
+entry. Measure the true tier-0 hit rate early rather than planning around an optimistic one.
 
 **The records are the hard part, not the code.** The collection is heavy on white labels
 and dubplates. These are frequently absent from Discogs and MusicBrainz entirely. No

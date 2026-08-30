@@ -5,3 +5,6 @@ build/
 DerivedData/
 Secrets.swift
 .env
+
+# Generated build artifact — 880KB of the owner's music library, not for a public repo
+Resources/bpmkey.db
