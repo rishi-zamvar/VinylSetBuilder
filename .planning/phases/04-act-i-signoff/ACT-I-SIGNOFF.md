@@ -526,3 +526,69 @@ Until then, **Act I is not signed off, and Act II does not open.**
 *Verdict issued 2026-08-30 by plan 04-05, against gates fixed in `CONTEXT.md` before plan 04-01
 ran. Three independent clean runs. Every committed frame opened and read. The requirement count
 re-derived by eight commands that had to agree. A refusal is a legitimate outcome and this is one.*
+
+---
+
+# ADDENDUM — the refusal answered, 2026-08-30, plan 04-06
+
+This section is appended, not merged into the verdict above. The verdict is 04-05's record of
+what was true when it was issued and it stays exactly as written. What follows is what changed.
+
+## Gate S3 now HOLDS
+
+`./Scripts/screenshots.sh`, three consecutive runs from a purged host, against the final code:
+
+| | run 1 | run 2 | run 3 |
+|---|---|---|---|
+| `./Scripts/screenshots.sh` | **rc=0** | **rc=0** | **rc=0** |
+| purge | 36 frames, 0 remain | 36, 0 | 36, 0 |
+| UI suite, from the log | `Executed 7 tests, with 0 failures` | same | same |
+| UI suite, from `build/ui.xcresult` | route=`test-results-summary` passed=**7** failed=**0** | same | same |
+| `ui-test.sh` zero-test guard | `totalTestCount=7` | 7 | 7 |
+| drag recipe that fired | **2** (edit mode OFF) | **1** (edit mode ON) | **2** (edit mode OFF) |
+| row order, before → after | `1 Source Direct / 2 Photek` → `1 Photek / 2 Source Direct` | same | same |
+| walk states | 15 files, 1 declared pair, **14 distinct** | same | same |
+| `screenshot-audit.py` | **AUDIT PASSED** | **AUDIT PASSED** | **AUDIT PASSED** |
+
+**Where 04-05 measured rc=0 / rc=1 / rc=1, this is rc=0 / rc=0 / rc=0.** The three runs are not
+three repetitions of one path: recipes 1 and 2 both won, so both edit-mode branches of the walk
+were exercised and both produced the same 14 distinct states.
+
+An **earlier** series of three runs, made against an intermediate state of the code, went
+**rc=0 / rc=0 / rc=1** and is reported here rather than dropped. Its failure was **not** V18 —
+V18 did not reproduce on any run tonight — but a second defect that V18's fix uncovered by
+letting a recipe other than 1 win for the first time: the walk's post-drag edit mode followed
+the gesture routing, so `02-walk-10` came back **byte-identical** to `02-walk-07` (0 differing
+pixels) and the declared `08/10` pair went stale. Fixed in `3efc975`; the series-B runs above
+are the three clean runs the gate asks for, and one of them (run 3) is exactly that case.
+
+## The other six gates, re-measured
+
+| Gate | Verdict | Command | What it printed | Times measured tonight |
+|---|---|---|---|---|
+| S1 | HOLDS | `screenshot-audit.py` gate A | 18 covered rows, 0 uncovered | 4 (3 runs + standalone) |
+| S2 | HOLDS | `screenshot-audit.py` gate B | 46 files → 45 distinct; walk 15 → 14 | 4 |
+| **S3** | **HOLDS** | `./Scripts/screenshots.sh` | **rc=0, rc=0, rc=0** | **3** |
+| S4 | HOLDS | `test.sh`, `ui-test.sh` + `xcresulttool` | **172** Core tests (was 171 + 1 new); UI **7 passed / 0 failed** from log *and* bundle | 3 each |
+| S5 | HOLDS | `./Scripts/hygiene.sh` | **9 pass, 0 fail** | 3 |
+| S6 | HOLDS | `hygiene.sh` G7 | 23 complete + 44 outstanding = 67 | 3 |
+| S7 | HOLDS | `ledger-check.py` / G9 | **18 rows, 9 closed, 9 carried**, rc=0 | 3, plus `--selftest` |
+
+**All seven gates now hold.** The act criterion — committed settle-delay screenshots of every
+screen — was already MET in the verdict and is unchanged.
+
+## What this addendum does NOT claim
+
+- **The phase criterion's clause 2 is still NOT MET, and 04-06 did not touch it.** Two
+  Medium-or-above rows remain open: **V3**, blocked on the owner's unanswered U8, and **V12**,
+  owned by Phase 6's SEG-03 filter. Closing V18 changed the ledger from 8 closed / 10 carried to
+  **9 closed / 9 carried**; the Medium-or-above count is **2**, exactly as before.
+- **Finding 6 of §11 is still open.** `ui-test.sh`'s `RC=$?` is still dead code under `set -e`.
+  It was left alone deliberately: it is outside this plan's stated scope, and the three-run S3
+  evidence above was gathered with the script exactly as the verdict measured it. The S3 claim
+  does not rest on that variable — `screenshots.sh` re-derives pass/fail from the result bundle
+  and refuses to collect on `failed != 0` or `passed == 0`.
+- **Findings 7 of §11 is unchanged**: three green tests still defend a retired specification, and
+  `AsyncSequencer` / `BeamDivergenceCheck` still do not exist. Both are Phase 9's.
+
+Findings **1 through 5** of §11 are closed by this plan.
