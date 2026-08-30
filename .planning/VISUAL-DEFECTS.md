@@ -10,7 +10,7 @@ screenshot is an opinion, not a defect.
 |---|--------|----------|----------|-------|
 | ~~V1~~ | ~~**"1 records"** — pluralisation not handled~~ | **FIXED 2026-08-30 (plan 02-01), CLOSED WITH EVIDENCE (plan 02-05).** See "V1 — closed" below. Evidence: `02-walk-01-crate-list.png` and `02-01-crate-list-pluralised.png`. | — | Closed |
 | ~~V2~~ | ~~Whole UI washed out to near-invisible grey~~ | **NOT A DEFECT — RESOLVED 2026-08-30, RE-CONFIRMED ON THE NEW SCREENS (plan 02-05).** See "V2 — closure re-confirmed" below. Evidence: all fifteen `02-walk-*.png`, probed twice. | — | Closed |
-| V3 | **The not-included bucket names a record "Vinyl 2" even though its artist, title, BPM and key are all known.** The row reads `Vinyl 2 · 178 · 6A · "No track within 4 BPM of the set"` — the badges carry real data from a track the app can name `Dillinja — Angels Fell`. A DJ reading the bucket cannot tell which record was left out, which is half of what SEQ-07 exists to say. | `02-walk-07-not-included-expanded.png` (rows "Vinyl 2" / "Vinyl 3"); same defect independently visible in plan 02-03's `02-03-crate-detail-bucket-expanded.png` | **Medium** | Phase 4 |
+| V3 | **The not-included bucket names a record "Vinyl 2" even though its artist, title, BPM and key are all known.** The row reads `Vinyl 2 · 178 · 6A · "No track within 4 BPM of the set"` — the badges carry real data from a track the app can name `Dillinja — Angels Fell`. A DJ reading the bucket cannot tell which record was left out, which is half of what SEQ-07 exists to say. | `02-walk-07-not-included-expanded.png` (rows "Vinyl 2" / "Vinyl 3"); same defect independently visible in plan 02-03's `02-03-crate-detail-bucket-expanded.png`; **SECOND SIGHTING obtained 2026-08-30 by plan 03-05 on a screen that did not exist when V3 was found** — `03-walk-07-done-sequenced.png`, twelve freshly captured records in the bucket, the eight visible rows reading `Vinyl 1` … `Vinyl 8` while the strip four frames earlier (`03-walk-04-strip-twelve.png`) named the same records from their own OCR text. **Not fixed here — the product call is U8 and it is the owner's.** | **Medium** | Phase 4 |
 | V4 | **Placeholder badges are near-invisible.** An unresolved record's `—` / `—` badge pair renders `.foregroundStyle(.secondary)` on a `.thinMaterial` capsule — light grey on light grey. SEQ-11's rule is that a missing value is *dimmed, never hidden*; at this contrast it is very close to hidden. | `02-walk-07-not-included-expanded.png`, the "Vinyl 3" row | Low | Phase 4 |
 | V5 | **Two fixture vinyls share `position: 2`, so both would render as "Vinyl 3".** `FixtureCrates.mixedResultsCrate` gives `sharedVinyl` and `unresolvedVinyl` the same `position`, and `VinylEntry.label`'s fallback is `"Vinyl \(position + 1)"`. **Not visible in any of the fifteen photographs** — only one of the two ever lands in the bucket — so this is a latent duplicate-label hazard found by reading the fixture, not by looking. Recorded because V3's fix touches the same line. | none — read from `FixtureCrates.swift:24` and `:48`, not from a picture | Low | Phase 4 |
 | V6 | **Running-order index alignment at double digits could not be assessed.** No fixture crate reaches ten rows, so no photograph in the set shows an index of `10` or above against the `minWidth: 20` monospaced column. Honest "not assessable from this capture" rather than a guess either way. | none — the fifteen photographs top out at index `2` | Low | Phase 4 |
@@ -19,7 +19,10 @@ screenshot is an opinion, not a defect.
 | V9 | **Thirteen of the walk's fifteen frames render no large navigation title.** The crate list shows "Crates" on `02-walk-01` and then never again; the crate detail never shows the crate's name at all; the capture screen shows "Capture" in one test and not in the other. A DJ two screens deep cannot tell from the picture which crate they are in. **Not a capture-timing artefact** — see "V9 — measured, not guessed" below. **Not introduced by plan 03-03**: it is equally absent on Phase 2's own `CrateDetailView` and `CrateListView`, which this plan did not touch, and plan 02-03's frames of the same screens have their titles. | absent: `02-walk-03` … `02-walk-15` (13 frames). present: `02-walk-01-crate-list.png`, all four `03-03-capture-*.png`, and every `02-03-crate-detail*.png` | **Low** | Phase 4 |
 | V10 | **The sleeve framing guide changes size when the flip-side prompt appears.** The preview is a flexible box, so the inline banner pushing in shrinks the preview and the guide follows it: the guide's stroked square measures **872x873 px** with no prompt and **686x686 px** with one — a 21% jump, mid-framing. Correct arithmetic (`edgeCoverage` holds at 0.881 and 0.879 of the preview's shorter edge in both cases, which is the point of deriving it from `FramingGuide.sleeve`), but with a live viewfinder a reticle that resizes while you are lining a sleeve up is its own annoyance. Belongs to Phase 10, where the preview stops being a flexible black rectangle and becomes a fixed-aspect camera layer. | `03-03-capture-flip-prompt.png` (686 px) against `03-03-capture-empty.png`, `03-03-capture-one-item.png`, `03-03-capture-flip-suppressed.png` (872 px). Measured on 7 frames across 3 runs. | Low | Phase 10 |
 | V12 | **The inspect sheet titles a record `Zzz.`** — a two-syllable fragment of a price sticker — on a photograph that also read `Cause 4 Concern` (the artist) and `A: High Down` (the title), both at confidence 1.00. `CaptureItem.displayLabel` takes the **first trusted observation in reading order**, and OCR reading order is spatial, not semantic, so whichever scrap of text sits highest-left on the sleeve becomes the record's name. Not a regression and not V3: it is the deliberate ceiling of D-03-6's naming rule (which exists to keep `"Vinyl N"` off the new screens) made visible for the first time. A DJ scrolling a twelve-tile strip cannot tell which record `Zzz.` is. Real segmentation (SEG-01…06) is what gives a title rule something better to pick from. | `03-04-sheet-lines.png`, `03-04-sheet-after-merge.png`, `03-04-sheet-after-split.png`, `03-04-sheet-hand-typed.png` (all four title-bars read `Zzz.`); independently, `FixtureObservations.swift:205` — IMG_0503's first observation is `"Zzz."` at 1.00; and XCUITest's own accessibility dump on this plan's second run printed `identifier: 'capture-thumb-6', label: 'Zzz.'` on the thumbnail strip, a different screen | **Medium** | Phase 6 |
-| V13 | **A long recognised line's behaviour in the correction field is not assessable from this capture.** The widest line any 03-04 frame renders is `AAA: Strange Nat ure` at 20 characters, which fits the field with room to spare. The corpus's longest real read is **106 characters** (`THEIEINE ENTR UNIO 82 21482E STREETPBYEO SASSLINETECHNQUERECORDINGS.CO.UK/ DRUMSOUNDATECHNIQUERECORDINGSCO`, IMG_0505) and the third longest is the 36-character `TH TRACKS WRITTENAND PRODUCED BY THE` on IMG_0506 — neither fixture is photographed here, so whether a single-line `TextField` scrolls them acceptably, and whether two long lines then read identically at a glance, is genuinely unknown rather than fine. 03-05 walks all twelve fixtures and can answer it. Honest "not assessable", not a guess either way. | none — measured from `FixtureObservations.swift` against the five 03-04 frames, not seen in a picture | Low | Phase 3, plan 03-05 |
+| ~~V13~~ | ~~**A long recognised line's behaviour in the correction field is not assessable from this capture.**~~ | **CLOSED 2026-08-30 (plan 03-05), assessed with numbers on both halves.** The 44-character read *does* truncate in the field; the 106-character read *does not* — it wraps. See "V13 — closed, and what the assessment found" below. Evidence: `03-walk-05-inspect-sheet.png`, `03-walk-06-inspect-raw-text.png`, and the measured row heights. | — | Closed |
+| V14 | **Two of the crate walk's fifteen states are the same picture.** `02-walk-08-detail-edit-mode` (edit mode, sequenced order) and `02-walk-10-detail-restored` (edit mode, order restored to sequenced) are the same screen by construction — Restore's whole job is to return to state 8 — so the walk photographs **14 materially distinct states, not 15**. Measured three times: byte-identical (`md5 d55b41d7…`) on one run, and differing only in a 1×1 antialiased pixel and a 41×92 px toolbar-material patch on the other two. Not a rendering bug; a coverage-accounting one, and it matters because Phase 4's ship criterion is "screenshot count equals screen count". Restore's *effect* is legible only by comparing `02-walk-09` to `02-walk-10`, never from `02-walk-10` alone. | `02-walk-08-detail-edit-mode.png` and `02-walk-10-detail-restored.png`, compared across three independently captured runs | Informational | Phase 4 |
+| V15 | **The correction field truncates a long track line and gives no way to read the rest without tapping into it.** `EXCLUSIVE NEW MIXES FROM V CLASSIC THE ALBUM` (44 characters, the corpus's longest **trusted** read) renders as `EXCLUSIVE NEW MIXES FR…` in a 237.3 pt single-line `TextField`. The value is intact — XCUITest reads all 44 characters back off the field — so nothing is lost, but roughly half of the longest lines a DJ has to correct are invisible at rest. The raw list below does not have this problem (see V13's closure), so the same string is fully readable eleven rows further down the same sheet. | `03-walk-05-inspect-sheet.png`, line 4 | Low | Phase 4 |
+| V16 | **The over-split draft contains exact duplicate lines.** IMG_0505's eleven-line draft carries `SIMON BASSLINE SMITH` **twice** — the OCR read the same text off two surfaces of one sleeve, and D-03-4's one-line-per-trusted-observation rule keeps both. IMG_0503 shows the near-miss version: `Timeless Recordings` / `TimelessRecordings` and `Cause 4 Concern-` / `Cause 4 Concern`. A person correcting this sheet has to delete lines they cannot tell apart from the ones they are keeping. This is the deliberate cost of not segmenting in Act I, made visible — de-duplication is SEG-03's filtering and belongs to Phase 6. | `03-walk-06-inspect-raw-text.png` (lines 2 and 5 both `SIMON BASSLINE SMITH`); `03-04-sheet-lines.png` (lines 8/9 and 2/10) | Low | Phase 6 |
 | V11 | **Add More opens a capture screen that says "0 records" for a crate that already holds four.** The session count is scoped to the visit, which is CAP-03's own wording ("scanned so far in this session") and decision D-03-3, so it is behaving as designed — recorded as informational so a reviewer looking at the picture is not surprised, and so the owner can say whether they would rather see the crate's total. | `02-walk-11-add-more-capture.png` (Friday Warehouse, 4 records in the crate, "0 records" on the strip) | Informational | Phase 4 |
 
 ---
@@ -292,3 +295,162 @@ measurement.
 Standing negative controls in the source, asserted every run and never removed:
 `inspect-raw-obs-999` and `inspect-line-99` must not resolve, in **both** sheets; and every line
 count is two-sided (`inspect-line-{k}` exists **and** `inspect-line-{k+1}` does not).
+
+
+---
+
+## Plan 03-05 — thirty-three frames looked at, and how many times each claim was measured
+
+Nine `03-walk-*.png`, four `03-03-*.png`, five `03-04-*.png` and the fifteen re-captured
+`02-walk-*.png`. Every one opened at 1206×2622 and read, not sampled. Phase 2's standing
+instruction says a phase that produces fifteen screenshots and audits three has produced twelve
+unread files; this is the audit that says it did not.
+
+**All thirty-three frames come from one `xcodebuild test` run, into one simulator container,
+after the whole `03-walk-*`, `02-walk-*`, `03-03-*`, `03-04-*` and `02-smoke-*` glob was purged
+from the host.** Not one is a leftover.
+
+### The photometric probe — run THREE times, on three independently captured runs
+
+| Signature | Threshold | Result across all 33 frames, all three runs |
+|---|---|---|
+| a genuinely black pixel exists | `min` ≤ 110 | `min = 0` on every frame |
+| a white ground exists | `max` ≥ 200 | `max = 255` on every frame |
+| the frame is not flat | `min ≠ max` | holds on every frame |
+
+**`SUSPECT: none`, probe exit 0, three times.** Per-frame mean drift: **0.022** between runs A
+and B, **0.024** between A and C, **0.029** between B and C — against Phase 2's stated bar of
+±0.06. No threshold was adjusted. The V2 pallor signature appears on none of the new screens.
+
+### What the pictures showed that no assertion did
+
+| Finding | Frames | Times measured |
+|---|---|---|
+| **V3's second sighting, obtained.** The bucket header reads `Not in the set (12)` and the eight rows the frame reaches read `Vinyl 1` … `Vinyl 8` — the *same* records the strip named `HIGHER`, `Emotif/Xstatic EMF2029`, `inckatecks*`, `Zzz.` … four frames earlier **in the same session**. One record, two names, two screens | `03-walk-07-done-sequenced.png` against `03-walk-04-strip-twelve.png` | **three runs** — the eight-name list came back byte-identical on A, B and C, and the frame was captured on each |
+| **V9, narrowed to a clean rule.** Every frame carrying a large navigation title was taken **before any `.sheet` had been presented**; every frame without one was taken **after** a sheet had been presented and dismissed. 33 of 33 frames obey it, with no exception | present: `02-walk-01`, `02-smoke`, all four `03-03-*`, `03-walk-08`, `03-walk-09`. absent: `02-walk-03`…`02-walk-15`, `03-walk-01`…`03-walk-04`, `03-walk-07` | **three runs**, same split each time |
+| **V13, closed.** See below | `03-walk-05`, `03-walk-06` | **three runs** for the field width and the row height; the numbers were identical each time |
+| **V4, not fixed and now twelve times as visible.** `03-walk-07` renders **twelve** `— —` badge pairs, secondary-on-material, in one frame | `03-walk-07-done-sequenced.png` | twice (Phase 2's frame and this one) |
+| **V10, confirmed again.** The guide measures **290.67 × 291 pt** (872 px) with no prompt and is visibly smaller with one, in the same test, four frames apart | `03-walk-01-capture-guide.png` against `03-walk-02-flip-prompt-fires.png` | **three runs**; the pt figure was printed on each |
+| **V11, confirmed again.** Add More opens on `Friday Warehouse` reading `0 records` for a four-record crate | `02-walk-11-add-more-capture.png` | twice (Phase 3's original sighting and this re-capture) |
+| **V12, confirmed on a third screen.** The strip tile for fixture 6 is labelled `Zzz.` | printed from `capture-thumb-6`'s label on all three runs; visible in `03-04-sheet-lines.png` | **three runs** |
+| **V7 stays closed.** `Nothing sequenced yet` above `Not in the set (1)` | `02-walk-05-new-crate-detail.png` | twice, and now a third time at twelve records on `03-walk-07` |
+| **V14, new** — states 8 and 10 are the same picture | `02-walk-08`, `02-walk-10` | **three runs** |
+| **V15, new** — the correction field truncates at ~22 characters | `03-walk-05-inspect-sheet.png` | **three runs** |
+| **V16, new** — the draft carries exact duplicate lines | `03-walk-06`, `03-04-sheet-lines.png` | **three runs** |
+
+### Checked deliberately and found clean — written down because "we looked and found nothing" is only worth something if it is recorded
+
+- **V4's failure mode on the new screens: NOT repeated.** The strip's status pill is white on
+  solid dark green / amber / dark red and legible at a glance in `03-walk-04-strip-twelve.png`
+  at four tiles and in `03-walk-09-strip-scrolled-to-end.png` at the far end of twenty-one. The
+  raw list's confidence capsule is white on solid dark green / dark red in
+  `03-walk-06-inspect-raw-text.png`, and carries the number as well as the colour.
+- **V3 kept out of the new screens: confirmed two ways.** No tile in the twelve-shot walk
+  matched `^Vinyl \d+$` (asserted every run, `CaptureWalkUITests.swift:99`), and
+  `grep -rn "VinylEntry.label" App/` returns nothing (rc=1).
+- **The framing guide reads as square and frames a sleeve, not a label.** `290.67 × 291 pt`
+  measured off the rendered accessibility frame — 0.5 pt out of square on a 291 pt box — and it
+  covers most of the preview's shorter edge with the caption *"Fill the square with the whole
+  sleeve — not just the label."* directly beneath it. Whether it frames a **real** sleeve at
+  arm's length is U10 and cannot be answered without a camera.
+- **Controls colliding on a long line: none.** The scissors and merge-up buttons are fixed-width
+  on the right at 4 lines (`03-walk-05`) and at 11 (`03-walk-06`), with no reflow between them.
+
+### One thing that is not a defect but should not be discovered twice
+
+`app.otherElements["capture-flip-prompt"].label` is **empty**. The banner uses
+`.accessibilityElement(children: .contain)`, which keeps `Skip` and `Scan` individually
+queryable — the whole reason the contract specifies it — and therefore publishes no label of its
+own. The prompt's text (`Only one side read` / the record's name) lives on its children and is
+plainly visible in `03-walk-02-flip-prompt-fires.png`. The walk prints the label every run; it
+printed `''` twelve times over. Reading the banner's own label is not a way to read the prompt.
+
+---
+
+## V13 — closed, and what the assessment found
+
+V13 asked one question in two halves, and 03-04 could answer neither because the widest line any
+of its frames rendered was 20 characters.
+
+**Half one — the correction `TextField`. It truncates.** IMG_0502's draft holds the corpus's
+longest **trusted** read at 44 characters. Measured, three runs, identical each time:
+
+```
+WALK12 V13 line 4: 44 chars, field 237.33333333333331pt, 'EXCLUSIVE NEW MIXES FROM V CLASSIC THE ALBUM'
+```
+
+and `03-walk-05-inspect-sheet.png` renders it as `EXCLUSIVE NEW MIXES FR…`. The value is intact
+— XCUITest reads all 44 characters back — so nothing is lost, but about half of it is invisible
+at rest. Filed as **V15**.
+
+**Half two — the raw list. It wraps, and loses nothing.** The corpus's longest read overall is
+106 characters, and it is **not** in any draft: it came back at confidence 0.30 and the
+segmenter drops it (which is precisely what OCR-04 exists to expose). It appears only in the raw
+list, at the bottom edge of `03-walk-06-inspect-raw-text.png` — so the photograph cannot say
+whether it wraps or is cut off, and **height was measured instead**:
+
+```
+WALK12 V13 raw row 1 height = 19.33331298828125pt      <- one-line control
+WALK12 V13 raw row 2 height = 19.3333740234375pt       <- one-line control
+WALK12 V13 raw row 3 height = 70.74652099609375pt      <- the 106-character read
+```
+
+70.75 against 19.33 is **four rendered lines**. The raw list wraps the longest read in the corpus
+in full. The walk asserts `height > 1.5 × one-line`, so a future `lineLimit(1)` would redden it.
+
+**The question V13 was really about — "do two different lines read identically?" — is answered
+YES, and truncation is not the cause.** IMG_0505's draft carries `SIMON BASSLINE SMITH` twice
+because the OCR read it off two surfaces of one sleeve. Filed as **V16**, owner Phase 6.
+
+---
+
+## V9 — the narrowing plan 03-05 could do that 03-03 could not
+
+03-03 measured the settle (no effect), disproved `.disabled(true)` by tapping, and concluded the
+navigation container was implicated without being able to say what triggered it. Thirty-three
+frames across two entry routes now split cleanly:
+
+| Route onto the screen | Sheet presented first? | Large title |
+|---|---|---|
+| launch → crate list (`02-walk-01`, `02-smoke`) | no | **present** |
+| crate list → crate detail → Add More → capture (all four `03-03-*`, `03-walk-08`, `03-walk-09`) | no | **present** |
+| crate list → new-crate **sheet** → Create → capture (`02-walk-03`, `03-walk-01`…`03-walk-04`) | yes | absent |
+| anything at all after that sheet has been dismissed (`02-walk-05`…`02-walk-15`, `03-walk-07`) | yes | absent |
+
+`03-walk-08` and `03-walk-09` are the load-bearing rows: they are the **same `CaptureView`** as
+`03-walk-01`…`03-walk-04`, in the **same suite run**, and they have their title because that
+test never opens a sheet. The screen is not the variable; the sheet is.
+
+**Measured three times** — runs A, B and C each produced the same split with no exception across
+all 33 frames. It remains **Low** and Phase 4's, and nothing was restyled on the strength of it,
+per the rule V2 left behind. What changes is that whoever picks it up now has a one-line repro
+rather than a hypothesis: present a `.sheet` from `RootView`, dismiss it, and watch every
+subsequent `navigationTitle` stop rendering.
+
+---
+
+## Negative controls run by plan 03-05 — the walk's own assertions are provably able to fail
+
+Three mutations, each applied to a **committed** tree (the lesson mutation H left behind), each
+run, each confirmed from **two independent sources**, each reverted. None crashed the runner.
+
+| # | Mutation | Expected to redden | What actually happened |
+|---|---|---|---|
+| I | `FixturePhotoSource.table` scores `IMG_0500` as `.read` instead of `.partial` | the 6/5/1 status tally | `CaptureWalkUITests.swift:153` — *"the strip's status tally is ["Read": 7, "Partial": 4, "Unread": 1], not 6 Read / 5 Partial / 1 Unread"*. log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| J | `CaptureThumbnailStrip`'s tile width shrinks with the item count instead of staying fixed | CAP-03's *"scrolls past 20 items without layout breaking"* | `CaptureWalkUITests.swift:228` — *"the tiles compressed from 101.0pt to 41.0pt — the strip is shrinking, not scrolling"*. log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| K | `CaptureSession.append` sets `pendingFlipPrompt = item.id` unconditionally | the named flip set | `CaptureWalkUITests.swift:142` — *"the flip prompt fired on [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], not on [1, 3, 4, 5, 7, 8, 10, 11, 12]"*. log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+
+**J is the one worth reading twice.** Under it, `capture-thumb-21` still existed, `capture-thumb-22`
+still did not, and `21 records` still rendered — **every count and existence assertion in the test
+passed**. Only the width comparison saw it. That is the whole argument for measuring the layout
+claim as a layout claim, and it is now demonstrated rather than asserted.
+
+After all three reverts: `git diff HEAD` empty, 168 Core tests green, both walk tests green,
+`xcresult passed=2 failed=0`.
+
+Standing negative controls in the source, asserted every run and never removed:
+`capture-thumb-99` and `capture-thumb-status-99` must not resolve **while `capture-thumb-1` does**
+— the positive control is what stops the pair being vacuous; `inspect-line-99` and
+`inspect-raw-obs-999` must not resolve; `capture-thumb-13` must not exist after twelve shots and
+`capture-thumb-22` must not exist after twenty-one; and the session count must read `12 records`
+and never `1 records`.

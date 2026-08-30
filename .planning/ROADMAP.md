@@ -47,7 +47,7 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 
 - [x] **Phase 1: Foundation & Protocol Seams** - Core package, purity guard, app target, build-time secrets — the compile-time skeleton every act hangs off
 - [x] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
-- [ ] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
+- [x] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
 - [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them.
 - [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
 - [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
@@ -138,11 +138,27 @@ Act III swaps a real camera and a real OCR pipeline underneath them, no new UI i
 screen in one simulated session; the flip prompt fires on exactly the fixtures that lack a
 second side marker and on no others; every screen and sheet state is screenshotted after a
 settle delay.
-**Plans**: TBD
-**Research**: yes — confirm how the 12 fixture HEICs are injected into the simulator in place
-of a camera before designing the seam, so the same seam accepts a real `AVCapturePhotoOutput`
-in Phase 10 with no UI change.
+**Plans**: 5 of 5 delivered
+  - [x] 03-01 — Capture Core: the real-OCR fixture generator (104 observations, 12 photographs), `FramingGuide`, `CaptureItem`/`CaptureSession`, the flip rule, the `PhotoCapturing` seam, `FixtureLineSegmenter` (CAP-02/03/05)
+  - [x] 03-02 — Correction Core: `SegmentationDraft` (split / merge-up / hand-type / add) and `RawObservationRows` (OCR-04, SEG-07)
+  - [x] 03-03 — the capture screen: sleeve guide, shutter, thumbnail strip with status, inline flip prompt, Done — and Phase 2's walk repaired against it (CAP-02/03/05/06)
+  - [x] 03-04 — the inspect/correct sheet, presented from a thumbnail tap (OCR-04, SEG-07)
+  - [x] 03-05 — the twelve-fixture session walk, the twenty-one-item strip test, nine photographed states, the visual audit of all 33 frames and the ship-criterion audit (all six)
+**Ship criterion: MET, and measured.** `CaptureWalkUITests` drives all 12 fixture photographs
+through the capture screen in one session; the flip prompt fires on exactly
+`[1, 3, 4, 5, 7, 8, 10, 11, 12]` and is suppressed on exactly `[2, 6, 9]`, asserted as named sets
+in both directions; the strip's status tally is exactly `6 Read / 5 Partial / 1 Unread`; and
+every screen and sheet state is photographed through one settle-delay helper at ≥3 s. Mutations
+I, J and K reddened those three claims cleanly (`.planning/VISUAL-DEFECTS.md`).
+**Research**: done — the 12 fixture HEICs never enter the simulator. `Scripts/generate-ocr-fixtures.sh`
+turns the real OCR run into a committed `FixtureObservations.swift`, and `FixturePhotoSource`
+deals it one shutter press at a time through the `async PhotoCapturing` seam Phase 10's
+`AVCapturePhotoOutput` implements. No photograph bytes are in the repo (D-03-2).
 **UI hint**: yes
+**Carried out of this phase**: V3 (Medium) carried with a **second** piece of evidence and no
+fix — the product call is U8 and it is the owner's. V4, V9, V14, V15 (Low/Informational) to
+Phase 4; V10 to Phase 10; V12 and V16 to Phase 6. V13 closed with numbers. U9 and U10 added to
+`UAT-PENDING.md`.
 
 ---
 
@@ -400,7 +416,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 |-------|----------------|--------|-----------|
 | 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
 | 2. The Crate Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
-| 3. The Capture & Correction Screens, Stubbed | 0/TBD | Not started | - |
+| 3. The Capture & Correction Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
 | 4. Act I Sign-off — Every Screen, Photographed | 0/TBD | Not started | - |
 | 5. The OCR Engine | 0/TBD | Not started | - |
 | 6. The Segmentation Engine | 0/TBD | Not started | - |
@@ -435,14 +451,21 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 14 | — (DoD proof + final sweep) | 0 |
 | **Total** | | **67** |
 
-**Already complete: 17 of 67.** SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07, SEQ-01/02/04/06/07/11.
-**Outstanding: 50 of 67.**
+**Already complete: 23 of 67.** SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07,
+CAP-02/03/05/06, OCR-04, SEG-07, SEQ-01/02/04/06/07/11.
+**Outstanding: 44 of 67.**
 
-*Corrected 2026-08-30 by plan 02-05's audit. The previous figure said 15 and listed `SEQ-03`
-among the complete, which contradicts `REQUIREMENTS.md` — SEQ-03 was **REOPENED** the same day
-when the sequencer spec went bidirectional. It also omitted CRATE-03/04/05, which Phase 2
-delivered and photographed. Counted from the ticked boxes in `REQUIREMENTS.md`, not from memory:
-`grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17.*
+*Recounted 2026-08-30 by plan 03-05's audit, from the ticked boxes in `REQUIREMENTS.md` and not
+by incrementing the previous line. Re-derive both halves in two commands:*
+
+```
+grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  23
+grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  44        23 + 44 = 67
+```
+
+*Phase 3 contributed all six of its requirements. The previous figure of 17 was plan 02-05's and
+was correct when written — it predates Phase 3. `SEQ-03` remains **REOPENED** and is still not
+counted among the complete.*
 
 ### Two placement notes, stated openly
 

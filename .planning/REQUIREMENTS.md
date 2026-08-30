@@ -163,12 +163,12 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | CRATE-07 | Act I — Phase 2 | Complete — 01-06 |
 | SEQ-07 | Act I — Phase 2 | Complete — 01-07 |
 | SEQ-11 | Act I — Phase 2 | Complete — 01-07 |
-| CAP-02 | Act I — Phase 3 | Complete |
-| CAP-03 | Act I — Phase 3 | Complete |
-| CAP-05 | Act I — Phase 3 | Complete |
-| CAP-06 | Act I — Phase 3 | Complete |
-| OCR-04 | Act I — Phase 3 | Complete |
-| SEG-07 | Act I — Phase 3 | Complete |
+| CAP-02 | Act I — Phase 3 | Complete — 03-01/03-03/03-05 |
+| CAP-03 | Act I — Phase 3 | Complete — 03-01/03-03/03-05 |
+| CAP-05 | Act I — Phase 3 | Complete — 03-01/03-03/03-05 |
+| CAP-06 | Act I — Phase 3 | Complete — 03-03/03-05 |
+| OCR-04 | Act I — Phase 3 | Complete — 03-02/03-04/03-05 |
+| SEG-07 | Act I — Phase 3 | Complete — 03-02/03-04/03-05 |
 | OCR-01 | Act II — Phase 5 | Pending |
 | OCR-02 | Act II — Phase 5 | Pending |
 | OCR-03 | Act II — Phase 5 | Pending |
@@ -222,13 +222,22 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 - v1 requirements: 67 total
 - Mapped to phases: 67/67 ✓
 - Unmapped: 0
-- Complete: 17 (SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07, SEQ-01/02/04/06/07/11)
-- Outstanding: 50
+- Complete: **23** (SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07, CAP-02/03/05/06, OCR-04,
+  SEG-07, SEQ-01/02/04/06/07/11)
+- Outstanding: **44**
 
-*Recounted 2026-08-30 by plan 02-05 from the ticked boxes above, not from the previous line:
-`grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17. The old figure said 15 and named
-`SEQ-03` as complete, which contradicts SEQ-03's own entry — it is **REOPENED**. It also omitted
-CRATE-03/04/05, which Phase 2 delivered and photographed.*
+*Recounted 2026-08-30 by plan 03-05 **from the ticked boxes above, not from the previous line**.
+Re-derive it in one command:*
+
+```
+grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  23
+grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  44          23 + 44 = 67
+```
+
+*Phase 3 added six: CAP-02/03/05/06 (the capture screen, 03-03), OCR-04 and SEG-07 (the inspect
+sheet, 03-04), all six re-verified in one twelve-fixture session by 03-05. The previous figure of
+17 was plan 02-05's, correct when written; it predates Phase 3 entirely. `SEQ-03` is still
+**REOPENED** and is still not counted.*
 
 **Placement notes:**
 - `CAP-02/03/05/06` are screens and sit in Act I (Phase 3), rendered from the 12 fixture
@@ -274,4 +283,4 @@ because its rank tuple ends in a position-derived `start-index asc`. See
 
 ---
 *Requirements defined: 2026-08-29*
-*Last updated: 2026-08-30 after the three-act roadmap rebuild — 67/67 mapped across 14 phases*
+*Last updated: 2026-08-30 at Phase 3 close (plan 03-05) — 67/67 mapped across 14 phases, 23 complete / 44 outstanding, recounted by command*

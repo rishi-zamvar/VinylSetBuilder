@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-08-30T10:18:34.402Z"
+stopped_at: Completed 03-05-PLAN.md — Phase 3 closed, 5 of 5
+last_updated: "2026-08-30T11:27:48Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
-  completed_phases: 1
+  completed_phases: 3
   total_plans: 18
-  completed_plans: 15
-  percent: 83
+  completed_plans: 16
+  percent: 89
 ---
 
 # Project State
@@ -23,9 +23,10 @@ See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
 
-**Current focus:** Act I, Phase 2 — The Crate Screens, Stubbed. Four of its nine requirements
-already landed during Phase 1's plans; CRATE-03/04/05 (the crate detail screen, manual
-reorder, Add More) are what remains before Act I can continue.
+**Current focus:** Act I, Phase 4 — Act I Sign-off. Phases 1, 2 and 3 are closed. Every screen
+the shell has is photographed; what Phase 4 owns is the act-level audit (screenshot count equals
+screen count, zero Medium-or-above defects still open, zero TODO/FIXME) and the V-defect backlog
+Phases 2 and 3 recorded but were forbidden to fix.
 
 ## The shape of the work
 
@@ -40,22 +41,34 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 3 of 14 (The Capture & Correction Screens, Stubbed) — **IN PROGRESS**
-Plan: 03-04 complete. 4 of Phase 3's 5 plans delivered (03-01, 03-02, 03-03, 03-04).
-Next: 03-05 (the 12-fixture walk, the 21-item scroll test, the visual and ship-criterion audits).
-Status: The inspect / correct sheet is live. OCR-04 and SEG-07 complete — split, merge-up and
-        hand entry are each one tap, proved by two-sided line-count deltas on the owner's real
-        OCR, and the raw list keeps the 0.30 reads the segmenter drops. 4 UI tests, 0 failures,
-        confirmed from log AND build/ui.xcresult; 168 Core tests green; device-SDK build green.
-        Four mutations (E/F/G/H) reddened cleanly and were reverted. New visual defects V12
-        (a record titled "Zzz." from its first spatial read) and V13 (long-line behaviour not
-        assessable) filed.
+Phase: 3 of 14 (The Capture & Correction Screens, Stubbed) — **COMPLETE, 5 of 5**
+Plan: 03-05 complete. Next: **Phase 4 — Act I Sign-off — Every Screen, Photographed.**
+Status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
+        drives all 12 fixture photographs through the capture screen in one session; the flip
+        prompt fires on exactly `[1, 3, 4, 5, 7, 8, 10, 11, 12]` and is suppressed on exactly
+        `[2, 6, 9]`, asserted as named sets in both directions, never as counts; the strip's
+        status tally is exactly `6 Read / 5 Partial / 1 Unread`, asserted as one dictionary; and
+        CAP-03's twenty-item claim is measured by TILE WIDTH (104.0 pt at 1 item and at 21) plus
+        reachability of tile 21, because a count assertion cannot see an `HStack` that shrinks.
+        **6 UI tests green, 0 failures, confirmed from the log AND `build/ui.xcresult`
+        (`passed=6 failed=0`), on three independent full-suite runs.** 168 Core tests green;
+        device-SDK build green; `TODO|FIXME` grep rc=1.
+        **33 screenshots — 9 + 4 + 5 + 15 — all from one purged run, and all looked at.**
+        Photometric probe run three times: `SUSPECT: none`, max per-frame mean drift 0.029
+        against a +/-0.06 bar.
+        Three mutations (I, J, K) reddened the tally, the layout claim and the flip set cleanly
+        and were reverted; J is the one that matters — under it every count and existence
+        assertion still passed and only the width comparison caught it.
+        **V13 closed with numbers. V3 carried forward WITH its second sighting and no fix.**
+        New: V14 (two walk states are one picture), V15 (the correction field truncates at ~22
+        characters), V16 (the over-split draft carries exact duplicate lines). V9 narrowed to a
+        one-line repro: presenting and dismissing a `.sheet` removes the large navigation title
+        for the rest of the session — 33 of 33 frames obey it.
 Last activity: 2026-08-30
 
-Progress: [████████░░] 83%
+Progress: [█████████░] 89%
 
-15 of the 18 plans on disk have summaries. One of the three that do not is Phase 3's
-still-outstanding `03-05`; the other two are **not** pending work:
+16 of the 18 plans on disk have summaries. The two that do not are **not** pending work:
 
 - `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
   exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
@@ -68,15 +81,22 @@ still-outstanding `03-05`; the other two are **not** pending work:
 
 **Requirements:** 67 total, 67 mapped, **23 complete, 44 outstanding**.
 
-> Recounted on disk after 03-03: `grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` -> 23,
-> `grep -c "^- \[ \] \*\*"` -> 44, and 23 + 44 = 67. Phase 3 has added six so far:
-> OCR-04 and SEG-07 (03-02's Core), then CAP-02/03/05/06 (03-03's screen).
-
-> **Corrected 2026-08-30 by plan 02-05's audit: 17 complete, 50 outstanding — not 19.**
-> Recounted from the ticked boxes: `grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17.
-> CRATE-03/04/05 are complete at every layer now: the value types (02-01), the screen (02-03),
-> and photographed in the walk (02-04). `SEQ-03` is **not** complete — it was REOPENED when the
-> sequencer spec went bidirectional, and both ROADMAP and REQUIREMENTS had been counting it.
+> **Recounted by command at Phase 3 close (03-05), from the ticked boxes and not by
+> incrementing the previous figure:**
+>
+> ```
+> grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  23
+> grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  44        23 + 44 = 67
+> ```
+>
+> Phase 3 contributed all six of its requirements: OCR-04 and SEG-07 (03-02's Core, 03-04's
+> sheet), CAP-02/03/05/06 (03-01's Core, 03-03's screen), every one of them re-verified in one
+> twelve-fixture session by 03-05. The figure of 17 that stood before Phase 3 was plan 02-05's
+> and was correct when written.
+>
+> `SEQ-03` is still **REOPENED** and is still not counted. `./Scripts/test.sh` prints a green
+> line reading *"BPM is non-decreasing across the whole winning sequence"* — that test is
+> passing and **wrong**, because the rule went bidirectional on 2026-08-30. Phase 9's.
 
 ## What already exists — 113 tests green, committed
 
@@ -121,6 +141,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 03 P01 | ~40 min | 3 tasks | 12 files |
 | Phase 03 P03 | 47min | 3 tasks | 9 files |
 | Phase 03 P04 | 48 | 2 tasks | 5 files |
+| Phase 03 P05 | ~95 min | 2 tasks | 40 files |
 
 ## Accumulated Context
 
@@ -191,6 +212,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 03]: ScreenshotRecorder settle stays 3.0/4.0: raising to 4.0/5.0 was measured across 19 frames and changed nothing (V9 is not a timing artefact)
 - [Phase 03]: 03-04: the raw-text frame is photographed on fixture 1, not fixture 6 — IMG_0503's 16 observations are ALL confidence 1.00, so it cannot show OCR-04's untrusted reads at all
 - [Phase 03]: 03-04: commit a fix BEFORE mutating the file it lives in — reverting a mutation with git checkout also discards uncommitted work in that file
+- [Phase 03]: 03-05: XCUITest's isHittable RAISES on an element scrolled off screen ("Activation point invalid"), it does not return false — reachability is asked of the geometry first (is the centre inside the window), and isHittable only after
+- [Phase 03]: 03-05: a scroll-to-element loop must be BIDIRECTIONAL and momentum-free — fifteen one-directional slow swipes drove capture-thumb-5 from off the right edge to x=-516 off the left; the fix is a bounded drag held at the end
+- [Phase 03]: 03-05: CAP-03's "scrolls past 20 without layout breaking" is measured by TILE WIDTH at 1 item vs 21, not by a count — mutation J shrank the tiles to 41pt and every count and existence assertion still passed
+- [Phase 03]: 03-05: the two sheet frames are taken on fixtures 5 and 8, not on one fixture, because those are the only two carrying the corpus's longest trusted read (44 chars) and its longest read overall (106 chars) — the frames that make V13 answerable
+- [Phase 03]: 03-05: V9 narrowed to a repro — every frame with a large navigation title was taken before any .sheet was presented, every frame without one after; 33 of 33 frames obey it across three runs
+- [Phase 03]: 03-05: V3's second sighting was obtained by EXPANDING the not-included bucket, which 03-03 was forbidden to do; the walk photographs it and prints the labels but asserts nothing about them, so Phase 4's fix does not have to edit a test
 
 ### Pending Todos
 

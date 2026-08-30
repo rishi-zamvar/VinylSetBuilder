@@ -133,3 +133,25 @@ defaults read com.apple.dt.Xcode IDEProvisioningTeams   → empty
 (1) Xcode signed into the Apple ID, (2) the iPhone connected and trusted, (3) automatic
 provisioning allowed to mint a profile, since there are currently zero. Signing-free
 compilation is unaffected and continues to pass.
+
+---
+
+## Added at Phase 3 close (plan 03-05, 2026-08-30)
+
+| # | Check | Why it can't be automated | Phase |
+|---|-------|---------------------------|-------|
+| U9 | **Is the correction sheet actually fast?** Open `Artifacts/screenshots/03-walk-05-inspect-sheet.png` and `03-walk-06-inspect-raw-text.png` and answer with a stopwatch and a thumb: are **merge-up, split and hand-type** the right three operations, and is one tap each fast enough for a record you will correct dozens of times? SEG-07 exists because six of your twelve records will never resolve automatically, so this sheet is a routine path, not an error path. Two things the pictures now show that may change your answer: a 44-character line is **truncated** in the field (V15), and the draft can carry the **same line twice** (V16, `SIMON BASSLINE SMITH` on IMG_0505). | "Fast" is a stopwatch-and-thumb judgement on a real layout in a real hand, and only the DJ whose workflow it is can say whether three operations are the right three. Every automated measurement here can say the tap count is 1; none can say the sheet is quick. | 4 |
+| U10 | **Does the sleeve framing guide frame a real sleeve on a real counter?** `FramingGuide.sleeve` covers **0.88 of the preview's shorter edge** and renders at `290.67 × 291 pt` — square to within half a point, measured off the live accessibility frame on three runs (`03-walk-01-capture-guide.png`). That is verified **as geometry only**. Whether 0.88 is the right fraction for a 12" sleeve held at arm's length over a counter — too tight, too loose, or right — is unanswerable until a camera is behind it. | The simulator has no camera. The preview is a black rectangle by decision D-03-2, so there is nothing in any frame to line a sleeve up against. Phase 10, with a live `AVCaptureSession`, is where this becomes answerable — and defect V10 (the guide resizing when the flip prompt appears) is queued against the same phase for the same reason. | 10 |
+
+**U8 stays open, and Phase 3 strengthened it rather than resolving it.** The second piece of
+evidence CONTEXT.md §6 predicted was obtained: `03-walk-07-done-sequenced.png` shows twelve
+records the app had just named `HIGHER`, `Emotif/Xstatic EMF2029`, `inckatecks*` and `Zzz.` in
+its own thumbnail strip, sitting in the not-included bucket as `Vinyl 1` … `Vinyl 8`. One record,
+two names, two screens, one session. **Nothing was fixed** — both defensible fixes (mark the
+fixtures `.resolved`, or give `VinylEntry.label` the same first-candidate fallback
+`Track.displayName` already has) are product calls, and preempting your answer would waste the
+question. Phase 4 implements whichever you pick.
+
+**Phase 3 needs nothing else from you.** All six of its requirements landed and are visible in
+the committed photographs. U1 (device install), U4 and U6 remain open from earlier phases and
+are unaffected.
