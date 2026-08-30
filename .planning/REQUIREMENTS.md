@@ -85,11 +85,11 @@ key transitions, that re-optimises when you add more.
 ### Sequencing
 
 - [x] **SEQ-01**: Camelot distance is computed as flat hop count around the 12-position wheel, plus 1 for a letter change
-- [ ] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
-- [ ] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE, and BPM never decreases along the sequence
-- [ ] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
+- [x] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
+- [x] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE, and BPM never decreases along the sequence
+- [x] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
 - [ ] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
-- [ ] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
+- [x] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
 - [ ] **SEQ-07**: Unresolved and excluded records share one collapsed section, each row carrying its own reason
 - [ ] **SEQ-08**: Adding a vinyl re-runs the whole optimisation, and a previously excluded record rejoins if a new addition bridges the gap
 - [ ] **SEQ-09**: Sequencing runs off the main thread and completes fast enough to feel instant at 100 vinyls / 400 candidates
@@ -152,11 +152,11 @@ key transitions, that re-optimises when you add more.
 | SETUP-03 | Phase 1 | Complete |
 | SETUP-04 | Phase 1 | Complete |
 | SEQ-01 | Phase 1 | Complete |
-| SEQ-02 | Phase 1 | Pending |
-| SEQ-03 | Phase 1 | Pending |
-| SEQ-04 | Phase 1 | Pending |
+| SEQ-02 | Phase 1 | Complete |
+| SEQ-03 | Phase 1 | Complete |
+| SEQ-04 | Phase 1 | Complete |
 | SEQ-05 | Phase 1 | Pending |
-| SEQ-06 | Phase 1 | Pending |
+| SEQ-06 | Phase 1 | Complete |
 | SEQ-07 | Phase 1 | Pending |
 | SEQ-08 | Phase 1 | Pending |
 | SEQ-09 | Phase 1 | Pending |

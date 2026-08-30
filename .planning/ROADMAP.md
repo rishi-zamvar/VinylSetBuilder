@@ -74,7 +74,7 @@ Plans:
 - [x] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
 - [x] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
 - [x] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
-- [ ] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
+- [x] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
 - [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
 - [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
 - [ ] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
