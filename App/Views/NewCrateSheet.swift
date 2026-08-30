@@ -12,17 +12,20 @@ struct NewCrateSheet: View {
         NavigationStack {
             Form {
                 TextField("Crate name", text: $name)
+                    .accessibilityIdentifier("new-crate-name-field")
             }
             .navigationTitle("New Crate")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .accessibilityIdentifier("new-crate-cancel-button")
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") {
                         model.store.createCrate(named: name)
                         dismiss()
                     }
+                    .accessibilityIdentifier("new-crate-create-button")
                 }
             }
         }

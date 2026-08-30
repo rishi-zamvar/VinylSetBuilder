@@ -20,9 +20,11 @@ struct CrateListView: View {
                         // V1: automatic grammar agreement — "1 record" / "4 records".
                         Text("^[\(summary.recordCount) record](inflect: true)")
                             .foregroundStyle(.secondary)
+                            .accessibilityIdentifier("record-count-\(summary.name)")
                     }
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("crate-row-\(summary.name)")
                 .swipeActions {
                     Button("Delete", role: .destructive) {
                         model.store.deleteCrate(summary.id)
@@ -30,6 +32,7 @@ struct CrateListView: View {
                 }
             }
         }
+        .accessibilityIdentifier("crate-list")
         .overlay {
             if model.store.summaries.isEmpty {
                 ContentUnavailableView("No Crates Yet", systemImage: "square.stack",
@@ -44,6 +47,7 @@ struct CrateListView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
+                .accessibilityIdentifier("new-crate-button")
             }
         }
         .sheet(isPresented: $showingNewCrateSheet) {
