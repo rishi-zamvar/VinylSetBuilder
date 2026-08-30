@@ -93,16 +93,38 @@ final class CrateWalkUITests: XCTestCase {
                        "CRATE-02: capture opened on '\(captureName.label)', not the crate just created")
         capture("02-walk-03-capture-empty")
 
-        // ------------------------------------------------------- 4. a fixture vinyl goes in
-        app.buttons["capture-add-fixture-button"].tap()
+        // ------------------------------------------------------ 4. a real capture goes in
+        // CHANGED BY PLAN 03-03, and deliberately stronger than what it replaces.
+        // Phase 2 tapped the placeholder screen's Add-Fixture button, which died with that
+        // screen; `capture-shutter-button` replaces it. The extra two assertions close
+        // deferred item D-02-04-1: walk states 3 and 4 were byte-identical (md5 `6a903ce3`,
+        // measured twice) because the old screen rendered NOTHING that reflected the crate's
+        // contents. The thumbnail strip does, so the two states now differ by construction —
+        // and the pair below is two-sided, where Phase 2 asserted nothing here at all.
+        app.buttons["capture-shutter-button"].tap()
+        XCTAssertTrue(app.buttons["capture-thumb-1"].waitForExistence(timeout: 10),
+                      "CAP-03: the shutter put nothing in the thumbnail strip")
+        XCTAssertFalse(app.buttons["capture-thumb-2"].exists,
+                       "CAP-03: one shutter press produced more than one thumbnail")
         XCTAssertTrue(app.staticTexts["capture-crate-name"].exists,
-                      "adding a fixture vinyl navigated away from capture")
+                      "the shutter navigated away from capture")
         capture("02-walk-04-capture-with-vinyl")
 
-        // -------------------------------------- 5. CRATE-03: the new crate has a running order
+        // ------------------------------- 5. CRATE-03: the new crate, and its order is EMPTY
+        // CHANGED BY PLAN 03-03, and this one is also a strengthening. Nothing resolves in
+        // Act I (D-03-5), so the vinyl the shutter just added carries real OCR text and no
+        // BPM — the sequencer cannot schedule it, and it goes to the not-included bucket with
+        // "No BPM yet". `sequenced-row-1` therefore CANNOT appear, and `empty-running-order`
+        // must. Phase 2 could never reach that branch because its placeholder button added a
+        // fully resolved fixture vinyl, which is exactly coverage gap V7. This assertion, and
+        // the screenshot below it, close V7.
         app.buttons["capture-done-button"].tap()
-        XCTAssertTrue(app.staticTexts["sequenced-row-1"].waitForExistence(timeout: 10),
-                      "CRATE-03: the new crate's detail screen has no sequenced row 1")
+        XCTAssertTrue(app.staticTexts["empty-running-order"].waitForExistence(timeout: 10),
+                      "V7: the new crate shows neither a running order nor the empty-order placeholder")
+        XCTAssertFalse(app.staticTexts["sequenced-row-1"].exists,
+                       "CRATE-03: a vinyl with no BPM was sequenced anyway")
+        XCTAssertTrue(app.buttons["not-included-section"].exists,
+                      "SEQ-07: the un-sequenceable capture is missing from the not-included bucket")
         // Negative control for the `sequenced-row-*` family: rows are numbered one-based and
         // contiguous, so `sequencedRowLabels()` below relies on row 99 NOT existing. If a broad
         // matcher were resolving everything, this would resolve too.

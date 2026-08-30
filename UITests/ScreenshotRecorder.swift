@@ -11,6 +11,13 @@ enum ScreenshotRecorder {
     /// MANDATORY minimum, per `.planning/VISUAL-DEFECTS.md`. Do not lower these to make a run
     /// faster — a screenshot taken mid-transition is evidence of nothing, and the last time one
     /// was believed it produced a defect report against code that was already correct.
+    ///
+    /// **Measured again on 2026-08-30 (plan 03-03), and left alone.** Thirteen of the walk's
+    /// fifteen frames render no large navigation title (defect V9). V2's protocol says raise
+    /// the settle before calling anything a styling question, so the whole suite was re-run at
+    /// 4.0/5.0: the *same* thirteen frames were still title-less, pixel-identical in the title
+    /// band. The delay is therefore not what V9 is about, and raising it buys nothing but
+    /// fifteen seconds a run — so these stay where Phase 2 measured them.
     static let defaultSettle: TimeInterval = 3.0
 
     /// Launch has the longest transition of any state in the walk, so it gets the widest margin.

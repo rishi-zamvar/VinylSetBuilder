@@ -14,8 +14,11 @@ screenshot is an opinion, not a defect.
 | V4 | **Placeholder badges are near-invisible.** An unresolved record's `—` / `—` badge pair renders `.foregroundStyle(.secondary)` on a `.thinMaterial` capsule — light grey on light grey. SEQ-11's rule is that a missing value is *dimmed, never hidden*; at this contrast it is very close to hidden. | `02-walk-07-not-included-expanded.png`, the "Vinyl 3" row | Low | Phase 4 |
 | V5 | **Two fixture vinyls share `position: 2`, so both would render as "Vinyl 3".** `FixtureCrates.mixedResultsCrate` gives `sharedVinyl` and `unresolvedVinyl` the same `position`, and `VinylEntry.label`'s fallback is `"Vinyl \(position + 1)"`. **Not visible in any of the fifteen photographs** — only one of the two ever lands in the bucket — so this is a latent duplicate-label hazard found by reading the fixture, not by looking. Recorded because V3's fix touches the same line. | none — read from `FixtureCrates.swift:24` and `:48`, not from a picture | Low | Phase 4 |
 | V6 | **Running-order index alignment at double digits could not be assessed.** No fixture crate reaches ten rows, so no photograph in the set shows an index of `10` or above against the `minWidth: 20` monospaced column. Honest "not assessable from this capture" rather than a guess either way. | none — the fifteen photographs top out at index `2` | Low | Phase 4 |
-| V7 | **The walk never photographs the empty running order.** `empty-running-order` ("Nothing sequenced yet") exists in `CrateDetailView` and reads correctly, but the walk adds a fixture vinyl before it opens the new crate, so state 5 has a row and the empty branch is unexercised. A coverage gap in the evidence, not a defect in the pixels. | the empty state is verified instead by plan 02-03's `02-03-crate-detail-empty.png`, where it reads "Nothing sequenced yet" and does **not** read like a crash | Low | Phase 4 |
-| V8 | **The capture screen still reads as scaffolding** — it literally says "Camera arrives in Phase 3". This is correct and deliberate, and its doc comment names Phase 3 as its replacement. Recorded only so a reviewer looking at the pictures is not surprised by it. | `02-walk-03-capture-empty.png`, `02-walk-04-capture-with-vinyl.png`, `02-walk-11-add-more-capture.png` | Informational | Phase 3 |
+| ~~V7~~ | ~~**The walk never photographs the empty running order.**~~ | **CLOSED 2026-08-30 (plan 03-03), with a picture.** The walk's step 4 now presses the real shutter, and a captured sleeve carries OCR text but no BPM, so the sequencer cannot schedule it and the new crate's running order is genuinely empty. `02-walk-05-new-crate-detail.png` shows "Nothing sequenced yet" above "Not in the set (1)". The walk asserts it two-sidedly (`empty-running-order` present AND `sequenced-row-1` absent), and Mutation D below proves that assertion can fail. | — | Closed |
+| ~~V8~~ | ~~**The capture screen still reads as scaffolding**~~ | **CLOSED 2026-08-30 (plan 03-03).** `CapturePlaceholderView` is deleted and `RootView` routes `.capture` to the real `CaptureView`. No frame anywhere says "Camera arrives in Phase 3" any more. Evidence: `02-walk-03-capture-empty.png`, `02-walk-11-add-more-capture.png` and all four `03-03-capture-*.png`. | — | Closed |
+| V9 | **Thirteen of the walk's fifteen frames render no large navigation title.** The crate list shows "Crates" on `02-walk-01` and then never again; the crate detail never shows the crate's name at all; the capture screen shows "Capture" in one test and not in the other. A DJ two screens deep cannot tell from the picture which crate they are in. **Not a capture-timing artefact** — see "V9 — measured, not guessed" below. **Not introduced by plan 03-03**: it is equally absent on Phase 2's own `CrateDetailView` and `CrateListView`, which this plan did not touch, and plan 02-03's frames of the same screens have their titles. | absent: `02-walk-03` … `02-walk-15` (13 frames). present: `02-walk-01-crate-list.png`, all four `03-03-capture-*.png`, and every `02-03-crate-detail*.png` | **Low** | Phase 4 |
+| V10 | **The sleeve framing guide changes size when the flip-side prompt appears.** The preview is a flexible box, so the inline banner pushing in shrinks the preview and the guide follows it: the guide's stroked square measures **872x873 px** with no prompt and **686x686 px** with one — a 21% jump, mid-framing. Correct arithmetic (`edgeCoverage` holds at 0.881 and 0.879 of the preview's shorter edge in both cases, which is the point of deriving it from `FramingGuide.sleeve`), but with a live viewfinder a reticle that resizes while you are lining a sleeve up is its own annoyance. Belongs to Phase 10, where the preview stops being a flexible black rectangle and becomes a fixed-aspect camera layer. | `03-03-capture-flip-prompt.png` (686 px) against `03-03-capture-empty.png`, `03-03-capture-one-item.png`, `03-03-capture-flip-suppressed.png` (872 px). Measured on 7 frames across 3 runs. | Low | Phase 10 |
+| V11 | **Add More opens a capture screen that says "0 records" for a crate that already holds four.** The session count is scoped to the visit, which is CAP-03's own wording ("scanned so far in this session") and decision D-03-3, so it is behaving as designed — recorded as informational so a reviewer looking at the picture is not surprised, and so the owner can say whether they would rather see the crate's total. | `02-walk-11-add-more-capture.png` (Friday Warehouse, 4 records in the crate, "0 records" on the strip) | Informational | Phase 4 |
 
 ---
 
@@ -104,6 +107,88 @@ back afterwards.
 3. Then an inherited `.foregroundStyle(.secondary)` / `.opacity()` on a container.
 
 Never adjust the probe's threshold to make a frame pass. If a frame is suspect, it is suspect.
+
+## V9 — measured, not guessed, and the settle is not the answer
+
+V2's protocol is explicit and it was followed in order, without deviation.
+
+**Step 1, raise the settle and re-capture.** The whole suite was re-run with
+`ScreenshotRecorder.defaultSettle` at **4.0 s** and `launchSettle` at **5.0 s** (up from 3.0/4.0).
+The same thirteen frames came back with no title, and the title band was **pixel-identical**:
+ink count 0 on all thirteen at both settles, 9498 on `02-walk-01` at both, 11753 on all four
+`03-03-capture-*.png` at both. A longer delay changes nothing, so the settle was put back where
+Phase 2 measured it rather than left raised for a benefit that does not exist — adjusting a knob
+that does not move the needle is the mistake V2 was about.
+
+**Step 2, `.disabled(true)`.** Disproved by tapping, not by looking, exactly as the rule requires:
+the walk taps `crate-row-Friday Warehouse`, `edit-button`, `add-more-button`,
+`restore-sequenced-order-button`, `capture-shutter-button`, `capture-flip-skip-button` and
+`capture-done-button` on these very screens and every one responds. It reached state 15 three
+times during this plan.
+
+**What the evidence actually points at.** The title renders on the first screen after launch and
+on every screen plan 02-03 photographed in its own short-lived tests, and stops rendering once
+the walk has swapped `RootView`'s content through several `Route` cases in one long session. That
+implicates the navigation container, not any screen's styling. Nothing was restyled on the
+strength of it, and nothing should be until someone reproduces it deliberately.
+
+**Measurement count: three full suite runs** (3.0 s, 4.0 s, 3.0 s again), 19 frames probed each
+time, plus 11 untouched frames from plans 01-06/02-01/02-03 as the control group.
+
+---
+
+## V3 — the second sighting plan 03-03 was expected to produce, and did not
+
+CONTEXT.md §6 predicted that CAP-06's Done would land on a crate detail whose freshly captured
+vinyl sat in the not-included bucket labelled "Vinyl 1", giving V3 a second piece of evidence on a
+screen that did not exist when it was found.
+
+**That frame was not obtained, and the row is not being claimed on a prediction.**
+`02-walk-05-new-crate-detail.png` does show the bucket — "Not in the set (1)" — but the bucket is
+**collapsed by default**, so the row's label is not in the picture. Expanding it would mean adding
+a sixteenth state to Phase 2's walk, which plan 03-03 was explicitly forbidden to do.
+
+V3's original evidence is unchanged and still visible in this run at `02-walk-07`, `02-walk-08`,
+`02-walk-09` and `02-walk-10` ("Vinyl 2" / "Vinyl 3"). The second sighting is carried to plan
+03-05, which owns the full twelve-fixture walk and can expand the bucket without touching Phase
+2's file. A row without a named screenshot is an opinion, not a defect — so it is not being
+written as one.
+
+---
+
+## V4 — still open, and deliberately not repeated on the new screen
+
+V4 (placeholder badges rendering `.secondary` on `.thinMaterial`, light grey on light grey) is
+still open and still visible on the "Vinyl 3" row of `02-walk-07-not-included-expanded.png`. Plan
+03-03 did not fix it — it belongs to Phase 4 — but it did refuse to repeat it. The thumbnail
+strip's status indicator, which is the single piece of information the strip exists to carry,
+renders white on a solid saturated ground (`Read` dark green, `Partial` amber, `Unread` dark red)
+rather than secondary-on-material. Visible at `03-03-capture-flip-suppressed.png`, two `Read`
+pills legible at a glance.
+
+---
+
+## Negative controls run by plan 03-03 — the tests are provably able to fail
+
+A green suite is worth nothing until it has been made red on purpose. Three one-line mutations
+were applied, run, and reverted. Each produced a **clean assertion failure at the named line**,
+not a crashed runner, and each was confirmed from two independent sources: xcodebuild's log and
+`build/ui.xcresult`'s own `failedTests` count.
+
+| # | Mutation | Expected to redden | What actually happened |
+|---|---|---|---|
+| A | `CaptureSession.append` sets `pendingFlipPrompt = item.id` unconditionally — always prompt | the suppression half of CAP-05 | `CaptureScreenUITests.swift:110` — "the prompt fired on a photograph that already read TWO sides". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| B | `CaptureSession.append` sets `pendingFlipPrompt = nil` unconditionally — never prompt | the firing half of CAP-05 | `CaptureScreenUITests.swift:81` — "no flip prompt after fixture 1, which read no side markers at all". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| D | `FixtureLineSegmenter` gives every track `bpm: 174` | the walk's rewritten step 5 (V7's closure) | `CrateWalkUITests.swift:122` — "the new crate shows neither a running order nor the empty-order placeholder". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+
+A and B are the same claim mutated in opposite directions, which is what makes
+"fires on fixture 1, suppressed on fixture 2" a measurement rather than a coincidence.
+
+Standing negative controls in the source, asserted every run and never removed:
+`capture-thumb-99` and `sequenced-row-99` must not resolve; `capture-thumb-2` must not exist
+after one shutter press; the session count must contain `1 record` **and not** `1 records`.
+
+---
 
 ## Two-observation rule
 
