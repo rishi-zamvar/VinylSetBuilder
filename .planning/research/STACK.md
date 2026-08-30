@@ -5,9 +5,9 @@
 >
 > | Stale claim | Current truth |
 > |---|---|
-> | Deployment target iOS 17 | **iOS 27** (locked — minimum for Music Understanding) |
+> | Deployment target iOS 17 | **iOS 26** — the installed SDK (was briefly iOS 27; reversed, see below) |
 > | Use `VNRecognizeTextRequest`, the new API is unavailable | The Swift-native **`RecognizeTextRequest`** (iOS 18+) IS available and preferred |
-> | BPM/key via GetSongBPM | **Apple Music Understanding** (`MusicUnderstandingSession`) — GetSongBPM is dropped |
+> | BPM/key via GetSongBPM | **In-house Accelerate/vDSP analyser** behind an `AudioAnalyzing` protocol. GetSongBPM dropped; Apple Music Understanding evaluated and rejected for now — `MusicUnderstanding.framework` is absent from the installed SDK and the running system, and needs Xcode 27 |
 > | Bundled corpus is 7,010 rows | **6,608** rows after dedup, 880 KB, `journal_mode=delete` already applied |
 >
 > **Still valid and load-bearing:** the SwiftData relationship-ordering gotcha and the
@@ -31,19 +31,19 @@
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Swift | 6.2 (Xcode 26.0.1 installed; iOS 26 SDK until Xcode 27 ships — see DEFERRED.md D1) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
-| SwiftUI | iOS 27 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
-| Vision (`RecognizeTextRequest`) | Swift-native API, iOS 18+ | OCR | Available at the iOS 27 target and preferred. `VNRecognizeTextRequest` remains a valid fallback and is what the OCR spike used |
-| SwiftData | iOS 17.0+ (target is 27) | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
+| Swift | 6.2 (Xcode 26.0.1, iOS 26 SDK — the target we build against) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
+| SwiftUI | iOS 26 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
+| Vision (`RecognizeTextRequest`) | Swift-native API, iOS 18+ | OCR | Available at the iOS 26 target and preferred. `VNRecognizeTextRequest` remains a valid fallback and is what the OCR spike used |
+| SwiftData | iOS 17.0+ (target is 26) | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
 | GRDB.swift | 7.11.1 (latest tag, 2026-06-18) | Read-only bundled reference DB (`bpmkey.db`, 6,608 deduped rows, 880 KB) | See dedicated section below |
-| MusicUnderstanding | iOS 27+ | **BPM + musical key**, on-device from an `AVAsset` | Replaces GetSongBPM, Spotify, aubio/Essentia and all hand-written DSP. `MusicUnderstandingSession` → `RhythmResult.beatsPerMinute`, `KeyResult`/`KeySignature`. Not in the iOS 26 SDK — see DEFERRED.md D2 |
+| Accelerate / vDSP (stdlib) | iOS 8+ | **BPM + musical key** on-device — onset envelope + autocorrelation for tempo, chromagram + Krumhansl-Schmuckler for key → Camelot | Apple framework, zero dependencies, builds on the INSTALLED iOS 26 SDK. Sits behind `AudioAnalyzing` so Music Understanding can swap in if Xcode 27 ever lands. ~350 lines, TDD'd against 29 ground-truth tracks whose audio is already cached |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | GRDB.swift | 7.11.1 | Query bundled `(artist, title, bpm, camelot)` SQLite — 6,608 rows | Tier-0 resolution lookup only — not for the mutable app model, that's SwiftData |
-| URLSession (stdlib) | iOS 27 SDK | Discogs/MusicBrainz/SoundCloud HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
+| URLSession (stdlib) | iOS 26 SDK | Discogs/MusicBrainz/SoundCloud HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
 
 No other third-party dependency is justified at this scope. Do not add a JSON/networking wrapper, a DI framework, or a state-management library — URLSession + Codable + structured concurrency covers three small REST integrations, and a single-screen-flow SwiftUI app does not need a DI container.
 
@@ -60,7 +60,7 @@ No other third-party dependency is justified at this scope. Do not add a JSON/ne
 
 **Confidence: HIGH.** This isn't close — it's a hard version-gate, not a taste call.
 
-- `RecognizeTextRequest` (the new `Sendable` struct with `perform(on:)` async/await) is **iOS 18.0+ / macOS 15.0+ only**. The deployment target is **iOS 27**, so it IS available and is the preferred API. `VNRecognizeTextRequest` is not deprecated and remains a valid fallback — it is what the OCR spike used on macOS, and the spike's findings (EXIF orientation must be passed explicitly; coordinates return in the ORIGINAL unrotated buffer space) apply to both APIs.
+- `RecognizeTextRequest` (the new `Sendable` struct with `perform(on:)` async/await) is **iOS 18.0+ / macOS 15.0+ only**. The deployment target is **iOS 26**, so it IS available and is the preferred API. `VNRecognizeTextRequest` is not deprecated and remains a valid fallback — it is what the OCR spike used on macOS, and the spike's findings (EXIF orientation must be passed explicitly; coordinates return in the ORIGINAL unrotated buffer space) apply to both APIs.
 - `VNRecognizeTextRequest` itself is **not deprecated**. Its documentation shows continued support through iOS 13.0+ up to current releases; only its older *revisions* (`VNRecognizeTextRequestRevision1`, `Revision2`) are marked deprecated in favor of `VNRecognizeTextRequestRevision3`, which is the current default revision. Do not pin an explicit older revision — let it default.
 - If you ever raise the deployment target to iOS 18+, the two APIs are functionally near-identical for your use case (same `.accurate`/`.fast` recognition levels, same `customWords`, same confidence/bounding-box shape). The only real gain from switching would be async/await ergonomics (no completion handler, no separate `VNImageRequestHandler` object) — not new OCR capability. Not worth doing now; it would only matter if you later drop iOS 17 support.
 - iOS 26 additionally introduced `RecognizeDocumentsRequest` (structured tables/lists/phone-number extraction). Not relevant here — vinyl labels are not structured documents, and it inherits the same 18+ floor.
@@ -265,7 +265,7 @@ Add this to the local SPM package's `Package.swift` (see layout section below), 
 
 | Avoid | Why | Use Instead |
 |-------|-----|--------------|
-| ~~`RecognizeTextRequest`~~ | **No longer avoided** — the iOS 27 target makes it available and preferred | Use `RecognizeTextRequest`; `VNRecognizeTextRequest` is an acceptable fallback |
+| ~~`RecognizeTextRequest`~~ | **No longer avoided** — the iOS 26 target makes it available and preferred | Use `RecognizeTextRequest`; `VNRecognizeTextRequest` is an acceptable fallback |
 | SwiftData for the bundled `library.db` | Can't open a hand-built external SQLite file/schema | GRDB.swift with `configuration.readonly = true` |
 | `@Relationship` to-many arrays as an ordering mechanism | Core Data backs it with `NSSet` — order is not guaranteed to survive a fetch | Plain `[UUID]`/scalar-array attributes, or an explicit `position: Int` field sorted at read time |
 | SPM build-tool plugin for secrets generation | Sandboxed; can't read `~/.config/keys/enrich.env` outside the package | Xcode Run Script build phase with `ENABLE_USER_SCRIPT_SANDBOXING = No` |

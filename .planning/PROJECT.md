@@ -37,9 +37,8 @@ add more, it has done its job. Scanning is only the input method.
 
 ### Out of Scope
 
-- **Hand-written DSP** — Apple's Music Understanding framework does tempo and key
-  extraction on-device. We write no signal-processing maths, and we do not vendor aubio
-  or Essentia.
+- **aubio / Essentia** — GPL/AGPL C/C++ vendoring for what ~350 lines of Accelerate does.
+  Not worth the build complexity for a personal app.
 - **AcoustID fingerprinting** — it matches a fingerprint to a *known recording*; it does
   not produce tempo or key, and it needs the audio to already be identified. Music
   Understanding replaces the reason we wanted it.
@@ -93,20 +92,23 @@ synthetic images.
 
 ## Constraints
 
-- **Tech stack**: Swift only, SwiftUI, **iOS 27+**. No Python runtime, no embedded interpreter.
+- **Tech stack**: Swift only, SwiftUI, **iOS 26**. No Python runtime, no embedded interpreter.
   URLSession covers every API call.
-- **iOS 27 deployment target is deliberate and load-bearing**: it is the minimum for Apple's
-  Music Understanding framework, which supplies BPM and key. iOS 27 general release is
-  ~14 September 2026; the device runs the public beta until then. This also unlocks the
-  modern Swift-native Vision `RecognizeTextRequest` (iOS 18+).
+- **iOS 26 deployment target is deliberate**: it is what the installed toolchain
+  (Xcode 26.0.1, iOS 26 SDK) can actually build. **Nothing in the project may depend on an
+  SDK that is not installed.** The modern Swift-native Vision `RecognizeTextRequest` is
+  iOS 18+, so it remains available. Apple's Music Understanding framework needs iOS 27 and
+  is therefore NOT used — see the audio-analysis constraint below.
 - **OCR**: Apple Vision, `.accurate` recognition level. On-device, free, no model bundling,
-  no network. On an iOS 27 target the Swift-native `RecognizeTextRequest` is available and
-  preferred over the older `VNRecognizeTextRequest`.
-- **BPM + key**: Apple Music Understanding (`MusicUnderstandingSession`), on-device,
-  offline, no API key, no rate limit, no licence encumbrance.
+  no network. At the iOS 26 target the Swift-native `RecognizeTextRequest` (iOS 18+) is
+  available and preferred over the older `VNRecognizeTextRequest`.
+- **BPM + key**: the app's **own Accelerate/vDSP analyser**, on-device and offline —
+  tempo via onset envelope + autocorrelation, key via chromagram + Krumhansl-Schmuckler
+  profile matching, mapped to Camelot. No API key, no rate limit, no third-party licence.
+  It sits behind an `AudioAnalyzing` protocol so Apple's Music Understanding can replace it
+  as a drop-in when Xcode 27 ships, without touching any caller.
 - **Persistence**: SwiftData, on-device only.
-- **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning. The 14 Pro
-  is supported by iOS 27.
+- **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning.
 - **Public repo**: the repo is public. (It was made public for a GetSongBPM backlink that is
   no longer needed, but it stays public.) Therefore **no secret may ever be committed** —
   keys are generated into a gitignored `Secrets.swift` at build time from `~/.config/keys/`,
@@ -117,8 +119,9 @@ synthetic images.
 - **API call frugality**: resolution must climb the ladder — bundled corpus → local cache →
   free-unlimited (MusicBrainz) → free-limited (Discogs, SoundCloud). Never call a
   quota-limited source for a datum available cheaper.
-- **Build toolchain**: Xcode 26.0.1 / iOS 26 SDK is installed. The app builds against iOS 26
-  and the target is raised to 27 when Xcode 27 ships. Tracked in `.planning/DEFERRED.md`.
+- **Build toolchain**: Xcode 26.0.1 / iOS 26 SDK, macOS 26.6.2. Verified by
+  `xcodebuild -showsdks`. `MusicUnderstanding.framework` is absent from both the SDK and the
+  running system — checked, not assumed. **No phase may be planned against an unavailable SDK.**
 
 ## Key Decisions
 
@@ -133,7 +136,9 @@ synthetic images.
 | Bundle a pruned `walkman-dj/library.db` as tier-0 resolution | 7,010 rows with both BPM and Camelot, same genres, free, offline, zero latency. Strictly better than an API call. | — Pending |
 | Keys in gitignored generated `Secrets.swift`, not committed | Repo must be public for the GetSongBPM backlink; keys still compile into the binary as requested. | — Pending |
 | Paid Apple Developer account | 1-year provisioning, no weekly re-sign friction. | — Pending |
-| **Target iOS 27; use Apple Music Understanding for BPM + key** | Ships on-device tempo (`RhythmResult.beatsPerMinute`) and key (`KeySignature`) from an `AVAsset`, offline, free, Apple-maintained. Eliminates GetSongBPM, its mandatory backlink, the blocked GitHub Actions dependency, and all hand-rolled DSP in one move. | — Pending |
+| ~~Target iOS 27; use Apple Music Understanding~~ | **REVERSED 2026-08-29.** `MusicUnderstanding.framework` is absent from the installed SDK *and* the running system (macOS 26.6.2, Xcode 26.0.1) — verified, not assumed. It needs Xcode 27, which is not available. Planning against an SDK you do not have is planning a blocker. | ✗ Reversed |
+| **Target iOS 26; write our own Accelerate/vDSP audio analyser** | It is what the installed toolchain can build, today, with no blocker. Tempo = onset envelope + autocorrelation; key = chromagram + Krumhansl-Schmuckler → Camelot. Bounded (~350 lines) and — decisively — **we already hold the oracle**: 29 tracks with known BPM + Camelot and their audio cached, so it is TDD against real ground truth rather than guesswork. | — Pending |
+| **Audio analysis sits behind an `AudioAnalyzing` protocol** | Music Understanding becomes a drop-in replacement the day Xcode 27 arrives, with no caller changed. The reversal above costs us nothing permanent. | — Pending |
 | **SoundCloud is the audio source for analysis** | Working OAuth already proven in CrateDig. Jungle/DnB promos and white-label rips live there precisely when they have no Discogs entry. Fetch → analyse → discard. | — Pending |
 | **Drop GetSongBPM entirely** | Its mandatory backlink cannot be satisfied: GitHub does not server-render READMEs, and GitHub Pages cannot build because Actions is disabled at the account level. Music Understanding removes the need. | — Pending |
 | **Spotify ruled out empirically** | `/v1/audio-features` returns 403 for the owner's credentials — the client is not grandfathered past the Nov 2024 deprecation. Tested, not assumed. | ✓ Good |

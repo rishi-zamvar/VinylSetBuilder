@@ -8,7 +8,7 @@ key transitions, that re-optimises when you add more.
 
 ### Project Setup
 
-- [ ] **SETUP-01**: Xcode project builds and runs on a physical iPhone 14 Pro under the paid developer account, targeting iOS 27
+- [ ] **SETUP-01**: Xcode project builds and runs on a physical iPhone 14 Pro under the paid developer account, targeting **iOS 26** — the installed SDK
 - [ ] **SETUP-02**: Algorithm code (segmentation, sequencing, Camelot maths) lives in a local Swift package that links neither AVFoundation nor URLSession, so its tests cannot touch a camera or a network
 - [ ] **SETUP-03**: API credentials are read from `~/.config/keys/` at build time into a gitignored `Secrets.swift`, so no secret is ever committed to the public repo
 - [ ] **SETUP-04**: The full test suite runs from the command line with no device, no camera and no network
@@ -67,7 +67,9 @@ key transitions, that re-optimises when you add more.
 - [ ] **BPM-01**: Every resolved track carries a BPM and a Camelot key, or is explicitly marked as lacking them
 - [ ] **BPM-02**: A bundled read-only copy of the owner's existing 7,010-track BPM/Camelot corpus is consulted first, before any network call
 - [ ] **BPM-03**: When the bundled corpus misses, audio is fetched from SoundCloud using the owner's existing OAuth credentials
-- [ ] **BPM-04**: Fetched audio is analysed on-device with Apple's Music Understanding framework to produce tempo and key, and is not retained afterwards
+- [ ] **BPM-04**: Fetched audio is analysed on-device by the app's own Accelerate/vDSP analyser to produce tempo and key, and is not retained afterwards
+- [ ] **BPM-08**: Audio analysis sits behind an `AudioAnalyzing` protocol, so Apple's Music Understanding can replace the in-house analyser as a drop-in when an iOS 27 SDK exists
+- [ ] **BPM-09**: The analyser's accuracy is measured against the 29-track ground-truth set (known BPM + Camelot, audio already cached in `.local/`) and the figure is recorded — tempo scored octave-aware, key scored by Camelot distance
 - [ ] **BPM-05**: A detected key is converted to Camelot notation
 - [ ] **BPM-06**: Any BPM below 100 is doubled, unconditionally, to fold half-time reads into the genre's real range
 - [ ] **BPM-07**: A track whose BPM cannot be established by any route is surfaced for manual entry rather than silently dropped
@@ -128,8 +130,8 @@ key transitions, that re-optimises when you add more.
 | Feature | Reason |
 |---------|--------|
 | Audio playback | This builds the set; the CDJs play it |
-| Hand-written DSP | Music Understanding does tempo and key on-device; writing FFT maths would be reinventing a shipped Apple framework |
-| aubio / Essentia | Same reason, plus GPL/AGPL encumbrance for no benefit |
+| Apple Music Understanding (for now) | Requires iOS 27; `MusicUnderstanding.framework` is absent from the installed SDK and the running system. Kept as a drop-in behind `AudioAnalyzing` for when Xcode 27 ships |
+| aubio / Essentia | GPL/AGPL C/C++ vendoring for what ~350 lines of Accelerate does |
 | GetSongBPM | Mandatory backlink cannot be satisfied — GitHub does not server-render READMEs and Pages cannot build with Actions disabled. Music Understanding removes the need |
 | Spotify audio-features | Empirically returns HTTP 403 for the owner's credentials; not grandfathered past the Nov 2024 deprecation |
 | AcoustID | Fingerprints audio to identify a recording; produces no tempo or key |
@@ -212,9 +214,9 @@ key transitions, that re-optimises when you add more.
 | PERS-04 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 65 total
-- Mapped to phases: 65/65 ✓
-- Unmapped: 0
+- v1 requirements: 67 total
+- Mapped to phases: 65/67 — BPM-08, BPM-09 pending remap
+- Unmapped: 2 (BPM-08, BPM-09) ⚠️
 
 **Note:** `SEG-01` moved from Phase 2 into Phase 3 during the roadmap revision. The Phase 2
 OCR spike ran early (see `research/OCR-SPIKE.md`) and already answered the layout question

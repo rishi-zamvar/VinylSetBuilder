@@ -1,38 +1,63 @@
 # Deferred — must not be forgotten
 
-Items intentionally postponed because a tool or OS is not yet available. Each names the
-trigger that unblocks it and the phase that must action it.
+**Revised 2026-08-29** after the decision to build against whatever toolchain is actually
+installed. The former blockers are now **resolved by substitution**, not waiting.
 
-| # | Item | Blocked on | Trigger | Owner phase |
-|---|------|-----------|---------|-------------|
-| D1 | Raise iOS deployment target 26 → **27** | Xcode 27 SDK. Current: Xcode 26.0.1, iOS 26 SDK only. | Xcode 27 released (~mid-Sept 2026, with iOS 27) | Phase 4 |
+## Verified toolchain (checked, not assumed)
 
-**Status check 2026-08-29 (post-restart):** macOS updated 26.3.1 → **26.6.2**. Still not OS 27, so D1/D2/D3 all remain blocked. Xcode unchanged at 26.0.1, single iOS 26 SDK. Verify with `sw_vers` and `xcodebuild -showsdks` rather than assuming an update helped.
-| D2 | Link `MusicUnderstanding`, implement `BPM-04` | Same — the framework is absent from the iOS 26 SDK | Xcode 27 installed | Phase 4 |
-| D3 | Run `Tools/mu-validate.swift` accuracy spike | macOS 27 (framework needs the OS 27 wave) | Mac updated to macOS 27 | Phase 4 (gate) |
-| D4 | GitHub Pages backlink page goes live | GitHub Actions disabled at **account** level — Pages builds on Actions | Owner re-enables Actions in GitHub billing settings | Cosmetic only — GetSongBPM was dropped, so nothing depends on it |
+```
+macOS                     26.6.2   (sw_vers)
+Xcode                     26.0.1
+SDKs                      iOS 26.0, macOS 26.0   (xcodebuild -showsdks)
+MusicUnderstanding in SDK          NOT PRESENT
+MusicUnderstanding on system       ABSENT
+```
 
-## D1/D2 — how this is kept honest
+**Governing rule: no phase may be planned against an SDK that is not installed.**
+Re-verify with `xcodebuild -showsdks` before believing any claim to the contrary — an OS
+update alone does not add an SDK; the SDK ships with Xcode.
 
-The app builds against **iOS 26** until Xcode 27 arrives. To guarantee the bump is not
-silently skipped:
+## Resolved by substitution
 
-1. The BPM resolver ships behind a protocol seam from Phase 1, with the Music Understanding
-   tier as a **stub that throws `unavailable`**, not as missing code.
-2. Phase 4 ships a **skipped test** asserting the real Music Understanding tier returns a
-   tempo — skipped with an explicit "requires iOS 27 SDK" reason, so it appears in every
-   test run as a visible reminder rather than an absence.
-3. `BPM-04` cannot be marked Complete while that test is skipped.
+| # | Was | Now | Status |
+|---|-----|-----|--------|
+| D1 | Raise deployment target to iOS 27 | **Target iOS 26** — the installed SDK | ✅ Resolved |
+| D2 | Link `MusicUnderstanding` for BPM/key | **In-house Accelerate/vDSP analyser** behind `AudioAnalyzing` | ✅ Resolved |
+| D3 | Run the accuracy gate (needed macOS 27) | **Runs today** against the in-house analyser and the cached ground truth | ✅ Unblocked |
+| D4 | GitHub Pages backlink | Cosmetic — GetSongBPM was dropped, nothing depends on it | ⏸️ Ignorable |
 
-Rationale: a deferred integration with no failing or skipped test attached is a deferred
-integration that gets forgotten. Recording the intent in prose is not sufficient.
+## Optional future swap — not a blocker
 
-## Ground truth already prepared (ready the moment D3 unblocks)
+| # | Item | Trigger | Notes |
+|---|------|---------|-------|
+| F1 | Swap in Apple Music Understanding behind `AudioAnalyzing` | Xcode 27 installed **and** `MusicUnderstanding.framework` present in the SDK | Drop-in. `BPM-08` exists precisely so no caller changes. Only worth doing if it measurably beats the in-house analyser on the same ground-truth set — compare, don't assume Apple wins. |
+| F2 | Raise deployment target 26 → 27 | Only if F1 is taken | Nothing else needs it |
 
-- 40 ground-truth tracks sampled across four tempo bands from `walkman-dj/library.db`
-- **29 matched on SoundCloud (72%)** using a duration sanity bound + weighted
-  artist/title similarity
-- 13 MB of 30-second previews cached locally
-- `Tools/mu-validate.swift` scores tempo (octave-error aware) and Camelot distance
+**Do not treat F1 as owed work.** If the in-house analyser hits acceptable accuracy, the
+project is finished and F1 is a curiosity.
 
-So D3 is one compile and one run, not a research task.
+## The ground truth that makes this testable today
+
+Already built and preserved in `.local/` (gitignored, 14 MB) — do NOT rebuild, it cost real
+API calls:
+
+| File | What |
+|---|---|
+| `truth.tsv` | 40 tracks sampled across four tempo bands, known BPM + Camelot from `walkman-dj/library.db` |
+| `mu_dataset.json` | 29 of them matched to SoundCloud (72% hit rate, duration bound + similarity scored) |
+| `mu_audio/*.mp3` | those 29 tracks' audio, 30 s each, 13 MB |
+| `bpmkey.db` | the 6,608-row tier-0 corpus, 880 KB, `journal_mode=delete` |
+| `ocr/ocr2.swift`, `ocr/ocr2_out.json` | EXIF-correct Vision probe + its results on all 12 fixtures |
+
+`Tools/mu-validate.swift` already scores tempo (octave-aware) and Camelot distance. It needs
+retargeting from `MusicUnderstandingSession` to the in-house `AudioAnalyzing` — that is
+Phase 4's first task, and it is a small edit, not new work.
+
+## Known ceilings carried forward
+
+| Item | Ceiling | Revisit when |
+|---|---|---|
+| Non-decreasing BPM | Real sets arc (warm-up → peak → cool-down). Monotonic keeps the DAG tractable. | A real set sounds wrong |
+| Beam width 50 | Unproven sufficient. Guarded by a divergence check against a wider beam. | The widths disagree |
+| Tier-0 corpus | Skews house/techno — only 12% in the 160–184 BPM band | Measure the real hit rate in Phase 4 |
+| 30-second previews | All SoundCloud returns. Ample for tempo; may miss the tonal centre for key | `BPM-09` measures exactly this |
