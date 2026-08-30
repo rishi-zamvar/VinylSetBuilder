@@ -48,7 +48,7 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 - [x] **Phase 1: Foundation & Protocol Seams** - Core package, purity guard, app target, build-time secrets — the compile-time skeleton every act hangs off
 - [x] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
 - [x] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
-- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them.
+- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them. **2026-08-30: 5 of 5 plans delivered and the verdict is REFUSED on gate S3 — the phase stays open until plan 04-06 lands. See `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`.**
 - [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
 - [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
 - [ ] **Phase 7: The Identity Resolver** - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
@@ -176,12 +176,40 @@ fixed and the codebase swept clean before any engine work starts.
 **Ship criterion (measured)**: screenshot count equals screen count with zero screens missing;
 `VISUAL-DEFECTS.md` has zero rows at Medium or above still open; a grep for `TODO`/`FIXME`
 across `App/` and `VinylSetBuilderCore/Sources/` returns zero hits.
-**Plans**: 5 planned, 0 delivered
+
+**SHIP-CRITERION RESULT — reported clause by clause 2026-08-30 by plan 04-05.**
+Full evidence: `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`.
+
+  1. *screenshot count equals screen count, zero screens missing* — **MET.**
+     `python3 Scripts/screenshot-audit.py` → `46 files - 44 distinct screen states`; Gate A
+     reports 18 COVERED rows and 0 uncovered. Measured 4 times.
+  2. *`VISUAL-DEFECTS.md` has zero rows at Medium or above still open* — **NOT MET.**
+     `python3 Scripts/ledger-check.py` → `18 rows, 8 closed, 10 carried, 2 Medium-or-above open`.
+     The two are **V3** (blocked on the owner's unanswered U8) and **V12** (Phase 6 owns the
+     SEG-03 filter that fixes it). Both are outside Act I's authority to close; neither was
+     re-worded to make the clause read differently.
+  3. *a grep for `TODO`/`FIXME` returns zero hits* — **MET.** `rc=1`, zero hits, by the literal
+     command above and independently by `hygiene.sh` G1.
+
+**PHASE-LEVEL VERDICT: REFUSED**, on sign-off gate **S3**, not on the clause above.
+`./Scripts/screenshots.sh` exited **1 on two of three clean runs**:
+`Artifacts/screenshots/02-walk-09-detail-manual-order.png` came back photographing the
+sequencer's own order under a *Custom order* header, 22,142 differing content pixels against the
+committed frame, while the UI suite reported 7 passed / 0 failed from log **and** result bundle.
+Root cause filed as ledger row **V18**: `CrateDetailModel.moveRows` commits a manual order for an
+identity move, and the walk's CRATE-04 step asserts a button **exists** instead of measuring the
+row order. **Plan 04-06 closes it.** The **act**-level criterion (committed settle-delay
+screenshots of every screen) is separately reported **MET** — the committed frames are right; it
+is regeneration that is not.
+
+**Plans**: 5 of 5 delivered. **The phase is NOT complete** — 04-05 returned REFUSED and 04-06 is
+required before Act II opens.
   - [x] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
   - [x] 04-02 — `Scripts/hygiene.sh`: eight gates each proven able to fail, plus the carried-debt inventory corrected (S5/S6)
   - [x] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
   - [x] 04-04 — the defect ledger adjudicated row by row, `Scripts/ledger-check.py` as gate G9, U11 filed (S7)
-  - [ ] 04-05 — the clean double re-run, the four-command recount, and the verdict: sign-off or refusal (S1-S7)
+  - [x] 04-05 — three clean runs, the eight-command recount, all 46 frames read, and the verdict: **REFUSED on S3** (S1-S7)
+  - [ ] 04-06 — **REQUIRED to close the refusal**: an identity guard on `moveRows`, a row-order assertion in the walk's CRATE-04 step, then three clean regenerations at rc=0
 **UI hint**: yes
 **Planned 2026-08-30 against four facts.** (1) The phase owns **zero requirements** — its
 deliverables are a verdict and a clean ledger, and its gates are numbered S1-S7 in
@@ -431,7 +459,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
 | 2. The Crate Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
 | 3. The Capture & Correction Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
-| 4. Act I Sign-off — Every Screen, Photographed | 0/5 | Planned | - |
+| 4. Act I Sign-off — Every Screen, Photographed | 5/5 | **In progress — REFUSED on S3 by 04-05; 04-06 required** | - |
 | 5. The OCR Engine | 0/TBD | Not started | - |
 | 6. The Segmentation Engine | 0/TBD | Not started | - |
 | 7. The Identity Resolver | 0/TBD | Not started | - |
@@ -540,3 +568,8 @@ Allowing backward steps turns it into a **general graph**, so:
   must be produced when the keys make it the better path.
 
 Requirements complete drops from **15 to 14**.
+
+> *Historical figure, correct on 2026-08-30 when this amendment was written and three counts
+> out of date now. The live count at Phase 4 close is **23 complete / 44 outstanding / 67 total**,
+> re-derived by eight commands that had to agree (plan 04-05, see
+> `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md` §5). Re-derive it; do not copy it.*

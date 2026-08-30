@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-04-PLAN.md
+stopped_at: Completed 04-05-PLAN.md — VERDICT: REFUSED on gate S3; plan 04-06 required
 last_updated: "2026-08-30T14:01:15.034Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 23
-  completed_plans: 20
-  percent: 83
+  completed_plans: 21
+  percent: 91
 ---
 
 # Project State
@@ -23,10 +23,9 @@ See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
 
-**Current focus:** Act I, Phase 4 — Act I Sign-off. Phases 1, 2 and 3 are closed. Every screen
-the shell has is photographed; what Phase 4 owns is the act-level audit (screenshot count equals
-screen count, zero Medium-or-above defects still open, zero TODO/FIXME) and the V-defect backlog
-Phases 2 and 3 recorded but were forbidden to fix.
+**Current focus:** Act I, Phase 4 — **STILL OPEN. Plan 04-05 returned the verdict REFUSED.**
+All five planned plans delivered; the act-level gate S3 is red and plan **04-06** is required
+before Act II opens. Phases 1, 2 and 3 are closed.
 
 ## The shape of the work
 
@@ -41,71 +40,98 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — IN PROGRESS
-Plan: 5-03 complete (3 of 5). Next: **04-04 — adjudicate the defect ledger row by row.**
-Status: Ready to execute
-        **V4** — the placeholder badge pair measured **4.01:1** against WCAG 2.2 AA's 4.5:1 for
-        12 pt text and now measures **7.96:1**, with the complete pair still strictly ahead at
-        18.27:1, so SEQ-11's *dimmed, never hidden* holds on both halves. Measured twice before
-        and three times after, and by TWO independent implementations (an in-test Swift histogram
-        and `probe-frames.py --ink 128`) that return the same integers. **The plan's own
-        `contrast >= 60` gate measured 125 on the DEFECTIVE badge — it could never have caught
-        V4. The threshold was kept where it was set and the failure of the gate is reported, not
-        hidden.** Two mutations reddened the two halves at their named lines, xcresult-confirmed.
-        **V5** — `unresolvedVinyl` moved off `position: 2`; label AND position uniqueness now
-        assert across every crate in the new `FixtureCrates.all`, which `demoStore` is built from
-        so the two lists cannot drift. Red before the fix and red under the restored duplicate,
-        naming `["Vinyl 3"]` and `[2]`.
-        **V9 — the rule this row carried for two phases is WRONG.** Reproduced deliberately for
-        the first time: present-and-cancel returns two BYTE-IDENTICAL frames, ink 9677 both. A
-        seven-frame bisection kept every title. A two-session A/B isolated the real rule, four
-        times without variation: **the title is lost for the session iff the FIRST route change
-        is the one driven from inside the sheet's Create** (A=0, B=11746). That also explains the
-        33-frame split — CaptureWalk test 1 enters Create-first and reads 0, test 2 enters via
-        Add More and reads 11746, same class, same build. Three fixes tried and all REJECTED by
-        measurement (H3 forced `.large`, H1 hoisted `.navigationTitle`, H2 removed the sheet's
-        nested `NavigationStack` — 0/11746 every time), all reverted; `RootView` carries no
-        change. **V9 carried to Phase 11** with its repro and its three dead ends written down.
-        171 Core tests green (168 + 3); 7 UI tests green from the log AND `build/ui.xcresult`;
-        device-SDK build green; hygiene 8 pass / 0 fail; audit green — 46 files, 44 distinct
-        states, 0 orphan. 8 frames changed materially and they are exactly the 8 that render a
-        badge pair; 26 changed only in the simulator clock, measured below y=150.
-        **Hazard found: `ui-test.sh` exited 0 having run ZERO tests, twice, on the first
-        invocation after a UI-test file was edited. A green rc from it is not evidence that
-        anything ran — read `passedTests` from the result bundle.**
+Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — **IN PROGRESS. NOT COMPLETE.**
+Plan: 5 of 5 delivered. **Next: 04-06 — close the refusal.**
+Status: **VERDICT: REFUSED**, issued 2026-08-30 by plan 04-05 against the seven gates S1-S7 that
+        `CONTEXT.md` fixed before plan 04-01 ran a single command. Full evidence in
+        `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`.
+
+        **The gate that failed: S3.** `./Scripts/screenshots.sh` — the one command that
+        regenerates the whole screenshot set from a purged host — exited **1 on two of the three
+        clean runs** plan 04-05 made (run 1 rc=0, runs 2 and 3 rc=1). On both failures
+        `Artifacts/screenshots/02-walk-09-detail-manual-order.png` came back photographing the
+        **sequenced** order under a **Custom order** header: **22,142 differing pixels below
+        y=150** against the committed frame, the same wrong state twice, the two anomalous frames
+        differing from each other only inside the status-bar clock. 44 of 46 frames were
+        content-identical to the committed set on both runs — one frame, exactly the reorder
+        frame.
+
+        **Root cause, confirmed three ways, filed as ledger row V18 (Low, CARRIED to 04-06).**
+        (1) `CrateDetailModel.moveRows` writes `crate.manualOrder` for any in-range offsets
+        including an identity move, `moved()` returns the array unchanged, and `orderingMode` is
+        `.manual` whenever `manualOrder != nil` — so a drag landing on the row boundary renders
+        *Custom order* + *Restore* over the sequencer's own order. (2) The committed
+        `ManualOrderTests.swift:194` already documents it: it asserts an identity move leaves the
+        displayed order alone and **omits** the `manualOrder == nil` assertion it makes three
+        lines earlier for the out-of-range case. (3) The photograph, on two independent runs.
+
+        **The walk could not see it.** `reorderTookEffect()` asks whether
+        `restore-sequenced-order-button` **exists**; step 9 asserts only that the header changed.
+        Neither looks at the row order. The UI suite reported **7 passed / 0 failed** from the log
+        **and** from `build/ui.xcresult` on all three runs, printing identical
+        `WALK DRAG RECIPE FIRED: 1` lines for two different outcomes. This is `CONTEXT.md`'s own
+        mutation-J lesson repeating: a presence assertion standing where a measurement belongs.
+
+        **The instrument that saw nothing.** Per-frame mean drift — one of 04-01's two
+        "independent" localisers of V17 — measured **0.0346** on that frame between run 1 and
+        run 2, well inside the stated ±0.06 bar, while 22,142 content pixels changed. A mean
+        cannot see a permutation. Do not use the drift bar alone as a regeneration check.
+
+        **Everything else held, on three runs each:** `./Scripts/test.sh` **171 green**;
+        `./Scripts/build-app.sh` **BUILD SUCCEEDED**; UI suite **7 passed / 0 failed** from log
+        and result bundle; `./Scripts/hygiene.sh` **9 pass, 0 fail**;
+        `python3 Scripts/ledger-check.py` rc=0; `probe-frames.py --check` `SUSPECT: none (46)`;
+        the audit green on the committed set. S1, S2, S4, S5, S6 and S7 all hold.
+
+        **The two criteria, reported separately.** The **act** criterion (committed settle-delay
+        screenshots of every screen) is **MET** — 18 covered flow rows, 0 uncovered, the settle
+        living in one place at 3.0s/4.0s. The **phase** criterion is **NOT MET**: clause 1 MET,
+        **clause 2 NOT MET** (2 Medium-or-above rows open — V3 blocked on the owner's unanswered
+        U8, V12 owned by Phase 6's SEG-03 filter), clause 3 MET (`TODO`/`FIXME` rc=1).
+
+        **All 46 committed frames were opened and read**, none sampled, none skipped.
+        Nothing visible in them is not already a V-row.
 Last activity: 2026-08-30
 
-Progress: [████████░░] 83%
+Progress: [█████████░] 91%
 
-16 of the 18 plans on disk have summaries. The two that do not are **not** pending work:
+21 of the 23 plans on disk have summaries. The two that do not are **not** pending work:
 
 - `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
   exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
-  This is the one real gap between the Phase 1 record and what is on disk.
+  Re-confirmed three times tonight by hygiene gate G4 (`rc=1`, no hits).
 
 - `01-08-PLAN.md` — **superseded, not skipped.** Its CRATE-03/04/05 content was delivered by
   02-01 (`CrateDetailModel`) and 02-03 (`CrateDetailView`); its SEQ-05 tolerance slider moved
-  to Phase 9 by decision D2-4. Nothing from it is missing except SEQ-05, which is tracked
-  there.
+  to Phase 9 by decision D2-4.
 
 **Requirements:** 67 total, 67 mapped, **23 complete, 44 outstanding**.
 
-> **Recounted by command at Phase 3 close (03-05), from the ticked boxes and not by
-> incrementing the previous figure:**
+> **Re-derived at Phase 4 close (plan 04-05) by EIGHT commands that had to agree — not copied
+> from anywhere, including from this file's previous figure:**
 >
 > ```
-> grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  23
-> grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  44        23 + 44 = 67
+> grep -c "^- \[x\] \*\*"  .planning/REQUIREMENTS.md            ->  23   complete
+> grep -c "^- \[ \] \*\*"  .planning/REQUIREMENTS.md            ->  44   outstanding
+> grep -cE "^- \[.\] \*\*" .planning/REQUIREMENTS.md            ->  67   total
+> ... | sort -u | wc -l                                            ->  67   distinct IDs
+> ... | sort | uniq -d                                             ->  (empty)
 > ```
 >
-> Phase 3 contributed all six of its requirements: OCR-04 and SEG-07 (03-02's Core, 03-04's
-> sheet), CAP-02/03/05/06 (03-01's Core, 03-03's screen), every one of them re-verified in one
-> twelve-fixture session by 03-05. The figure of 17 that stood before Phase 3 was plan 02-05's
-> and was correct when written.
+> Plus: the traceability table has **67** rows; the ROADMAP phase table sums to **67** with no
+> duplicates; the set difference between the checkbox list and the traceability table is **empty
+> in both directions**; and — an extra check nobody asked for — the phase assignment per
+> requirement agrees between ROADMAP and traceability for all 67. `hygiene.sh` G7 agrees.
+> Nothing in `REQUIREMENTS.md` needed correcting.
 >
-> `SEQ-03` is still **REOPENED** and is still not counted. `./Scripts/test.sh` prints a green
-> line reading *"BPM is non-decreasing across the whole winning sequence"* — that test is
-> passing and **wrong**, because the rule went bidirectional on 2026-08-30. Phase 9's.
+> `SEQ-03` is still **REOPENED** and still not counted. `./Scripts/test.sh` printed, on all three
+> runs tonight, a green line reading *"[STALE — retired spec, Phase 9 replaces] BPM is
+> non-decreasing across the whole winning sequence"*. That test passes and is **wrong**.
+> Phase 9's.
+>
+> One stale figure was found and annotated rather than deleted: `ROADMAP.md`'s sequencer
+> amendment ends *"Requirements complete drops from 15 to 14"* — correct when written, three
+> counts ago.
 
 ## What already exists — 113 tests green, committed
 
@@ -155,6 +181,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 04 P01 | 37m | 3 tasks | 5 files |
 | Phase 04 P03 | 61 | 3 tasks | 13 files |
 | Phase 04-act-i-signoff P04 | 24m | 3 tasks | 4 files |
+| Phase 04-act-i-signoff P05 | ~90m | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -240,6 +267,13 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 04]: V9's two-phase-old rule ('a sheet removes the title') is FALSE. The measured rule: the title is lost iff the FIRST route change of the session comes from the sheet's Create. Carried to Phase 11 with H1/H2/H3 rejected at 0/11746 each
 - [Phase 04-act-i-signoff]: A CLOSED defect row must cite a re-runnable route to the DEFECT as well as to the fix; V1 and V8 gained photographs of their own defects (04-04)
 - [Phase 04-act-i-signoff]: V17 filed as a seventeenth ledger row from 04-01's Finding 3 — the crate walk's run-to-run state instability, carried to Phase 11 (04-04)
+- [Phase 04]: 04-05: **VERDICT REFUSED on gate S3** — screenshots.sh exited 1 on 2 of 3 clean runs. The rules were fixed in CONTEXT.md before 04-01 ran; no gate was narrowed, filtered or re-thresholded to reach a different one. Every threshold in the project appears exactly once in git history as an addition and was never edited — checked by command, not asserted
+- [Phase 04]: 04-05: V18 filed — CrateDetailModel.moveRows commits a manual order for an IDENTITY move, so a boundary drag renders 'Custom order' + Restore over the sequencer's own order; the walk's reorderTookEffect() only checks a button EXISTS. Carried to 04-06, not fixed here: this plan touches no code
+- [Phase 04]: 04-05: the per-frame mean-drift bar (±0.06) is BLIND to a row permutation — 0.0346 on a frame with 22,142 changed content pixels. 04-01's 'two independent measurements' claim is weaker than it reads; only the pixel-fraction gate caught this
+- [Phase 04]: 04-05: D-04-1 through D-04-5 all held under the verdict — V3 was not guessed at, V6 was not manufactured, the probe is committed, and every screenshot is classified rather than merely counted
+- [Phase 04]: 04-05: the act criterion and the phase criterion are reported SEPARATELY and reach different answers — act MET, phase NOT MET on clause 2. Conflating them would have been the exact dishonesty the phase exists to prevent
+- [Phase 04]: 04-05: two of the 46 committed frames (04-badge-*.png) are element crops taken WITHOUT the settle delay; zero Gate A flow rows cite either, so no screen's coverage depends on them. Stated rather than glossed
+- [Phase 04]: 04-05: NC-Z — the ui-test.sh zero-test guard was itself shown able to fail (totalTestCount=0 -> rc=1). It had never been proved red since 04-03 added it
 
 ### Pending Todos
 
@@ -247,6 +281,24 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
   proper seeded-shuffle determinism test when Phase 9 opens.
 
 ### Blockers/Concerns
+
+- **THE REFUSAL — S3 is red and Act I is not signed off.** `./Scripts/screenshots.sh` exited 1 on
+  2 of 3 clean runs (04-05). `02-walk-09-detail-manual-order.png` regenerates as the SEQUENCED
+  order under a *Custom order* header, 22,142 content pixels off the committed frame, the same
+  wrong state twice. Root cause **V18**. **Plan 04-06 closes it**: an identity guard on
+  `CrateDetailModel.moveRows`, and a row-order assertion replacing `reorderTookEffect()`'s
+  presence check, then three clean regenerations at rc=0. **Act II does not open before that.**
+
+- **CRATE-04 is ticked complete, and its UI evidence is weaker than the tick implies.** The frame
+  that photographs it is the frame that came back wrong twice tonight. The model is demonstrably
+  correct (run 1, the committed frame, and `ManualOrderTests`), so the tick was NOT removed —
+  plan 04-05 may not tick or untick any requirement — but 04-06 must re-establish the evidence
+  rather than assume it.
+
+- **A green UI suite is not evidence that the right screen was photographed.** 7 passed / 0 failed
+  from the log AND from `build/ui.xcresult`, three runs, two of which photographed a wrong state.
+  Verifying from the result bundle closed the *zero-tests* hazard; it does not close this one.
+  Only a measurement of the content can.
 
 - **V3 — the not-included bucket cannot tell you which record it excluded.** It labels the row
   `Vinyl 2` while showing that record's real `178` / `6A` badges and the reason "No track within
@@ -319,10 +371,13 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T14:01:10.183Z
-Stopped at: Completed 04-04-PLAN.md
-113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
-after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
-recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
-Next: Phase 3 — The Capture & Correction Screens, Stubbed.
-Resume file: None
+Last session: 2026-08-30
+Stopped at: Completed 04-05-PLAN.md — **VERDICT: REFUSED on gate S3**
+Three independent clean runs of the full battery, from a purged host each time. 171 Core tests
+green x3; device-SDK build SUCCEEDED x3; UI suite 7 passed / 0 failed from log AND result bundle
+x3; hygiene 9 pass / 0 fail x3; ledger-check rc=0 x3; probe `SUSPECT: none (46 frames)` x3.
+`./Scripts/screenshots.sh` rc=0 / **rc=1** / **rc=1**. All 46 committed frames opened and read.
+Requirement count re-derived by eight commands that agreed at 23 / 44 / 67 / 67, nothing to
+correct. V18 filed; ledger now 18 rows, 8 closed, 10 carried, 2 Medium-or-above open.
+Next: **04-06 — close the refusal.** Do not open Act II first.
+Resume file: `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`
