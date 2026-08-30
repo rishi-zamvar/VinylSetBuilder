@@ -22,6 +22,12 @@ struct CrateListView: View {
                             .foregroundStyle(.secondary)
                             .accessibilityIdentifier("record-count-\(summary.name)")
                     }
+                    // Measured 2026-08-30, not guessed: without this, a tap landing in the
+                    // HStack's Spacer gap hit-tests to nothing and the row does not open. The
+                    // XCUITest tapped the button's centre and stayed on the list; a tap on the
+                    // name text navigated. Hit-testing only — no visual or structural change,
+                    // so V2's evidence is intact.
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("crate-row-\(summary.name)")

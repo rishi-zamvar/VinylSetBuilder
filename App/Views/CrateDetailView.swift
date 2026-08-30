@@ -32,10 +32,15 @@ struct CrateDetailView: View {
                     .accessibilityIdentifier("back-to-crates-button")
             }
             ToolbarItem(placement: .primaryAction) {
-                // What makes `.onMove`'s drag handles appear: a List outside edit mode
-                // offers none, and the walk cannot drag what is not there.
-                EditButton()
-                    .accessibilityIdentifier("edit-button")
+                // NOT `EditButton()`. Measured 2026-08-30: toolbar content is hosted outside
+                // this view's environment, so `EditButton` toggled the navigation controller's
+                // own edit binding, flipped its label to "Done", and left `editMode` here
+                // untouched — the List never entered edit mode. Driving the same state the
+                // List reads is the whole fix.
+                Button(editMode == .active ? "Done" : "Edit") {
+                    editMode = editMode == .active ? .inactive : .active
+                }
+                .accessibilityIdentifier("edit-button")
             }
             ToolbarItem(placement: .bottomBar) {
                 Button("Add More") { model.store.addMore(to: crateID) }   // CRATE-05
@@ -65,26 +70,34 @@ struct CrateDetailView: View {
     @ViewBuilder
     private func runningOrder(_ detail: CrateDetailModel) -> some View {
         Section {
+            // The ForEach is deliberately NOT inside an `if` — measured 2026-08-30: wrapping
+            // it in a conditional left the section with no movable ForEach, so edit mode
+            // rendered no reorder grabbers and no delete circles at all. An empty ForEach
+            // renders nothing, so the placeholder below covers the empty case instead.
+            ForEach(detail.rows.sequenced) { row in
+                SequencedRowView(row: row)
+                    // Without .combine the identifier lands on all four leaf Texts (index,
+                    // title, BPM, key) and every query matches four elements — measured, not
+                    // assumed. One element per row is also the only thing a drag can grab.
+                    .accessibilityElement(children: .combine)
+                    .accessibilityIdentifier("sequenced-row-\(row.indexLabel)")
+            }
+            .onMove { offsets, offset in                             // CRATE-04
+                var edited = detail
+                edited.moveRows(fromOffsets: offsets, toOffset: offset)
+                commit(edited)
+            }
+            .onDelete { offsets in                                   // CRATE-06
+                // A row is a track; removing it removes the whole VINYL, because a crate
+                // holds vinyls and the sequencer picks one track from each.
+                removeVinyls(offsets.map { detail.rows.sequenced[$0].vinylID })
+            }
+
             if detail.rows.sequenced.isEmpty {
                 // A newly created crate lands here, and a blank screen reads as a crash.
                 Text("Nothing sequenced yet")
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("empty-running-order")
-            } else {
-                ForEach(detail.rows.sequenced) { row in
-                    SequencedRowView(row: row)
-                        .accessibilityIdentifier("sequenced-row-\(row.indexLabel)")
-                }
-                .onMove { offsets, offset in                         // CRATE-04
-                    var edited = detail
-                    edited.moveRows(fromOffsets: offsets, toOffset: offset)
-                    commit(edited)
-                }
-                .onDelete { offsets in                               // CRATE-06
-                    // A row is a track; removing it removes the whole VINYL, because a crate
-                    // holds vinyls and the sequencer picks one track from each.
-                    removeVinyls(offsets.map { detail.rows.sequenced[$0].vinylID })
-                }
             }
         } header: {
             HStack {
