@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: V4 and V5 are CLOSED with re-runnable evidence; V9's rule was DISPROVED and carried.
-stopped_at: Completed 04-03-PLAN.md — V4 and V5 closed with measurements; V9's rule disproved and carried to Phase 11
-last_updated: "2026-08-30T13:38:46.188Z"
+status: executing
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-08-30T14:01:15.034Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 2
   total_plans: 23
-  completed_plans: 19
+  completed_plans: 20
   percent: 83
 ---
 
@@ -42,8 +42,8 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — IN PROGRESS
-Plan: 04-03 complete (3 of 5). Next: **04-04 — adjudicate the defect ledger row by row.**
-Status: V4 and V5 are CLOSED with re-runnable evidence; V9's rule was DISPROVED and carried.
+Plan: 5-03 complete (3 of 5). Next: **04-04 — adjudicate the defect ledger row by row.**
+Status: Ready to execute
         **V4** — the placeholder badge pair measured **4.01:1** against WCAG 2.2 AA's 4.5:1 for
         12 pt text and now measures **7.96:1**, with the complete pair still strictly ahead at
         18.27:1, so SEQ-11's *dimmed, never hidden* holds on both halves. Measured twice before
@@ -154,6 +154,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 04 P02 | 25m | 3 tasks | 5 files |
 | Phase 04 P01 | 37m | 3 tasks | 5 files |
 | Phase 04 P03 | 61 | 3 tasks | 13 files |
+| Phase 04-act-i-signoff P04 | 24m | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -237,6 +238,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 04]: sim-settled-crate-list.png deleted as the one orphan; 01-06-crate-list.png carries the same unfixed '1 records' state and is cited twice
 - [Phase 04]: V4 closed on WCAG 2.2 AA (4.01:1 -> 7.96:1); the plan's own contrast>=60 gate measured 125 on the defective badge and is reported as unable to have caught it — the threshold was NOT moved
 - [Phase 04]: V9's two-phase-old rule ('a sheet removes the title') is FALSE. The measured rule: the title is lost iff the FIRST route change of the session comes from the sheet's Create. Carried to Phase 11 with H1/H2/H3 rejected at 0/11746 each
+- [Phase 04-act-i-signoff]: A CLOSED defect row must cite a re-runnable route to the DEFECT as well as to the fix; V1 and V8 gained photographs of their own defects (04-04)
+- [Phase 04-act-i-signoff]: V17 filed as a seventeenth ledger row from 04-01's Finding 3 — the crate walk's run-to-run state instability, carried to Phase 11 (04-04)
 
 ### Pending Todos
 
@@ -316,8 +319,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T13:38:12.439Z
-Stopped at: Completed 04-03-PLAN.md — V4 and V5 closed with measurements; V9's rule disproved and carried to Phase 11
+Last session: 2026-08-30T14:01:10.183Z
+Stopped at: Completed 04-04-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
