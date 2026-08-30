@@ -141,17 +141,81 @@ key transitions, that re-optimises when you add more.
 
 ## Traceability
 
-Filled during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| _(pending roadmap)_ | — | Pending |
+| SETUP-01 | Phase 1 | Pending |
+| SETUP-02 | Phase 1 | Pending |
+| SETUP-03 | Phase 1 | Pending |
+| SETUP-04 | Phase 1 | Pending |
+| SEQ-01 | Phase 1 | Pending |
+| SEQ-02 | Phase 1 | Pending |
+| SEQ-03 | Phase 1 | Pending |
+| SEQ-04 | Phase 1 | Pending |
+| SEQ-05 | Phase 1 | Pending |
+| SEQ-06 | Phase 1 | Pending |
+| SEQ-07 | Phase 1 | Pending |
+| SEQ-08 | Phase 1 | Pending |
+| SEQ-09 | Phase 1 | Pending |
+| SEQ-10 | Phase 1 | Pending |
+| SEQ-11 | Phase 1 | Pending |
+| CRATE-01 | Phase 1 | Pending |
+| CRATE-02 | Phase 1 | Pending |
+| CRATE-03 | Phase 1 | Pending |
+| CRATE-04 | Phase 1 | Pending |
+| CRATE-05 | Phase 1 | Pending |
+| CRATE-06 | Phase 1 | Pending |
+| CRATE-07 | Phase 1 | Pending |
+| CAP-01 | Phase 2 | Pending |
+| CAP-02 | Phase 2 | Pending |
+| CAP-03 | Phase 2 | Pending |
+| CAP-04 | Phase 2 | Pending |
+| CAP-05 | Phase 2 | Pending |
+| CAP-06 | Phase 2 | Pending |
+| OCR-01 | Phase 2 | Pending |
+| OCR-02 | Phase 2 | Pending |
+| OCR-03 | Phase 2 | Pending |
+| OCR-04 | Phase 2 | Pending |
+| OCR-05 | Phase 2 | Pending |
+| SEG-01 | Phase 2 | Pending |
+| SEG-02 | Phase 3 | Pending |
+| SEG-03 | Phase 3 | Pending |
+| SEG-04 | Phase 3 | Pending |
+| SEG-05 | Phase 3 | Pending |
+| SEG-06 | Phase 3 | Pending |
+| SEG-07 | Phase 3 | Pending |
+| RES-01 | Phase 4 | Pending |
+| RES-02 | Phase 4 | Pending |
+| RES-03 | Phase 4 | Pending |
+| RES-04 | Phase 4 | Pending |
+| RES-05 | Phase 4 | Pending |
+| RES-06 | Phase 4 | Pending |
+| RES-07 | Phase 4 | Pending |
+| BPM-01 | Phase 4 | Pending |
+| BPM-02 | Phase 4 | Pending |
+| BPM-03 | Phase 4 | Pending |
+| BPM-04 | Phase 4 | Pending |
+| BPM-05 | Phase 4 | Pending |
+| BPM-06 | Phase 4 | Pending |
+| BPM-07 | Phase 4 | Pending |
+| MAN-01 | Phase 5 | Pending |
+| MAN-02 | Phase 5 | Pending |
+| MAN-03 | Phase 5 | Pending |
+| MAN-04 | Phase 5 | Pending |
+| MAN-05 | Phase 5 | Pending |
+| PERS-01 | Phase 6 | Pending |
+| PERS-02 | Phase 6 | Pending |
+| PERS-03 | Phase 6 | Pending |
+| PERS-04 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 63 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 63 ⚠️
+- Mapped to phases: 63/63 ✓
+- Unmapped: 0
+
+**Note:** `SEG-01` is grouped into Phase 2 (Camera + OCR) rather than alongside the rest of
+the Segmentation category — its output (the concentric-vs-horizontal layout spike) is the
+go/no-go input Phase 3's design depends on, so it belongs with the phase that produces it.
 
 ---
 *Requirements defined: 2026-08-29*
-*Last updated: 2026-08-29 after initial definition*
+*Last updated: 2026-08-29 after roadmap creation — 63/63 requirements mapped to 6 phases*
