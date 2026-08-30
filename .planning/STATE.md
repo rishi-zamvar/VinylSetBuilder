@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04-05-PLAN.md — VERDICT: REFUSED on gate S3; plan 04-06 required
-last_updated: "2026-08-30T14:01:15.034Z"
+status: verifying
+stopped_at: Completed 04-06-PLAN.md — gate S3 HOLDS (rc=0 x3), V18 CLOSED
+last_updated: "2026-08-30T15:55:28.770Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 3
-  total_plans: 23
-  completed_plans: 21
+  total_plans: 24
+  completed_plans: 22
   percent: 91
 ---
 
@@ -23,9 +23,10 @@ See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
 
-**Current focus:** Act I, Phase 4 — **STILL OPEN. Plan 04-05 returned the verdict REFUSED.**
-All five planned plans delivered; the act-level gate S3 is red and plan **04-06** is required
-before Act II opens. Phases 1, 2 and 3 are closed.
+**Current focus:** Act I, Phase 4 — **the refusal is answered. Gate S3 HOLDS.** Plan 04-06 fixed
+V18, replaced the presence assertion that hid it, and ran `./Scripts/screenshots.sh` three
+consecutive times from a purged host: **rc=0 / rc=0 / rc=0**, where 04-05 measured
+rc=0 / rc=1 / rc=1. All seven gates S1–S7 now hold. Phases 1, 2 and 3 are closed.
 
 ## The shape of the work
 
@@ -40,60 +41,69 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — **IN PROGRESS. NOT COMPLETE.**
-Plan: 5 of 5 delivered. **Next: 04-06 — close the refusal.**
-Status: **VERDICT: REFUSED**, issued 2026-08-30 by plan 04-05 against the seven gates S1-S7 that
-        `CONTEXT.md` fixed before plan 04-01 ran a single command. Full evidence in
-        `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`.
+Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — **6 of 6 plans delivered.**
+Plan: 6 of 6. Phase complete — ready for verification.
+Status: **Gate S3 HOLDS**, cleared 2026-08-30 by plan 04-06. The verdict 04-05 issued is
+        preserved verbatim in `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`; what
+        changed is recorded in that file's **ADDENDUM**, appended rather than merged.
 
-        **The gate that failed: S3.** `./Scripts/screenshots.sh` — the one command that
-        regenerates the whole screenshot set from a purged host — exited **1 on two of the three
-        clean runs** plan 04-05 made (run 1 rc=0, runs 2 and 3 rc=1). On both failures
-        `Artifacts/screenshots/02-walk-09-detail-manual-order.png` came back photographing the
-        **sequenced** order under a **Custom order** header: **22,142 differing pixels below
-        y=150** against the committed frame, the same wrong state twice, the two anomalous frames
-        differing from each other only inside the status-bar clock. 44 of 46 frames were
-        content-identical to the committed set on both runs — one frame, exactly the reorder
-        frame.
+        **The gate that failed, re-measured.** `./Scripts/screenshots.sh`, three consecutive
+        runs from a purged host against the final code: **rc=0, rc=0, rc=0**. Each run:
+        36 frames purged and 0 remaining, UI suite `Executed 7 tests, with 0 failures` from the
+        log *and* `passed=7 failed=0` from `build/ui.xcresult`, `totalTestCount=7` from
+        `ui-test.sh`'s zero-test guard, `AUDIT PASSED`, and 15 walk files → 14 distinct states.
+        The three runs are not three repetitions of one path: drag recipes **2, 1, 2** won, so
+        both edit-mode branches of the walk were exercised and both produced the same 14 states.
 
-        **Root cause, confirmed three ways, filed as ledger row V18 (Low, CARRIED to 04-06).**
-        (1) `CrateDetailModel.moveRows` writes `crate.manualOrder` for any in-range offsets
-        including an identity move, `moved()` returns the array unchanged, and `orderingMode` is
-        `.manual` whenever `manualOrder != nil` — so a drag landing on the row boundary renders
-        *Custom order* + *Restore* over the sequencer's own order. (2) The committed
-        `ManualOrderTests.swift:194` already documents it: it asserts an identity move leaves the
-        displayed order alone and **omits** the `manualOrder == nil` assertion it makes three
-        lines earlier for the out-of-range case. (3) The photograph, on two independent runs.
+        **V18 is CLOSED**, with both halves of a route. Back to the defect: delete
+        `guard order != ids else { return }` from `CrateDetailModel.moveRows` and
+        `ManualOrderTests` reddens with 4 expectations, rc=1 — measured, then reverted. The
+        opposite mutation (clear the override on a no-op) reddens the preserve-direction test
+        with 3, rc=1 — also measured and reverted. To the fix: `a20a43d` the guard, `d658e3e`
+        the assertions the suite omitted, `fbcf12c` the walk's row-order measurement, `3efc975`
+        the edit-mode normalisation, `009ff13` `probe-frames --drift`.
 
-        **The walk could not see it.** `reorderTookEffect()` asks whether
-        `restore-sequenced-order-button` **exists**; step 9 asserts only that the header changed.
-        Neither looks at the row order. The UI suite reported **7 passed / 0 failed** from the log
-        **and** from `build/ui.xcresult` on all three runs, printing identical
-        `WALK DRAG RECIPE FIRED: 1` lines for two different outcomes. This is `CONTEXT.md`'s own
-        mutation-J lesson repeating: a presence assertion standing where a measurement belongs.
+        **The presence check is gone.** `reorderTookEffect()` polls `sequencedRowLabels()` for a
+        genuine permutation instead of asking whether a button exists, and the walk runs three
+        controls on that comparator **in band on every run** — it must reject a list against
+        itself, accept a reversal, and prove its position strip fires.
 
-        **The instrument that saw nothing.** Per-frame mean drift — one of 04-01's two
-        "independent" localisers of V17 — measured **0.0346** on that frame between run 1 and
-        run 2, well inside the stated ±0.06 bar, while 22,142 content pixels changed. A mean
-        cannot see a permutation. Do not use the drift bar alone as a regeneration check.
+        **Two things were measured that nobody had:** recipe 1 (press-and-drag, edit mode ON)
+        genuinely reorders on only **3 of 8** runs — every green run through the old presence
+        check was recipe 1 "succeeding" on the identity move it had just committed, which is
+        V18's mechanism seen directly. And a **second defect** surfaced once recipe 1 could
+        lose: the walk's post-drag edit mode followed the gesture routing, so `02-walk-10` came
+        back byte-identical to `02-walk-07` (0 differing pixels) and an earlier three-run series
+        went rc=0 / rc=0 / rc=1. Fixed in `3efc975`; series-B run 3 is that exact case, at rc=0.
 
-        **Everything else held, on three runs each:** `./Scripts/test.sh` **171 green**;
-        `./Scripts/build-app.sh` **BUILD SUCCEEDED**; UI suite **7 passed / 0 failed** from log
-        and result bundle; `./Scripts/hygiene.sh` **9 pass, 0 fail**;
-        `python3 Scripts/ledger-check.py` rc=0; `probe-frames.py --check` `SUSPECT: none (46)`;
-        the audit green on the committed set. S1, S2, S4, S5, S6 and S7 all hold.
+        **The blind instrument now has a positional check.** `probe-frames.py --drift A B`
+        reports the mean delta **and** the differing-pixel count below y=150, failing on either.
+        Its permanent negative control is a synthetic permutation in `--selftest`:
+        `mean_delta=0.0` inside the ±0.06 bar while `content_px=20000`. The ±0.06 mean bar must
+        never be quoted on its own again. Used immediately: all **34** regenerated PNGs are
+        content-identical to the committed set below y=150 — 0 differing pixels each. The
+        `02-walk-08` vs `02-walk-09` pair is back at **31,273 px / 0.009890**, 04-05's figure for
+        the correct swapped state, against the defect's 9,131 px / 0.002888.
 
-        **The two criteria, reported separately.** The **act** criterion (committed settle-delay
-        screenshots of every screen) is **MET** — 18 covered flow rows, 0 uncovered, the settle
-        living in one place at 3.0s/4.0s. The **phase** criterion is **NOT MET**: clause 1 MET,
-        **clause 2 NOT MET** (2 Medium-or-above rows open — V3 blocked on the owner's unanswered
-        U8, V12 owned by Phase 6's SEG-03 filter), clause 3 MET (`TODO`/`FIXME` rc=1).
+        **All seven gates, re-measured:** S1 and S2 `AUDIT PASSED` (5 observations); **S3 rc=0
+        ×3**; S4 `test.sh` **172 green** (171 + 1 new case) and UI 7/0 from log and bundle
+        (3 each); S5 `hygiene.sh` **9 pass, 0 fail** (4); S6 23 + 44 = 67 (3); S7
+        `ledger-check.py` rc=0, **18 rows, 9 closed, 9 carried** (3, plus `--selftest`).
 
-        **All 46 committed frames were opened and read**, none sampled, none skipped.
-        Nothing visible in them is not already a V-row.
+        **What is still NOT met, said plainly.** The **act** criterion was already MET and is
+        unchanged. The **phase** criterion's clause 2 is **still NOT MET** and 04-06 did not
+        touch it: two Medium-or-above rows remain open — **V3**, blocked on the owner's
+        unanswered U8, and **V12**, owned by Phase 6's SEG-03 filter. Closing V18 moved the
+        ledger from 8 closed / 10 carried to 9 / 9; the Medium-or-above count is 2, as before.
+        `ui-test.sh`'s dead `RC=$?` under `set -e` (04-05 §11 finding 6) was left alone
+        deliberately — outside 04-06's scope, and the S3 evidence was gathered with the script
+        exactly as the verdict measured it. Three green tests still defend a retired
+        specification and `AsyncSequencer` / `BeamDivergenceCheck` still do not exist; both are
+        Phase 9's.
+
 Last activity: 2026-08-30
 
-Progress: [█████████░] 91%
+Progress: [█████████░] 92%
 
 21 of the 23 plans on disk have summaries. The two that do not are **not** pending work:
 
@@ -182,6 +192,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 04 P03 | 61 | 3 tasks | 13 files |
 | Phase 04-act-i-signoff P04 | 24m | 3 tasks | 4 files |
 | Phase 04-act-i-signoff P05 | ~90m | 3 tasks | 4 files |
+| Phase 04-act-i-signoff P06 | ~140 min | 6 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -274,6 +285,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 04]: 04-05: the act criterion and the phase criterion are reported SEPARATELY and reach different answers — act MET, phase NOT MET on clause 2. Conflating them would have been the exact dishonesty the phase exists to prevent
 - [Phase 04]: 04-05: two of the 46 committed frames (04-badge-*.png) are element crops taken WITHOUT the settle delay; zero Gate A flow rows cite either, so no screen's coverage depends on them. Stated rather than glossed
 - [Phase 04]: 04-05: NC-Z — the ui-test.sh zero-test guard was itself shown able to fail (totalTestCount=0 -> rc=1). It had never been proved red since 04-03 added it
+- [Phase 04-act-i-signoff]: An identity drag PRESERVES an existing manual order rather than clearing it — both directions have their own test and their own mutation (V18)
+- [Phase 04-act-i-signoff]: The walk normalises to edit mode ON after the drag loop, so the photographed state cannot depend on which drag recipe won
+- [Phase 04-act-i-signoff]: The +/-0.06 mean-drift bar is never quoted alone again: probe-frames --drift reports a positional content-band count beside it
 
 ### Pending Todos
 
@@ -371,8 +385,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30
-Stopped at: Completed 04-05-PLAN.md — **VERDICT: REFUSED on gate S3**
+Last session: 2026-08-30T15:55:23.270Z
+Stopped at: Completed 04-06-PLAN.md — gate S3 HOLDS (rc=0 x3), V18 CLOSED
 Three independent clean runs of the full battery, from a purged host each time. 171 Core tests
 green x3; device-SDK build SUCCEEDED x3; UI suite 7 passed / 0 failed from log AND result bundle
 x3; hygiene 9 pass / 0 fail x3; ledger-check rc=0 x3; probe `SUSPECT: none (46 frames)` x3.
@@ -380,4 +394,4 @@ x3; hygiene 9 pass / 0 fail x3; ledger-check rc=0 x3; probe `SUSPECT: none (46 f
 Requirement count re-derived by eight commands that agreed at 23 / 44 / 67 / 67, nothing to
 correct. V18 filed; ledger now 18 rows, 8 closed, 10 carried, 2 Medium-or-above open.
 Next: **04-06 — close the refusal.** Do not open Act II first.
-Resume file: `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`
+Resume file: None

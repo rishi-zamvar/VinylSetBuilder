@@ -48,7 +48,7 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 - [x] **Phase 1: Foundation & Protocol Seams** - Core package, purity guard, app target, build-time secrets — the compile-time skeleton every act hangs off
 - [x] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
 - [x] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
-- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them. **2026-08-30: 5 of 5 plans delivered and the verdict is REFUSED on gate S3 — the phase stays open until plan 04-06 lands. See `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`.**
+- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them. **2026-08-30: 6 of 6 plans delivered. 04-05 returned REFUSED on gate S3; 04-06 closed V18 and re-ran `./Scripts/screenshots.sh` clean three times (rc=0/rc=0/rc=0), so S3 — and all seven gates — now hold. Two Medium-or-above ledger rows (V3, V12) stay carried. See `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md` and its ADDENDUM.**
 - [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
 - [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
 - [ ] **Phase 7: The Identity Resolver** - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
@@ -202,14 +202,23 @@ row order. **Plan 04-06 closes it.** The **act**-level criterion (committed sett
 screenshots of every screen) is separately reported **MET** — the committed frames are right; it
 is regeneration that is not.
 
-**Plans**: 5 of 5 delivered. **The phase is NOT complete** — 04-05 returned REFUSED and 04-06 is
-required before Act II opens.
+**2026-08-30, plan 04-06 — the refusal is answered.** V18 is fixed at its root (`moveRows` now
+returns early when a move produces the order already displayed) and CLOSED in the ledger with a
+route back to the defect as well as to the fix. The walk's CRATE-04 step measures the **row
+order** instead of a button's existence, with three controls on that comparator run in band.
+`./Scripts/screenshots.sh` then returned **rc=0 on three consecutive clean runs** — recipes 2, 1
+and 2 won, so both edit-mode branches were exercised — against 04-05's rc=0 / rc=1 / rc=1.
+**Gate S3 HOLDS, and all seven gates S1-S7 now hold.** Two Medium-or-above ledger rows (V3, V12)
+remain carried and unchanged, so the phase criterion's clause 2 is still not met; that is
+reported, not papered over. See the **ADDENDUM** in `ACT-I-SIGNOFF.md`.
+
+**Plans**: 6 of 6 delivered.
   - [x] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
   - [x] 04-02 — `Scripts/hygiene.sh`: eight gates each proven able to fail, plus the carried-debt inventory corrected (S5/S6)
   - [x] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
   - [x] 04-04 — the defect ledger adjudicated row by row, `Scripts/ledger-check.py` as gate G9, U11 filed (S7)
   - [x] 04-05 — three clean runs, the eight-command recount, all 46 frames read, and the verdict: **REFUSED on S3** (S1-S7)
-  - [ ] 04-06 — **REQUIRED to close the refusal**: an identity guard on `moveRows`, a row-order assertion in the walk's CRATE-04 step, then three clean regenerations at rc=0
+  - [x] 04-06 — **REQUIRED to close the refusal**: an identity guard on `moveRows`, a row-order assertion in the walk's CRATE-04 step, then three clean regenerations at rc=0
 **UI hint**: yes
 **Planned 2026-08-30 against four facts.** (1) The phase owns **zero requirements** — its
 deliverables are a verdict and a clean ledger, and its gates are numbered S1-S7 in
