@@ -221,6 +221,7 @@ def probe(paths: list[str]) -> list[dict]:
 
 
 def _probe_module():
+    sys.dont_write_bytecode = True   # do not litter Scripts/ with __pycache__
     spec = importlib.util.spec_from_file_location("probe_frames", PROBE)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

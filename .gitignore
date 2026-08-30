@@ -25,3 +25,6 @@ VinylSetBuilder.xcodeproj/
 
 # Generated at build time from ~/.config/keys/ — PUBLIC REPO, never commit
 App/Generated/
+
+# Python bytecode from Scripts/*.py
+__pycache__/
