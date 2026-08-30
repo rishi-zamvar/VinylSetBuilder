@@ -193,6 +193,14 @@ final class CrateWalkUITests: XCTestCase {
         // ------------------------------------------------- 9/10. CRATE-04: override, then restore
         let drag = performReorderDrag()
         let recipe = drag.recipe
+        // The recipes run in different edit modes and the first one to fire wins, so without
+        // this the state photographed as 9 and 10 depends on WHICH recipe fired. Measured:
+        // when recipe 2 (edit mode OFF) won, `02-walk-10-detail-restored` came back
+        // byte-identical — 0 differing pixels — to `02-walk-07-not-included-expanded`, and the
+        // audit's near-duplicate gate reddened on a pair that is only a duplicate by accident
+        // of gesture routing. Edit mode ON is the state frame 8 established and the state the
+        // committed 9/10 pair was photographed in.
+        setEditMode(true)
         print("WALK DRAG RECIPE FIRED: \(recipe)")
         print("WALK row order BEFORE drag = \(drag.before)")
         print("WALK row order AFTER  drag = \(drag.after)")
@@ -245,13 +253,14 @@ final class CrateWalkUITests: XCTestCase {
             // And the rows, not only the header — the same omission, on the other side of the
             // round trip. Polled, because the button vanishing and the list settling back are
             // not the same frame.
-            var restored = sequencedRowLabels()
+            var restored = rowIdentities(sequencedRowLabels())
+            let want = rowIdentities(drag.before)
             let restoreDeadline = Date().addingTimeInterval(3)
-            while restored != drag.before && Date() < restoreDeadline {
+            while restored != want && Date() < restoreDeadline {
                 Thread.sleep(forTimeInterval: 0.25)
-                restored = sequencedRowLabels()
+                restored = rowIdentities(sequencedRowLabels())
             }
-            XCTAssertEqual(restored, drag.before,
+            XCTAssertEqual(restored, want,
                            "CRATE-04: Restore put the header back but left the rows at \(restored)")
         }
         capture("02-walk-10-detail-restored")
@@ -449,9 +458,17 @@ final class CrateWalkUITests: XCTestCase {
     ///
     /// Stripping the first all-digit component leaves what actually identifies the row. The BPM
     /// badge is also all digits, so `firstIndex` matters — the position comes first.
+    ///
+    /// A leading "Remove" goes too: that is edit mode's delete affordance joining the combined
+    /// label, not part of the row. Without it, an order read in edit mode could never be
+    /// compared with one read out of it — and the drag recipes run in both.
+    ///
+    /// Order is preserved, so equality of two identity arrays means the same rows in the same
+    /// order, and this is a safe comparator for the restore round-trip as well as the drag.
     private func rowIdentities(_ labels: [String]) -> [String] {
         labels.map { label in
             var parts = label.components(separatedBy: ", ")
+            if parts.first == "Remove" { parts.removeFirst() }
             if let i = parts.firstIndex(where: { !$0.isEmpty && $0.allSatisfy(\.isNumber) }) {
                 parts.remove(at: i)
             }
