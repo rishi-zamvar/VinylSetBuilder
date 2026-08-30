@@ -32,15 +32,14 @@ Camelot never excludes a record; it only orders survivors. Unchanged.
 
 Unchanged — "most records still win", provided both functions are properly optimised.
 
-## One reading I had to make — flagged for correction
+## The reading — CONFIRMED BY OWNER 2026-08-30
 
 The owner wrote *"song n−1 and song n+1 must be +- 4 bpm of each other"*. Read literally that
 constrains tracks **two apart** (skipping n), which would be an unusual rule and, combined with
 adjacency, extremely tight.
 
-**Interpreted as: consecutive tracks.** For every adjacent pair, `|Δbpm| ≤ 4`. This is the
-standard DJ meaning and is consistent with "generally ascending" and with accepting
-`170 → 178 → 174`. If the literal two-apart reading was intended, this is the line to change.
+**CONFIRMED: consecutive tracks.** Owner's words, 2026-08-30: *"yes consecutive tracks"*.
+For every adjacent pair, `|Δbpm| ≤ tolerance`. The two-apart reading is dead — do not revive it.
 
 ## Consequence — this is an ALGORITHMIC change, not a parameter tweak
 
