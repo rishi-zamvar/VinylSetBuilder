@@ -59,7 +59,6 @@ struct CrateDetailView: View {
                 Section {                                 // caller owns its visibility.
                     NotIncludedSectionView(rows: detail.rows.notIncluded,
                                            header: detail.rows.notIncludedHeader)
-                        .accessibilityIdentifier("not-included-section")
                 }
             }
         }

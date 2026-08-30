@@ -34,6 +34,7 @@ struct NotIncludedSectionView: View {
             }
         } label: {
             Text(header)
+                .accessibilityIdentifier("not-included-section")
         }
     }
 }
