@@ -191,9 +191,26 @@ final class CrateWalkUITests: XCTestCase {
         capture("02-walk-08-detail-edit-mode")
 
         // ------------------------------------------------- 9/10. CRATE-04: override, then restore
-        let recipe = performReorderDrag()
+        let drag = performReorderDrag()
+        let recipe = drag.recipe
         print("WALK DRAG RECIPE FIRED: \(recipe)")
+        print("WALK row order BEFORE drag = \(drag.before)")
+        print("WALK row order AFTER  drag = \(drag.after)")
         var stateCount = 15
+
+        // Controls on the comparator every assertion below now rests on — V18 got through
+        // because nobody asked whether the success signal could ever be false.
+        // Negative: a list is not a permutation of itself.
+        XCTAssertFalse(isReorder(from: drag.before, to: drag.before),
+                       "the reorder comparator calls a list a permutation of ITSELF — it cannot fail")
+        // Positive: it can still see a real one, so the negative above is not passing vacuously.
+        XCTAssertTrue(isReorder(from: drag.before, to: Array(drag.before.reversed())),
+                      "the reorder comparator cannot see a reversal — it cannot succeed either")
+        // And the strip that makes those two controls meaningful actually fires. If a label
+        // carried no position, `rowIdentities` would be the identity function and the check
+        // above would be comparing POSITIONS rather than rows — which is the whole defect.
+        XCTAssertNotEqual(rowIdentities(drag.before), drag.before,
+                          "no position was stripped from \(drag.before) — the permutation check is comparing positions, not rows")
 
         if recipe == "none" {
             // Documented fallback. The gesture is not faked, the assertion is not deleted, and no
@@ -202,7 +219,17 @@ final class CrateWalkUITests: XCTestCase {
             stateCount = 14
             XCTAssertFalse(app.buttons["restore-sequenced-order-button"].exists,
                            "no drag recipe fired, yet a manual order exists — the walk lost track of state")
+            XCTAssertEqual(drag.after, drag.before,
+                           "no drag recipe fired, yet the row order moved — the walk lost track of state")
         } else {
+            // V18. The ROW ORDER is the assertion; the button and the header are corroboration.
+            // All three are kept, and this one is first, because it is the one that failed.
+            XCTAssertTrue(isReorder(from: drag.before, to: drag.after),
+                          "CRATE-04: recipe '\(recipe)' reported success but \(drag.after) is not a permutation of \(drag.before)")
+            // Re-measured at the moment of photography, not only at the moment of the drag: the
+            // frame is the artefact, so the frame's own state is what has to be asserted.
+            XCTAssertTrue(isReorder(from: drag.before, to: sequencedRowLabels()),
+                          "CRATE-04: the rows are back in the sequencer's order at the instant this frame is photographed")
             XCTAssertTrue(app.buttons["restore-sequenced-order-button"].exists,
                           "CRATE-04: the drag reordered nothing")
             XCTAssertNotEqual(app.staticTexts["ordering-mode-label"].label, runningOrderLabel,
@@ -215,6 +242,17 @@ final class CrateWalkUITests: XCTestCase {
                           "CRATE-04: Restore did not clear the manual order")
             XCTAssertEqual(app.staticTexts["ordering-mode-label"].label, runningOrderLabel,
                            "CRATE-04: Restore did not put the header back to the sequencer's order")
+            // And the rows, not only the header — the same omission, on the other side of the
+            // round trip. Polled, because the button vanishing and the list settling back are
+            // not the same frame.
+            var restored = sequencedRowLabels()
+            let restoreDeadline = Date().addingTimeInterval(3)
+            while restored != drag.before && Date() < restoreDeadline {
+                Thread.sleep(forTimeInterval: 0.25)
+                restored = sequencedRowLabels()
+            }
+            XCTAssertEqual(restored, drag.before,
+                           "CRATE-04: Restore put the header back but left the rows at \(restored)")
         }
         capture("02-walk-10-detail-restored")
 
@@ -353,41 +391,101 @@ final class CrateWalkUITests: XCTestCase {
     /// order and stopped at the FIRST one that takes effect — two successful drags on a
     /// two-row list return it to where it started, and the assertion then fails for the
     /// opposite reason. Returns the recipe that fired, for the record.
-    private func performReorderDrag() -> String {
+    /// Returns the recipe that fired, and the row order either side of it, for the record AND
+    /// for the caller's assertions. The pre-drag order is re-read immediately before EVERY
+    /// attempt rather than once at the top: edit mode prefixes every row label with "Remove, ",
+    /// and recipe 2 toggles it, so one `before` captured in the wrong mode would make every
+    /// comparison below a comparison of two different label formats.
+    private func performReorderDrag() -> (recipe: String, before: [String], after: [String]) {
         let first = app.staticTexts["sequenced-row-1"]
         let second = app.staticTexts["sequenced-row-2"]
 
         // 1. The exact gesture 02-03 measured working, with the List in edit mode.
+        var before = sequencedRowLabels()
         first.press(forDuration: 1.0, thenDragTo: second)
-        if reorderTookEffect() { return "1: press-and-drag on the row, edit mode ON" }
+        if reorderTookEffect(from: before) {
+            return ("1: press-and-drag on the row, edit mode ON", before, sequencedRowLabels())
+        }
 
         // 2. 02-03's measured configuration exactly: the same gesture with edit mode OFF, where
         //    a long press on the row body is itself the drag handle.
         setEditMode(false)
+        before = sequencedRowLabels()
         first.press(forDuration: 1.0, thenDragTo: second)
-        if reorderTookEffect() { return "2: press-and-drag on the row, edit mode OFF" }
+        if reorderTookEffect(from: before) {
+            return ("2: press-and-drag on the row, edit mode OFF", before, sequencedRowLabels())
+        }
 
         // 3. Aim at the reorder handle on the trailing edge rather than the row's middle.
         setEditMode(true)
+        before = sequencedRowLabels()
         first.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5))
             .press(forDuration: 1.2,
                    thenDragTo: second.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.2)))
-        if reorderTookEffect() { return "3: coordinate drag onto the trailing-edge handle" }
+        if reorderTookEffect(from: before) {
+            return ("3: coordinate drag onto the trailing-edge handle", before, sequencedRowLabels())
+        }
 
         // 4. Drag PAST the target instead of onto it — SwiftUI reorders on crossing the
         //    midpoint, and landing exactly on the boundary is a coin flip.
+        before = sequencedRowLabels()
         first.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5))
             .press(forDuration: 1.2,
                    thenDragTo: second.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 1.6)))
-        if reorderTookEffect() { return "4: coordinate drag past the target" }
+        if reorderTookEffect(from: before) {
+            return ("4: coordinate drag past the target", before, sequencedRowLabels())
+        }
 
-        return "none"
+        return ("none", before, sequencedRowLabels())
     }
 
-    /// The success signal is the appearance of `restore-sequenced-order-button` — an identifier,
-    /// not a caption — and `waitForExistence` doubles as the settle the reorder animation needs.
-    private func reorderTookEffect() -> Bool {
-        app.buttons["restore-sequenced-order-button"].waitForExistence(timeout: 3)
+    /// A row's accessibility label leads with its POSITION — `"Remove, 1, Source Direct —
+    /// Snake Style, 170, 5A"` — because `sequenced-row-N` is numbered by `indexLabel`, and
+    /// `indexLabel` renumbers 1…N in the new order after every move. So a genuine swap changes
+    /// the *text of every label*, not just their order, and a multiset comparison of raw labels
+    /// sees two disjoint sets and reports no permutation. Measured, not reasoned about: with
+    /// the raw labels this walk fired all four drag recipes on a two-row list, swapped it four
+    /// times, and reported `recipe: none` over a committed manual order.
+    ///
+    /// Stripping the first all-digit component leaves what actually identifies the row. The BPM
+    /// badge is also all digits, so `firstIndex` matters — the position comes first.
+    private func rowIdentities(_ labels: [String]) -> [String] {
+        labels.map { label in
+            var parts = label.components(separatedBy: ", ")
+            if let i = parts.firstIndex(where: { !$0.isEmpty && $0.allSatisfy(\.isNumber) }) {
+                parts.remove(at: i)
+            }
+            return parts.joined(separator: ", ")
+        }
+    }
+
+    /// A genuine reorder and nothing else: the **same rows, in a different order**.
+    ///
+    /// Deliberately not a bare `after != before`. A drag that deleted a row satisfies that, and
+    /// so does a tree read mid-animation with a row briefly missing — neither is a reorder, and
+    /// treating them as one would put the wrong frame in `Artifacts/screenshots/` again. Pure,
+    /// and separate from the query, so the walk can run a control on the comparator itself.
+    private func isReorder(from before: [String], to after: [String]) -> Bool {
+        let b = rowIdentities(before), a = rowIdentities(after)
+        return !b.isEmpty && a != b && a.sorted() == b.sorted()
+    }
+
+    /// **V18.** This used to ask whether `restore-sequenced-order-button` EXISTS. That button
+    /// appears whenever a manual order is committed — which, before the `moveRows` identity
+    /// guard, happened on a drag that reordered nothing. So the walk photographed the SEQUENCED
+    /// order under a "Custom order" header and still reported 7 passed / 0 failed, on 2 of 3
+    /// clean runs, and `screenshots.sh` exited 1 both times. A presence assertion was standing
+    /// where a measurement belongs.
+    ///
+    /// It now measures the row order, and the poll still doubles as the settle the reorder
+    /// animation needs — the timeout is unchanged at 3s.
+    private func reorderTookEffect(from before: [String]) -> Bool {
+        let deadline = Date().addingTimeInterval(3)
+        repeat {
+            if isReorder(from: before, to: sequencedRowLabels()) { return true }
+            Thread.sleep(forTimeInterval: 0.25)
+        } while Date() < deadline
+        return isReorder(from: before, to: sequencedRowLabels())
     }
 
     /// Edit state is read off the caption *relative to* the one recorded when the list was known
