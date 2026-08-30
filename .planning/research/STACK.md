@@ -1,3 +1,24 @@
+> ## ⚠️ PARTIALLY SUPERSEDED — read this first
+>
+> This document was researched under an **iOS 17** deployment target. The project has since
+> pivoted to **iOS 27**. The following conclusions below are NO LONGER CORRECT:
+>
+> | Stale claim | Current truth |
+> |---|---|
+> | Deployment target iOS 17 | **iOS 27** (locked — minimum for Music Understanding) |
+> | Use `VNRecognizeTextRequest`, the new API is unavailable | The Swift-native **`RecognizeTextRequest`** (iOS 18+) IS available and preferred |
+> | BPM/key via GetSongBPM | **Apple Music Understanding** (`MusicUnderstandingSession`) — GetSongBPM is dropped |
+> | Bundled corpus is 7,010 rows | **6,608** rows after dedup, 880 KB, `journal_mode=delete` already applied |
+>
+> **Still valid and load-bearing:** the SwiftData relationship-ordering gotcha and the
+> `[UUID]`-scalar-array fix; GRDB 7.11.1 for the bundled read-only DB and the WAL→DELETE
+> bundling caveat; the Run-Script-not-SPM-plugin recipe for `Secrets.swift`; the
+> app + local SPM package split; the bounded `TaskGroup` pull-model pattern; and the
+> `customWords` "bias list, not a guarantee" caveat.
+>
+> **Build-time note:** Xcode 26.0.1 / iOS 26 SDK is what is installed today. The app builds
+> against iOS 26 until Xcode 27 ships. See `.planning/DEFERRED.md` items D1/D2.
+
 # Stack Research
 
 **Domain:** On-device iOS OCR + local persistence + bounded-concurrency network resolution app (personal, undistributed)
@@ -10,18 +31,19 @@
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Swift | 6.2 (Xcode 26 toolchain) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
-| SwiftUI | iOS 17 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
-| Vision (`VNRecognizeTextRequest`) | Legacy VN* API, current on iOS 17+ | OCR | See dedicated section below — this is the only correct choice at an iOS 17 deployment target |
-| SwiftData | iOS 17.0+ | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
-| GRDB.swift | 7.11.1 (latest tag, 2026-06-18) | Read-only bundled reference DB (`library.db`, 7,010 pruned rows) | See dedicated section below |
+| Swift | 6.2 (Xcode 26.0.1 installed; iOS 26 SDK until Xcode 27 ships — see DEFERRED.md D1) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
+| SwiftUI | iOS 27 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
+| Vision (`RecognizeTextRequest`) | Swift-native API, iOS 18+ | OCR | Available at the iOS 27 target and preferred. `VNRecognizeTextRequest` remains a valid fallback and is what the OCR spike used |
+| SwiftData | iOS 17.0+ (target is 27) | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
+| GRDB.swift | 7.11.1 (latest tag, 2026-06-18) | Read-only bundled reference DB (`bpmkey.db`, 6,608 deduped rows, 880 KB) | See dedicated section below |
+| MusicUnderstanding | iOS 27+ | **BPM + musical key**, on-device from an `AVAsset` | Replaces GetSongBPM, Spotify, aubio/Essentia and all hand-written DSP. `MusicUnderstandingSession` → `RhythmResult.beatsPerMinute`, `KeyResult`/`KeySignature`. Not in the iOS 26 SDK — see DEFERRED.md D2 |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| GRDB.swift | 7.11.1 | Query bundled `(artist, title, bpm, camelot)` SQLite | Tier-0 resolution lookup only — not for the mutable app model, that's SwiftData |
-| URLSession (stdlib) | iOS 17 SDK | Discogs/MusicBrainz/GetSongBPM HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
+| GRDB.swift | 7.11.1 | Query bundled `(artist, title, bpm, camelot)` SQLite — 6,608 rows | Tier-0 resolution lookup only — not for the mutable app model, that's SwiftData |
+| URLSession (stdlib) | iOS 27 SDK | Discogs/MusicBrainz/SoundCloud HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
 
 No other third-party dependency is justified at this scope. Do not add a JSON/networking wrapper, a DI framework, or a state-management library — URLSession + Codable + structured concurrency covers three small REST integrations, and a single-screen-flow SwiftUI app does not need a DI container.
 

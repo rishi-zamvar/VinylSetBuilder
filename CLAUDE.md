@@ -31,15 +31,18 @@ add more, it has done its job. Scanning is only the input method.
 - **Persistence**: SwiftData, on-device only.
 - **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning. The 14 Pro
   is supported by iOS 27.
-- **Public repo**: the GitHub repo must stay public because GetSongBPM requires a
-  verifiable backlink. Therefore **no secret may ever be committed**. Keys are generated
-  into a gitignored `Secrets.swift` at build time from `~/.config/keys/` — compiled into
-  the binary as intended, never in version control.
+- **Public repo**: the repo is public. (It was made public for a GetSongBPM backlink that is
+  no longer needed, but it stays public.) Therefore **no secret may ever be committed** —
+  keys are generated into a gitignored `Secrets.swift` at build time from `~/.config/keys/`,
+  compiled into the binary as intended, never in version control. The bundled BPM corpus and
+  the fixture photographs are likewise gitignored.
 - **Rate limits**: Discogs 60 req/min authenticated. Max 3 concurrent requests, backoff
   on 429.
-- **API call frugality**: resolution must climb the ladder — bundled library.db → cache →
-  free-unlimited (MusicBrainz) → free-limited (Discogs, GetSongBPM). Never call a paid or
+- **API call frugality**: resolution must climb the ladder — bundled corpus → local cache →
+  free-unlimited (MusicBrainz) → free-limited (Discogs, SoundCloud). Never call a
   quota-limited source for a datum available cheaper.
+- **Build toolchain**: Xcode 26.0.1 / iOS 26 SDK is installed. The app builds against iOS 26
+  and the target is raised to 27 when Xcode 27 ships. Tracked in `.planning/DEFERRED.md`.
 <!-- GSD:project-end -->
 
 <!-- GSD:stack-start source:research/STACK.md -->
@@ -49,16 +52,17 @@ add more, it has done its job. Scanning is only the input method.
 ### Core Technologies
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| Swift | 6.2 (Xcode 26 toolchain) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
-| SwiftUI | iOS 17 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
-| Vision (`VNRecognizeTextRequest`) | Legacy VN* API, current on iOS 17+ | OCR | See dedicated section below — this is the only correct choice at an iOS 17 deployment target |
-| SwiftData | iOS 17.0+ | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
-| GRDB.swift | 7.11.1 (latest tag, 2026-06-18) | Read-only bundled reference DB (`library.db`, 7,010 pruned rows) | See dedicated section below |
+| Swift | 6.2 (Xcode 26.0.1 installed; iOS 26 SDK until Xcode 27 ships — see DEFERRED.md D1) | Language | Ships with Xcode 26; "Approachable Concurrency" mode makes Swift 6 the easy default, not a strict-mode fight |
+| SwiftUI | iOS 27 SDK | UI | Locked by PROJECT.md constraints; single-target personal app |
+| Vision (`RecognizeTextRequest`) | Swift-native API, iOS 18+ | OCR | Available at the iOS 27 target and preferred. `VNRecognizeTextRequest` remains a valid fallback and is what the OCR spike used |
+| SwiftData | iOS 17.0+ (target is 27) | Persistence for mutable app data (Crate/VinylEntry/Track) | Already locked in PROJECT.md; native, zero extra dependency, fine at this data scale (<100 vinyls, <400 tracks) |
+| GRDB.swift | 7.11.1 (latest tag, 2026-06-18) | Read-only bundled reference DB (`bpmkey.db`, 6,608 deduped rows, 880 KB) | See dedicated section below |
+| MusicUnderstanding | iOS 27+ | **BPM + musical key**, on-device from an `AVAsset` | Replaces GetSongBPM, Spotify, aubio/Essentia and all hand-written DSP. `MusicUnderstandingSession` → `RhythmResult.beatsPerMinute`, `KeyResult`/`KeySignature`. Not in the iOS 26 SDK — see DEFERRED.md D2 |
 ### Supporting Libraries
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| GRDB.swift | 7.11.1 | Query bundled `(artist, title, bpm, camelot)` SQLite | Tier-0 resolution lookup only — not for the mutable app model, that's SwiftData |
-| URLSession (stdlib) | iOS 17 SDK | Discogs/MusicBrainz/GetSongBPM HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
+| GRDB.swift | 7.11.1 | Query bundled `(artist, title, bpm, camelot)` SQLite — 6,608 rows | Tier-0 resolution lookup only — not for the mutable app model, that's SwiftData |
+| URLSession (stdlib) | iOS 27 SDK | Discogs/MusicBrainz/SoundCloud HTTP calls | Already locked as the only network layer; no Alamofire needed for 3 simple REST APIs |
 ### Development Tools
 | Tool | Purpose | Notes |
 |------|---------|-------|

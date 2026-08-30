@@ -107,15 +107,18 @@ synthetic images.
 - **Persistence**: SwiftData, on-device only.
 - **Device**: iPhone 14 Pro, paid Apple Developer account, 1-year provisioning. The 14 Pro
   is supported by iOS 27.
-- **Public repo**: the GitHub repo must stay public because GetSongBPM requires a
-  verifiable backlink. Therefore **no secret may ever be committed**. Keys are generated
-  into a gitignored `Secrets.swift` at build time from `~/.config/keys/` — compiled into
-  the binary as intended, never in version control.
+- **Public repo**: the repo is public. (It was made public for a GetSongBPM backlink that is
+  no longer needed, but it stays public.) Therefore **no secret may ever be committed** —
+  keys are generated into a gitignored `Secrets.swift` at build time from `~/.config/keys/`,
+  compiled into the binary as intended, never in version control. The bundled BPM corpus and
+  the fixture photographs are likewise gitignored.
 - **Rate limits**: Discogs 60 req/min authenticated. Max 3 concurrent requests, backoff
   on 429.
-- **API call frugality**: resolution must climb the ladder — bundled library.db → cache →
-  free-unlimited (MusicBrainz) → free-limited (Discogs, GetSongBPM). Never call a paid or
+- **API call frugality**: resolution must climb the ladder — bundled corpus → local cache →
+  free-unlimited (MusicBrainz) → free-limited (Discogs, SoundCloud). Never call a
   quota-limited source for a datum available cheaper.
+- **Build toolchain**: Xcode 26.0.1 / iOS 26 SDK is installed. The app builds against iOS 26
+  and the target is raised to 27 when Xcode 27 ships. Tracked in `.planning/DEFERRED.md`.
 
 ## Key Decisions
 
