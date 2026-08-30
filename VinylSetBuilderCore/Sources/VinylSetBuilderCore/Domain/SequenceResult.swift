@@ -12,7 +12,10 @@ public struct NotIncluded: Sendable, Hashable, Codable, Identifiable {
 }
 
 public struct SequenceResult: Sendable, Hashable {
-    public let sequence: [Track]              // ordered, one per vinyl, non-decreasing BPM
+    /// Ordered, one track per vinyl. Every adjacent pair is within BPM_TOLERANCE in EITHER
+    /// direction (SEQ-03, revised 2026-08-30) — the order is NOT sorted by tempo, and must not
+    /// be re-sorted by a caller: the arrangement is the sequencer's harmonic answer.
+    public let sequence: [Track]
     public let notIncluded: [NotIncluded]     // D7: ONE bucket for unresolved + excluded
     public let totalCamelotDistance: Int
 

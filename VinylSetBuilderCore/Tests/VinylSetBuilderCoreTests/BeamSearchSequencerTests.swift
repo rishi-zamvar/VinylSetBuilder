@@ -25,44 +25,20 @@ func test_givenAnyFixture_whenSequenced_thenVinylIDsAreUnique() {
     #expect(Set(ids).count == ids.count)
 }
 
-// MARK: - SEQ-03: BPM gate
+// MARK: - SEQ-03: BPM gate, bidirectional since 2026-08-30
+//
+// The three assertions that used to live here defended the RETIRED non-decreasing rule
+// (`b.bpm! >= a.bpm!`) and were green while doing it. They are gone. Adjacency, both
+// boundary directions and the backward step now live in SequencerAdjacencyTests.swift,
+// which asserts the window rather than the direction.
 
-// ⚠️ STALE — ASSERTS A RETIRED SPEC. DO NOT TRUST THIS GREEN.
-// The owner replaced the non-decreasing rule on 2026-08-30 with bidirectional adjacency:
-// |bpm[i+1] − bpm[i]| ≤ tolerance, in EITHER direction. See .planning/SEQUENCER-SPEC.md.
-// This test still passes only because BeamSearchSequencer still enforces the OLD rule —
-// a single forward pass over BPM-sorted candidates. SEQ-03 is REOPENED.
-// Phase 9 must delete this test and replace it with an adjacency-window assertion.
-@Test("[STALE — retired spec, Phase 9 replaces] BPM is non-decreasing across the whole winning sequence")
-func test_givenSequence_whenInspected_thenBPMIsNonDecreasing() {
+@Test("Every adjacent pair of the winning sequence is within tolerance, either direction")
+func test_givenSequence_whenInspected_thenEveryAdjacentPairIsWithinTolerance() {
     let candidates = makeCrateFixture(vinylCount: 40, seed: 7)
     let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
+    #expect(result.sequence.count > 1, "a one-track sequence would make this vacuous")
     for (a, b) in zip(result.sequence, result.sequence.dropFirst()) {
-        #expect(b.bpm! >= a.bpm!)
-    }
-}
-
-@Test("Exactly the tolerance apart is still a legal follow")
-func test_givenExactlyToleranceApart_whenSequenced_thenBothIncluded() {
-    let candidates = makeVinyl(1, bpms: [170]) + makeVinyl(2, bpms: [174])
-    let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
-    #expect(result.sequence.count == 2)
-}
-
-@Test("A hair over the tolerance excludes the second vinyl")
-func test_givenJustOverTolerance_whenSequenced_thenSecondIsExcluded() {
-    let candidates = makeVinyl(1, bpms: [170]) + makeVinyl(2, bpms: [174.01])
-    let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
-    #expect(result.sequence.count == 1)
-    #expect(result.notIncluded.count == 1)
-}
-
-@Test("Input order never matters — the output always ascends")
-func test_givenDescendingCandidates_whenSequenced_thenOrderIsAscending() {
-    let candidates = makeVinyl(1, bpms: [180]) + makeVinyl(2, bpms: [175]) + makeVinyl(3, bpms: [170])
-    let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
-    for (a, b) in zip(result.sequence, result.sequence.dropFirst()) {
-        #expect(b.bpm! >= a.bpm!)
+        #expect(abs(b.bpm! - a.bpm!) <= 4 + 1e-9)
     }
 }
 
