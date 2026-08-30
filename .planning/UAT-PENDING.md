@@ -49,6 +49,23 @@ What was automated instead, so the phases could still be verified:
 
 ---
 
+## Added at Phase 2 close (plan 02-05, 2026-08-30)
+
+| # | Check | Why it can't be automated | Phase |
+|---|-------|---------------------------|-------|
+| U8 | **Look at the fifteen photographs and rule on V3.** The not-included bucket names a record `Vinyl 2` even where the app knows it as `Dillinja — Angels Fell` (178 / 6A) — see `Artifacts/screenshots/02-walk-07-not-included-expanded.png` and `.planning/VISUAL-DEFECTS.md` V3. Whether "which record got left out" must be legible in Act I, or can wait until real resolution lands in Act III, is a product judgement about your own workflow. Phase 4 implements whichever you pick. | Irreducibly a taste/priority call, not a correctness one. Both readings are defensible: it is a code defect (`VinylEntry.label` demands `resolutionState == .resolved` while `SequencedRow.title` does not) or a fixture defect (no fixture `Track` is ever marked `.resolved`). | 4 |
+
+**U8 is not the U8 plan 02-04 anticipated.** That one was reserved for a walk state dropped
+because the drag gesture would not fire. The drag fired on its first recipe, all fifteen states
+were captured, and no state was dropped — so that row was never needed and the number is reused
+here deliberately rather than left as a phantom.
+
+**Phase 2 needs nothing else from you.** All nine of its requirements landed and are visible in
+the committed photographs; U1 (device install), U4 and U6 (is the set one you would play) remain
+open from earlier phases and are unaffected by this one.
+
+---
+
 ## Your decision — not a blocker, not urgent
 
 ### D-1: Team ID committed to the public repo

@@ -156,9 +156,9 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SETUP-04 | Act I — Phase 1 | Complete — 01-01 |
 | CRATE-01 | Act I — Phase 2 | Complete — 01-06 |
 | CRATE-02 | Act I — Phase 2 | Complete — 01-06 |
-| CRATE-03 | Act I — Phase 2 | Complete |
-| CRATE-04 | Act I — Phase 2 | Complete |
-| CRATE-05 | Act I — Phase 2 | Complete |
+| CRATE-03 | Act I — Phase 2 | Complete — 02-01/02-03/02-04 |
+| CRATE-04 | Act I — Phase 2 | Complete — 02-01/02-03/02-04 |
+| CRATE-05 | Act I — Phase 2 | Complete — 02-01/02-03/02-04 |
 | CRATE-06 | Act I — Phase 2 | Complete — 01-06 |
 | CRATE-07 | Act I — Phase 2 | Complete — 01-06 |
 | SEQ-07 | Act I — Phase 2 | Complete — 01-07 |
@@ -222,8 +222,13 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 - v1 requirements: 67 total
 - Mapped to phases: 67/67 ✓
 - Unmapped: 0
-- Complete: 15 (SETUP-01/02/03/04, CRATE-01/02/06/07, SEQ-01/02/03/04/06/07/11)
-- Outstanding: 52
+- Complete: 17 (SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07, SEQ-01/02/04/06/07/11)
+- Outstanding: 50
+
+*Recounted 2026-08-30 by plan 02-05 from the ticked boxes above, not from the previous line:
+`grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17. The old figure said 15 and named
+`SEQ-03` as complete, which contradicts SEQ-03's own entry — it is **REOPENED**. It also omitted
+CRATE-03/04/05, which Phase 2 delivered and photographed.*
 
 **Placement notes:**
 - `CAP-02/03/05/06` are screens and sit in Act I (Phase 3), rendered from the 12 fixture
@@ -238,6 +243,30 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
   badges — so they belong to the Act I shell, not to the Act II sequencer phase.
 - `MAN-01…05` sit in Act III per the mandated act structure, so the manual-entry sheet is the
   one screen Act I does not build. Recorded as a decision, not a gap.
+
+**Carried into Phase 9 — `AsyncSequencer` and `BeamDivergenceCheck` DO NOT EXIST.** Plan 01-05
+was written but never executed, so there is no async sequencing seam and no beam-divergence
+check on disk. `grep -rn "AsyncSequencer\|BeamDivergenceCheck" App/ VinylSetBuilderCore/ UITests/`
+returns nothing (run by plan 02-05, 2026-08-30). **SEQ-08, SEQ-09 and SEQ-10 are therefore
+wholly outstanding**, not partially built, and Phase 9 inherits `01-05-PLAN.md`'s content along
+with `.planning/open-questions/RejoinTests.swift.wip`. This is a real gap between what the
+Phase 1 record implies and what is on disk — do not plan against a file that is not there.
+
+**Carried into Phase 9 — the monotonic-BPM artefacts inventory.** SEQ-03 went bidirectional on
+2026-08-30, but the shipped Act I code and docs still assert the old non-decreasing rule in
+five places. Phase 2 deliberately did **not** touch them (`git diff --stat` on
+`VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/` is empty, so Phase 9's rewrite
+starts from an unmodified Phase 1 baseline). The full list, so Phase 9 does not have to
+re-derive it:
+
+| Artefact | What it asserts |
+|---|---|
+| `Sequencing/BeamSearchSequencer.swift:81` | comment: sorted-ascending order is a topological order of the "non-decreasing" DAG |
+| `Domain/SequenceResult.swift:15` | doc comment: `sequence` is "non-decreasing BPM" |
+| `Tests/…/BeamSearchSequencerTests.swift:30` | test *"BPM is non-decreasing across the whole winning sequence"* — currently green, and wrong |
+| `Tests/…/BPMRulesTests.swift:33` | section comment "D2: non-decreasing AND within tolerance" |
+| `Fixtures/NaiveBPMSortSequencer.swift:2` | stub sorts ascending by design |
+| `ROADMAP.md:385` | Definition of Done says "a sequenced set with ascending BPM" |
 
 **Open question carried into Phase 9:** `Q1` — `BeamSearchSequencer` may be order-dependent
 because its rank tuple ends in a position-derived `start-index asc`. See

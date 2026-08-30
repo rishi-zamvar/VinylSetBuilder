@@ -46,9 +46,9 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 ## Phases
 
 - [x] **Phase 1: Foundation & Protocol Seams** - Core package, purity guard, app target, build-time secrets — the compile-time skeleton every act hangs off
-- [ ] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
+- [x] **Phase 2: The Crate Screens, Stubbed** - Crate list, creation, sequenced detail, reorder, Add More, delete, multi-crate membership — all against fixture data
 - [ ] **Phase 3: The Capture & Correction Screens, Stubbed** - Framing guide, thumbnail strip, flip prompt, Done, and the inspect/correct sheet — all against fixture photographs and fixture observations
-- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, V1/V2 defects diagnosed and fixed, first hygiene sweep
+- [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them.
 - [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
 - [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
 - [ ] **Phase 7: The Identity Resolver** - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
@@ -107,12 +107,12 @@ Act I work): CRATE-01, CRATE-02, CRATE-06, CRATE-07 (`CrateStore`, `FixtureCrate
 **Ship criterion (measured)**: an XCUITest walks list → create → capture → detail → reorder →
 add more → remove vinyl → delete crate without a single stub throwing, and every one of those
 states is screenshotted into `Artifacts/screenshots/` after a settle delay.
-**Plans**: 5 planned, 4 waves
+**Plans**: 5 of 5 delivered
   - [x] 02-01 — `CrateDetailModel`: running order, the CRATE-07 pin, the manual override that survives a re-sequence, `addMore`/`update` (CRATE-03/04/05/07)
   - [x] 02-02 — XCUITest target, shared scheme, unattended run script, settle-delay screenshot pipeline proven end to end (CRATE-01)
   - [x] 02-03 — `CrateDetailView`, `RootView` wiring, V1's inflection fix, the frozen accessibility-identifier contract (CRATE-01/02/03/04/05/06/07, SEQ-07, SEQ-11)
   - [x] 02-04 — the whole-flow XCUITest walk and its fifteen photographed states (all nine requirements)
-  - [ ] 02-05 — V1/V2 closure with evidence, visual audit of all fifteen pictures, hygiene sweep, ship-criterion audit
+  - [x] 02-05 — V1/V2 closure with evidence, visual audit of all fifteen pictures, hygiene sweep, ship-criterion audit
 **UI hint**: yes
 **Planned against three facts worth carrying forward**: plan 01-05 was never executed, so
 `AsyncSequencer` and `BeamDivergenceCheck` do not exist on disk and SEQ-08/09/10 are wholly
@@ -399,7 +399,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
-| 2. The Crate Screens, Stubbed | 1/5 | In Progress|  |
+| 2. The Crate Screens, Stubbed | 5/5 | Complete | 2026-08-30 |
 | 3. The Capture & Correction Screens, Stubbed | 0/TBD | Not started | - |
 | 4. Act I Sign-off — Every Screen, Photographed | 0/TBD | Not started | - |
 | 5. The OCR Engine | 0/TBD | Not started | - |
@@ -435,8 +435,14 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 14 | — (DoD proof + final sweep) | 0 |
 | **Total** | | **67** |
 
-**Already complete: 15 of 67.** SETUP-01/02/03/04, CRATE-01/02/06/07, SEQ-01/02/03/04/06/07/11.
-**Outstanding: 52 of 67.**
+**Already complete: 17 of 67.** SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07, SEQ-01/02/04/06/07/11.
+**Outstanding: 50 of 67.**
+
+*Corrected 2026-08-30 by plan 02-05's audit. The previous figure said 15 and listed `SEQ-03`
+among the complete, which contradicts `REQUIREMENTS.md` — SEQ-03 was **REOPENED** the same day
+when the sequencer spec went bidirectional. It also omitted CRATE-03/04/05, which Phase 2
+delivered and photographed. Counted from the ticked boxes in `REQUIREMENTS.md`, not from memory:
+`grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17.*
 
 ### Two placement notes, stated openly
 
