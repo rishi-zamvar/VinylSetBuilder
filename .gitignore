@@ -6,6 +6,11 @@ DerivedData/
 Secrets.swift
 .env
 
+# SwiftPM build products (a concurrent commit accidentally checked ~2,200 of these
+# into the public repo on 2026-08-29 — see git history around aed80d7; removed here)
+VinylSetBuilderCore/.build/
+.swiftpm/
+
 # Generated build artifact — 880KB of the owner's music library, not for a public repo
 Resources/bpmkey.db
 
