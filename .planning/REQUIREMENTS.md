@@ -26,35 +26,37 @@ key transitions, that re-optimises when you add more.
 ### Capture
 
 - [ ] **CAP-01**: User can photograph a vinyl label and the shutter returns to the camera immediately, with no blocking spinner
-- [ ] **CAP-02**: A framing guide overlay shows where to place the label, and defines the label-centre convention that segmentation depends on
+- [ ] **CAP-02**: A framing guide overlay shows where to place the record sleeve, sized for a whole 12" sleeve rather than a label close-up
 - [ ] **CAP-03**: A thumbnail strip shows every vinyl scanned so far in this session with its per-item resolution status
 - [ ] **CAP-04**: User can scan 20 vinyls in one session without the app stalling, running out of memory, or thermally throttling
-- [ ] **CAP-05**: When a scan suggests an unscanned flip side, an inline prompt offers Scan or Skip without leaving the camera
+- [ ] **CAP-05**: When a scan yields tracks for only one side, an inline prompt offers Scan or Skip without leaving the camera — suppressed when both sides were already read from a single photo, which the fixtures show is common
 - [ ] **CAP-06**: User can tap Done to leave the capture loop and see the sequenced result
 
 ### Text Recognition
 
-- [ ] **OCR-01**: Each captured label photo yields text observations with their bounding boxes and per-observation confidence
-- [ ] **OCR-02**: Bounding-box coordinates are normalised into a single documented convention, with Vision's bottom-left origin flipped exactly once
+- [ ] **OCR-01**: Each captured photo yields text observations with bounding boxes, per-observation confidence, and baseline angle
+- [ ] **OCR-02**: EXIF orientation is passed to `VNImageRequestHandler`, and the returned coordinates — which Vision reports in the ORIGINAL unrotated buffer space — are transformed into one documented convention exactly once
 - [ ] **OCR-03**: Recognition is seeded with a custom vocabulary of the owner's recurring label and artist names
 - [ ] **OCR-04**: Raw recognised text for a label can be inspected on screen, for debugging a bad read
 - [ ] **OCR-05**: OCR runs off the main thread and never blocks the capture loop
 
 ### Segmentation
 
-- [ ] **SEG-01**: A measured spike over the real fixture photos reports what fraction of the owner's labels are concentric versus plain horizontal text, before any clustering strategy is committed to
-- [ ] **SEG-02**: One label photo is split into its individual candidate tracks, correct on at least 8 of 10 fixture labels
-- [ ] **SEG-03**: Non-track text — catalogue numbers, RPM, SIDE A/B, ℗/© lines, label names — is discarded before clustering
-- [ ] **SEG-04**: A leading track marker (`A1`, `B2`, `1.`) splits tracks in preference to geometry whenever one is present
+- [ ] **SEG-01**: Angle-cluster segmentation is validated against the 12 committed fixture photographs, reporting per-fixture track-count accuracy (baseline established in `research/OCR-SPIKE.md`: 6 clean / 5 partial / 1 fail)
+- [ ] **SEG-02**: Observations are grouped by BASELINE ANGLE to separate physical surfaces (sleeve vs. record label), then grouped within each cluster — not by radial distance from a label centre, which the fixtures disproved
+- [ ] **SEG-03**: Non-track text is filtered before clustering — shop price stickers (currency/decimal regex), RPM, ℗/© lines, addresses, URLs and emails. Catalogue numbers are EXTRACTED AND KEPT, not discarded
+- [ ] **SEG-04**: A side or track marker splits tracks in preference to geometry — covering `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:` / `STEEL SIDE:` found in the fixtures
 - [ ] **SEG-05**: A parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one
 - [ ] **SEG-06**: The app infers whether an unscanned flip side probably exists, from side markers or their absence
 - [ ] **SEG-07**: User can correct any segmentation result — split a track, merge two, or type a track line by hand
+- [ ] **SEG-08**: Only observations at the trusted confidence tier are used for track lines; the fixtures showed confidence is effectively binary (1.00 vs 0.50/0.30), so a fractional threshold is not a useful filter
 
 ### Metadata Resolution
 
 - [ ] **RES-01**: Each candidate track resolves to an artist and a title, or is explicitly marked as failed
 - [ ] **RES-02**: Resolution runs in the background per vinyl, with at most 3 requests in flight, and per-item status visible in the UI
 - [ ] **RES-03**: Discogs supplies release, artist, label and format; MusicBrainz is the fallback
+- [ ] **RES-08**: When a catalogue number is present it is used as the primary Discogs key ahead of artist+title — it read cleanly on 6 of 12 fixtures and is far more discriminating for white labels
 - [ ] **RES-04**: A match above 0.75 normalised similarity is accepted, 0.50–0.75 is queued for user confirmation, below 0.50 is rejected
 - [ ] **RES-05**: HTTP 429 triggers backoff and retry rather than a failed resolution
 - [ ] **RES-06**: Resolution results are cached, so re-running the sequencer never re-issues a network request
@@ -208,9 +210,9 @@ key transitions, that re-optimises when you add more.
 | PERS-04 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 63 total
-- Mapped to phases: 63/63 ✓
-- Unmapped: 0
+- v1 requirements: 65 total
+- Mapped to phases: pending re-roadmap after OCR spike
+- Unmapped: 2 (SEG-08, RES-08) ⚠️
 
 **Note:** `SEG-01` is grouped into Phase 2 (Camera + OCR) rather than alongside the rest of
 the Segmentation category — its output (the concentric-vs-horizontal layout spike) is the
