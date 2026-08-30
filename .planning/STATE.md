@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-08-30T08:05:42.331Z"
+status: executing
+stopped_at: Completed 02-04-PLAN.md
+last_updated: "2026-08-30T08:22:27.179Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 0
   total_plans: 13
-  completed_plans: 9
-  percent: 69
+  completed_plans: 10
+  percent: 77
 ---
 
 # Project State
@@ -41,11 +41,11 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 2 of 14 (The Crate Screens, Stubbed)
-Plan: 02-03 complete (of 5 planned for Phase 2 — 02-04 and 02-05 remain)
+Plan: 02-04 complete (of 5 planned for Phase 2 — 02-05 remains)
 Status: In progress
 Last activity: 2026-08-30
 
-Progress: [███████░░░] 69%
+Progress: [████████░░] 77%
 
 **Requirements:** 67 total, 67 mapped, 19 complete, 48 outstanding.
 
@@ -90,6 +90,7 @@ Do not re-plan this. It is TDD'd and on disk.
 in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of what was built.*
 | Phase 02-crate-screens-stubbed P02 | 25m | 2 tasks | 6 files |
 | Phase 02 P03 | 55 min | 2 tasks | 5 files |
+| Phase 02 P04 | ~50 min | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -144,6 +145,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 02]: EditButton() replaced by a plain Button — toolbar content is hosted outside the view's environment, so EditButton drove an edit binding the List never read
 - [Phase 02]: A List's .onMove/.onDelete ForEach must not sit inside a conditional, or the List renders no reorder or delete affordances at all
 - [Phase 02]: Accessibility identifiers are verified against the live tree with a throwaway probe, never assumed — it found three functional defects no unit test could reach
+- [Phase 02]: 02-04: the crate walk asserts on frozen identifiers only; the one caption under test (ordering-mode-label) is captured before the act and asserted CHANGED, never hardcoded
+- [Phase 02]: 02-04: container freshness re-measured across three runs — 02-02 was right (fresh container per xcodebuild test); 02-03's persistence reading was the previous run's own output. The screenshot count gate must purge the HOST glob, which is the real hazard
 
 ### Pending Todos
 
@@ -193,8 +196,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T08:05:42.328Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-08-30T08:21:58.813Z
+Stopped at: Completed 02-04-PLAN.md
 88 -> 113 tests green, V1 pluralisation fixed and closed.
 Next: plans 02-02 and 02-03 — the crate detail screen and the XCUITest walk.
 Resume file: None
