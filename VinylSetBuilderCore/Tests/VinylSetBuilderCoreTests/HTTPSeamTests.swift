@@ -7,9 +7,9 @@ import Testing
 /// zero requests" is a measurement.
 actor RecordingTransport: HTTPFetching {
     private(set) var sent: [HTTPRequest] = []
-    private var responses: [(HTTPRequest) -> HTTPResponse?]
+    private var responses: [@Sendable (HTTPRequest) -> HTTPResponse?]
 
-    init(_ responses: [(HTTPRequest) -> HTTPResponse?] = []) {
+    init(_ responses: [@Sendable (HTTPRequest) -> HTTPResponse?] = []) {
         self.responses = responses
     }
 
