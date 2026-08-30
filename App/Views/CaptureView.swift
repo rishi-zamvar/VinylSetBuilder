@@ -28,6 +28,9 @@ struct CaptureView: View {
     /// rather than restarting or skipping. An `actor` — `capture()` advances a counter.
     @State private var source: FixturePhotoSource
 
+    /// The captured item whose inspect/correct sheet is open, if any. OCR-04 / SEG-07.
+    @State private var inspecting: CaptureItem?
+
     /// D-03-4: one track line per trusted observation. Real segmentation is Phase 6.
     private let segmenter = FixtureLineSegmenter()
 
@@ -56,14 +59,19 @@ struct CaptureView: View {
 
             flipPrompt
 
-            CaptureThumbnailStrip(items: session.items) { _ in
-                // CAP-03's tap target exists now so plan 03-04 adds a sheet and not a button.
+            CaptureThumbnailStrip(items: session.items) { item in
+                inspecting = item
             }
 
             controls
         }
         .padding(.vertical, 12)
         .navigationTitle("Capture")
+        .sheet(item: $inspecting) { item in
+            // OCR-04 / SEG-07. Presented from the tap target the strip already had, so this
+            // screen gained a sheet and not another button.
+            InspectCorrectSheet(model: model, crateID: crateID, item: item)
+        }
         .task(id: crateID) {
             // Same pattern as `CrateDetailView.load()`: rebuild the screen's own state from
             // scratch whenever the crate it is about changes.
