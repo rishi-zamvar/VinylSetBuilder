@@ -6,6 +6,8 @@ trigger that unblocks it and the phase that must action it.
 | # | Item | Blocked on | Trigger | Owner phase |
 |---|------|-----------|---------|-------------|
 | D1 | Raise iOS deployment target 26 → **27** | Xcode 27 SDK. Current: Xcode 26.0.1, iOS 26 SDK only. | Xcode 27 released (~mid-Sept 2026, with iOS 27) | Phase 4 |
+
+**Status check 2026-08-29 (post-restart):** macOS updated 26.3.1 → **26.6.2**. Still not OS 27, so D1/D2/D3 all remain blocked. Xcode unchanged at 26.0.1, single iOS 26 SDK. Verify with `sw_vers` and `xcodebuild -showsdks` rather than assuming an update helped.
 | D2 | Link `MusicUnderstanding`, implement `BPM-04` | Same — the framework is absent from the iOS 26 SDK | Xcode 27 installed | Phase 4 |
 | D3 | Run `Tools/mu-validate.swift` accuracy spike | macOS 27 (framework needs the OS 27 wave) | Mac updated to macOS 27 | Phase 4 (gate) |
 | D4 | GitHub Pages backlink page goes live | GitHub Actions disabled at **account** level — Pages builds on Actions | Owner re-enables Actions in GitHub billing settings | Cosmetic only — GetSongBPM was dropped, so nothing depends on it |
