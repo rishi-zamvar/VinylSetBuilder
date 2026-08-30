@@ -10,13 +10,13 @@ screenshot is an opinion, not a defect.
 |---|--------|----------|----------|-------|
 | ~~V1~~ | ~~**"1 records"** — pluralisation not handled~~ | **FIXED 2026-08-30 (plan 02-01), CLOSED WITH EVIDENCE (plan 02-05).** See "V1 — closed" below. Evidence: `02-walk-01-crate-list.png` and `02-01-crate-list-pluralised.png`. | — | Closed |
 | ~~V2~~ | ~~Whole UI washed out to near-invisible grey~~ | **NOT A DEFECT — RESOLVED 2026-08-30, RE-CONFIRMED ON THE NEW SCREENS (plan 02-05).** See "V2 — closure re-confirmed" below. Evidence: all fifteen `02-walk-*.png`, probed twice. | — | Closed |
-| V3 | **The not-included bucket names a record "Vinyl 2" even though its artist, title, BPM and key are all known.** The row reads `Vinyl 2 · 178 · 6A · "No track within 4 BPM of the set"` — the badges carry real data from a track the app can name `Dillinja — Angels Fell`. A DJ reading the bucket cannot tell which record was left out, which is half of what SEQ-07 exists to say. | `02-walk-07-not-included-expanded.png` (rows "Vinyl 2" / "Vinyl 3"); same defect independently visible in plan 02-03's `02-03-crate-detail-bucket-expanded.png`; **SECOND SIGHTING obtained 2026-08-30 by plan 03-05 on a screen that did not exist when V3 was found** — `03-walk-07-done-sequenced.png`, twelve freshly captured records in the bucket, the eight visible rows reading `Vinyl 1` … `Vinyl 8` while the strip four frames earlier (`03-walk-04-strip-twelve.png`) named the same records from their own OCR text. **Not fixed here — the product call is U8 and it is the owner's.** | **Medium** | Phase 4 |
-| V4 | **Placeholder badges are near-invisible.** An unresolved record's `—` / `—` badge pair renders `.foregroundStyle(.secondary)` on a `.thinMaterial` capsule — light grey on light grey. SEQ-11's rule is that a missing value is *dimmed, never hidden*; at this contrast it is very close to hidden. | `02-walk-07-not-included-expanded.png`, the "Vinyl 3" row | Low | Phase 4 |
-| V5 | **Two fixture vinyls share `position: 2`, so both would render as "Vinyl 3".** `FixtureCrates.mixedResultsCrate` gives `sharedVinyl` and `unresolvedVinyl` the same `position`, and `VinylEntry.label`'s fallback is `"Vinyl \(position + 1)"`. **Not visible in any of the fifteen photographs** — only one of the two ever lands in the bucket — so this is a latent duplicate-label hazard found by reading the fixture, not by looking. Recorded because V3's fix touches the same line. | none — read from `FixtureCrates.swift:24` and `:48`, not from a picture | Low | Phase 4 |
+| V3 | **The not-included bucket names a record "Vinyl 2" even though its artist, title, BPM and key are all known.** The row reads `Vinyl 2 · 178 · 6A · "No track within 4 BPM of the set"` — the badges carry real data from a track the app can name `Dillinja — Angels Fell`. A DJ reading the bucket cannot tell which record was left out, which is half of what SEQ-07 exists to say. | `02-walk-07-not-included-expanded.png` (rows "Vinyl 2" / **"Vinyl 4"** since plan 04-03 closed V5; the same two rows read "Vinyl 2" / "Vinyl 3" in every capture before it — the name is still a position, which is V3's whole complaint, and the renumbering does not touch it); same defect independently visible in plan 02-03's `02-03-crate-detail-bucket-expanded.png`; **SECOND SIGHTING obtained 2026-08-30 by plan 03-05 on a screen that did not exist when V3 was found** — `03-walk-07-done-sequenced.png`, twelve freshly captured records in the bucket, the eight visible rows reading `Vinyl 1` … `Vinyl 8` while the strip four frames earlier (`03-walk-04-strip-twelve.png`) named the same records from their own OCR text. **Not fixed here — the product call is U8 and it is the owner's.** | **Medium** | Phase 4 |
+| ~~V4~~ | ~~**Placeholder badges are near-invisible.**~~ | **CLOSED 2026-08-30 (plan 04-03), with four numbers on two independently captured runs.** The `—` / `—` pair rendered `.secondary` ink on a `.thinMaterial` capsule and measured **4.01:1**, under WCAG 2.2 AA's 4.5:1 for 12 pt text. A solid `.tertiarySystemFill` capsule plus `.primary.opacity(0.7)` ink takes it to **7.96:1**, and the complete pair stays strictly ahead at 18.27:1, so SEQ-11's *dimmed, never hidden* holds on both halves. See "V4 — closed, and what the plan's own gate could not see" below. Evidence: `04-badge-placeholder.png`, `04-badge-complete.png`, `02-walk-07-not-included-expanded.png`; assertion `UITests/BadgeContrastUITests.swift`. | — | Closed |
+| ~~V5~~ | ~~**Two fixture vinyls share `position: 2`, so both would render as "Vinyl 3".**~~ | **CLOSED 2026-08-30 (plan 04-03).** `unresolvedVinyl` moved to `position: 3`. `FixtureCratesTests` now asserts label uniqueness AND position uniqueness across **every** crate `FixtureCrates.all` exposes, and `demoStore` is built from that same list so a crate added to the app is a crate under test. Red before the fix and red again under the restored duplicate, the label assertion naming `["Vinyl 3"]` and the position one naming `[2]`. The defect is now visible in a photograph for the first time: `02-walk-07-not-included-expanded.png` reads `Vinyl 2` / `Vinyl 4` where it read `Vinyl 2` / `Vinyl 3`. | — | Closed |
 | V6 | **Running-order index alignment at double digits could not be assessed.** No fixture crate reaches ten rows, so no photograph in the set shows an index of `10` or above against the `minWidth: 20` monospaced column. Honest "not assessable from this capture" rather than a guess either way. | none — the fifteen photographs top out at index `2` | Low | Phase 4 |
 | ~~V7~~ | ~~**The walk never photographs the empty running order.**~~ | **CLOSED 2026-08-30 (plan 03-03), with a picture.** The walk's step 4 now presses the real shutter, and a captured sleeve carries OCR text but no BPM, so the sequencer cannot schedule it and the new crate's running order is genuinely empty. `02-walk-05-new-crate-detail.png` shows "Nothing sequenced yet" above "Not in the set (1)". The walk asserts it two-sidedly (`empty-running-order` present AND `sequenced-row-1` absent), and Mutation D below proves that assertion can fail. | — | Closed |
 | ~~V8~~ | ~~**The capture screen still reads as scaffolding**~~ | **CLOSED 2026-08-30 (plan 03-03).** `CapturePlaceholderView` is deleted and `RootView` routes `.capture` to the real `CaptureView`. No frame anywhere says "Camera arrives in Phase 3" any more. Evidence: `02-walk-03-capture-empty.png`, `02-walk-11-add-more-capture.png` and all four `03-03-capture-*.png`. | — | Closed |
-| V9 | **Thirteen of the walk's fifteen frames render no large navigation title.** The crate list shows "Crates" on `02-walk-01` and then never again; the crate detail never shows the crate's name at all; the capture screen shows "Capture" in one test and not in the other. A DJ two screens deep cannot tell from the picture which crate they are in. **Not a capture-timing artefact** — see "V9 — measured, not guessed" below. **Not introduced by plan 03-03**: it is equally absent on Phase 2's own `CrateDetailView` and `CrateListView`, which this plan did not touch, and plan 02-03's frames of the same screens have their titles. | absent: `02-walk-03` … `02-walk-15` (13 frames). present: `02-walk-01-crate-list.png`, all four `03-03-capture-*.png`, and every `02-03-crate-detail*.png` | **Low** | Phase 4 |
+| V9 | **Thirteen of the crate walk's fifteen frames render no navigation title — neither large nor inline.** `02-walk-06` was cropped and looked at: the bar carries only the `Crates` and `Edit` buttons and the crate's name is nowhere on the screen. **The rule this row carried for two phases was WRONG and is corrected below** — it is not "a sheet was presented". Plan 04-03 root-caused it to a two-session A/B with exactly one variable, and rejected three fixes by measurement. See "V9 — the rule was wrong, and here is the right one" below. | absent: `02-walk-03` … `02-walk-15` (13 frames, band ink 0), `03-walk-01/02/03/04/07`. present: `02-walk-01` (9677), `02-smoke-crate-list` (9677), all four `03-03-capture-*` (11746), `03-walk-08`/`09` (11746) | **Low** | **Phase 11** |
 | V10 | **The sleeve framing guide changes size when the flip-side prompt appears.** The preview is a flexible box, so the inline banner pushing in shrinks the preview and the guide follows it: the guide's stroked square measures **872x873 px** with no prompt and **686x686 px** with one — a 21% jump, mid-framing. Correct arithmetic (`edgeCoverage` holds at 0.881 and 0.879 of the preview's shorter edge in both cases, which is the point of deriving it from `FramingGuide.sleeve`), but with a live viewfinder a reticle that resizes while you are lining a sleeve up is its own annoyance. Belongs to Phase 10, where the preview stops being a flexible black rectangle and becomes a fixed-aspect camera layer. | `03-03-capture-flip-prompt.png` (686 px) against `03-03-capture-empty.png`, `03-03-capture-one-item.png`, `03-03-capture-flip-suppressed.png` (872 px). Measured on 7 frames across 3 runs. | Low | Phase 10 |
 | V12 | **The inspect sheet titles a record `Zzz.`** — a two-syllable fragment of a price sticker — on a photograph that also read `Cause 4 Concern` (the artist) and `A: High Down` (the title), both at confidence 1.00. `CaptureItem.displayLabel` takes the **first trusted observation in reading order**, and OCR reading order is spatial, not semantic, so whichever scrap of text sits highest-left on the sleeve becomes the record's name. Not a regression and not V3: it is the deliberate ceiling of D-03-6's naming rule (which exists to keep `"Vinyl N"` off the new screens) made visible for the first time. A DJ scrolling a twelve-tile strip cannot tell which record `Zzz.` is. Real segmentation (SEG-01…06) is what gives a title rule something better to pick from. | `03-04-sheet-lines.png`, `03-04-sheet-after-merge.png`, `03-04-sheet-after-split.png`, `03-04-sheet-hand-typed.png` (all four title-bars read `Zzz.`); independently, `FixtureObservations.swift:205` — IMG_0503's first observation is `"Zzz."` at 1.00; and XCUITest's own accessibility dump on this plan's second run printed `identifier: 'capture-thumb-6', label: 'Zzz.'` on the thumbnail strip, a different screen | **Medium** | Phase 6 |
 | ~~V13~~ | ~~**A long recognised line's behaviour in the correction field is not assessable from this capture.**~~ | **CLOSED 2026-08-30 (plan 03-05), assessed with numbers on both halves.** The 44-character read *does* truncate in the field; the 106-character read *does not* — it wraps. See "V13 — closed, and what the assessment found" below. Evidence: `03-walk-05-inspect-sheet.png`, `03-walk-06-inspect-raw-text.png`, and the measured row heights. | — | Closed |
@@ -140,6 +140,33 @@ strength of it, and nothing should be until someone reproduces it deliberately.
 **Measurement count: three full suite runs** (3.0 s, 4.0 s, 3.0 s again), 19 frames probed each
 time, plus 11 untouched frames from plans 01-06/02-01/02-03 as the control group.
 
+**SUPERSEDED IN ONE RESPECT, 2026-08-30 by plan 04-03.** Everything above about the settle delay
+and `.disabled(true)` stands. The closing sentence's suspicion — "once the walk has swapped
+`RootView`'s content through several `Route` cases in one long session" — is *nearly* right and
+was still not testable as written: it is not several swaps, it is **the first one**, and only when
+that first one is driven from inside the new-crate sheet's `Create`. Route swaps by themselves are
+harmless, measured seven ways. See "V9 — the rule was wrong, and here is the right one" above.
+
+---
+
+## A tooling hazard found while measuring V9, worth more than the frame it was found on
+
+`./Scripts/ui-test.sh -only-testing:…` **exited 0 having run zero tests**, twice, both times on the
+first invocation after a UI-test source file was edited: `xcodebuild` reported
+`Test Suite 'VinylSetBuilderUITests.xctest' passed` with no test cases in it, and
+`build/ui.xcresult` confirmed `passedTests 0, failedTests 0, totalTestCount 0`. Re-running the
+identical command immediately afterwards ran the tests normally.
+
+`Scripts/screenshots.sh` is already immune — it asserts `passed > 0` before it will collect. A bare
+`ui-test.sh` is not. **A green exit code from `ui-test.sh` is not evidence that anything ran**;
+read `passedTests` out of the result bundle and compare it to the number you expected, which is
+what gate G2 in `Scripts/hygiene.sh` already does for the Core suite and for the same reason.
+
+Both zero-test runs are also the reason the V9 probe harness purges `zz-v9-*.png` from every
+simulator container before each run: the runner's data container is **not** always fresh per
+`xcodebuild test` — one container was observed accumulating four separate runs' output — so a
+stale frame from the previous hypothesis reads exactly like the current one's evidence.
+
 ---
 
 ## V3 — the second sighting plan 03-03 was expected to produce, and did not
@@ -154,22 +181,127 @@ screen that did not exist when it was found.
 a sixteenth state to Phase 2's walk, which plan 03-03 was explicitly forbidden to do.
 
 V3's original evidence is unchanged and still visible in this run at `02-walk-07`, `02-walk-08`,
-`02-walk-09` and `02-walk-10` ("Vinyl 2" / "Vinyl 3"). The second sighting is carried to plan
+`02-walk-09` and `02-walk-10` ("Vinyl 2" / "Vinyl 4" after plan 04-03's V5 fix renumbered the
+second row; "Vinyl 2" / "Vinyl 3" before it). The second sighting is carried to plan
 03-05, which owns the full twelve-fixture walk and can expand the bucket without touching Phase
 2's file. A row without a named screenshot is an opinion, not a defect — so it is not being
 written as one.
 
 ---
 
-## V4 — still open, and deliberately not repeated on the new screen
+## V4 — closed, and what the plan's own gate could not see
 
-V4 (placeholder badges rendering `.secondary` on `.thinMaterial`, light grey on light grey) is
-still open and still visible on the "Vinyl 3" row of `02-walk-07-not-included-expanded.png`. Plan
-03-03 did not fix it — it belongs to Phase 4 — but it did refuse to repeat it. The thumbnail
-strip's status indicator, which is the single piece of information the strip exists to carry,
-renders white on a solid saturated ground (`Read` dark green, `Partial` amber, `Unread` dark red)
-rather than secondary-on-material. Visible at `03-03-capture-flip-suppressed.png`, two `Read`
-pills legible at a glance.
+**Measured twice on independently captured runs, each time by two independent implementations**
+— an in-test luminance histogram in `UITests/BadgeContrastUITests.swift` and
+`python3 Scripts/probe-frames.py --ink 128` on the host, over the same element-screenshot PNGs.
+Both return the same integers, so neither is only checking itself.
+
+| | contrast (mode − min) | WCAG 2.2 ratio |
+|---|---|---|
+| placeholder, before | 125 | 4.01:1 |
+| placeholder, after | **167** | **7.96:1** |
+| complete, before | 245 | 19.30:1 |
+| complete, after | 239 | 18.27:1 |
+
+**The fix.** `.background(.thinMaterial, in: Capsule())` → `Color(uiColor: .tertiarySystemFill)`,
+and `.secondary` → `.primary.opacity(0.7)` for the incomplete style. Same "solid ground, not
+translucent material" move plan 03-03 made for the capture strip's status pill; no third badge
+idiom was invented, and no colour crossed into Core (D8 holds — `TrackBadges.placeholder` is
+untouched).
+
+**The part worth writing down: 04-03-PLAN.md's own gate could not have caught this.** The plan
+fixed `contrast = mode − min ≥ 60` in advance, as a legibility floor, and forbade re-fitting it.
+Measured on the *defective* badge it came back **125** — over the floor by a factor of two. That
+threshold was kept exactly where it was set, and it is reported for what it is: a gate that never
+went red on the defect it was written for. What reddens is WCAG 2.2 §1.4.3 AA at 4.5:1, whose
+number comes from the published standard rather than from this repo's data and would read the
+same if no badge had ever been measured here.
+
+Both halves of SEQ-11 are provably able to fail, each at its own named line, each confirmed from
+`build/ui.xcresult`'s failed-test list as well as from the log:
+
+| Mutation | Expected to redden | What happened |
+|---|---|---|
+| `.thinMaterial` + `.secondary` restored | the legibility half | `BadgeContrastUITests.swift:143` — "reads at 4.01:1 … below WCAG 2.2 AA's 4.5:1". xcresult `passed 0 / failed 1`. The `≥ 60` assertion stayed GREEN at 125 throughout, which is the evidence for the paragraph above. |
+| incomplete style set to `.primary` (dimming removed) | the *dimmed* half | `BadgeContrastUITests.swift:122` — "the complete badge pair's contrast (239) is not strictly greater than the placeholder's (239)". xcresult `passed 0 / failed 1`. |
+
+---
+
+## V9 — the rule was wrong, and here is the right one
+
+The rule this row carried for two phases was: *presenting and dismissing a `.sheet` removes the
+large navigation title for the rest of the session.* It was inferred from a 33-frame split, never
+reproduced deliberately. Plan 04-03 reproduced it deliberately for the first time, on a two-frame
+test, and **it did not reproduce**.
+
+**Step 1 — the band, calibrated before it was trusted.** Derived once from
+`02-walk-01-crate-list.png` by row-profiling the dark pixels between the status bar and the first
+list row, then held fixed: **`--region 0,383,1206,74 --ink 128`**. The two dark runs in that area
+are the `+` toolbar glyph (rows 226–278, x 1065–1117) and the title `Crates` (rows 383–456,
+x 52–359); the band excludes the button on purpose, which is what makes ink 0 mean *no title*
+rather than *no toolbar*. Calibration against known values:
+
+| Frame | recorded previously | measured here |
+|---|---|---|
+| `02-walk-01-crate-list.png` | ~9498 | **9677**, and identically on two independently captured copies of that frame (the pre-regeneration file and the regenerated one), so the number is a property of the screen, not of the run |
+| `03-03-capture-empty.png` | 11753 | **11746** (Δ7, 0.06%) |
+| any title-less frame | 0 | **0** |
+
+The 9498 → 9677 gap is 1.9% and comes from a capture that is no longer on disk; it is recorded
+rather than tuned away, because moving the band to hit 9498 would be fitting the instrument to
+the number.
+
+**Step 2 — the deliberate repro, which failed.** launch → capture → present `NewCrateSheet` →
+**Cancel** → capture. Expected 9677 → 0. Got **9677 → 9677, and the two PNGs were byte-identical
+(same md5)**. Presenting and dismissing the sheet does nothing.
+
+**Step 3 — bisecting the whole walk route in one session**, seven captures: launch list 9677 ·
+after Cancel 9677 · crate detail 26230 · list again 9677 · capture after **Create** 11746 ·
+detail after Create 17050 · list after Create 9677. Every frame keeps its title. So neither the
+sheet, nor Create, nor route switching is sufficient.
+
+**Step 4 — the A/B that isolates it.** Two app sessions differing in exactly one thing:
+
+| Session | Route taken | Title band ink |
+|---|---|---|
+| A | launch → new-crate sheet → type → **Create** → capture | **0** |
+| B | launch → crate detail → back → new-crate sheet → type → **Create** → capture | **11746** |
+
+**The corrected rule: the navigation title is lost for the rest of the session if and only if the
+FIRST `Route` change of the session is the one driven from inside the sheet's `Create`. Insert any
+prior route change and the identical Create keeps every title.** That A/B reproduced identically
+on **four independent runs** (the baseline and the three hypothesis runs below).
+
+It also explains the whole 33-frame split without the sheet being the cause:
+`CaptureWalkUITests` test 1 enters capture through Create-first and its five frames read 0, while
+test 2 enters through **Add More** and its two frames read 11746 — same file, same class, same
+build, two sessions. `CaptureScreenUITests` also enters through Add More, and all four
+`03-03-capture-*` frames have their title.
+
+**Three hypotheses, each rejected by measurement.** A rejected hypothesis with a number is the
+point of the exercise; Phase 11 should not spend its budget on these again.
+
+| # | Hypothesis | Change made | A / B ink | Verdict |
+|---|---|---|---|---|
+| H3 | SwiftUI's inline/large inference latches after a presentation | `.navigationBarTitleDisplayMode(.large)` on the `NavigationStack`'s content | **0 / 11746** | **REJECTED** — unchanged |
+| H1 | view identity churn: `.navigationTitle` is re-applied to a new `_ConditionalContent` branch on every route swap | hoisted to ONE `.navigationTitle(title)` on the stack's content, driven by `model.store.route`; removed from all three screens | **0 / 11746** | **REJECTED** — unchanged. The title's application site is not the variable. |
+| H2 | the sheet's own nested navigation container takes over title rendering | deleted `NewCrateSheet`'s `NavigationStack`, moved Cancel/Create into `Form` rows | **0 / 11746** | **REJECTED** — unchanged |
+
+All three were reverted; the working tree carries none of them.
+
+**Carried to Phase 11**, because Phase 11's criterion 2 re-runs the Phase 2 and Phase 3 walks and
+regenerates the whole screenshot set after each of five stub swaps, so `RootView`'s navigation is
+opened and re-verified there five times — and because what is left after H1, H2 and H3 is the
+navigation *bar's* own large-title state at the moment of the first root swap, which is a UIKit
+bridging question rather than a modifier-placement one, and is worth opening once with the
+navigation code already in hand rather than twice.
+
+**Repro for Phase 11, one command:** measure `--region 0,383,1206,74 --ink 128` on any frame from
+a session whose first navigation was the new-crate sheet's Create. Expect 0. Do a single crate-row
+tap and back first, and the same screen measures 11746.
+
+**Measurement count: seven UI runs** — one two-frame repro, one seven-frame bisection, one A/B
+baseline, three hypothesis A/Bs, and one re-run after a stale test enumeration (see below).
 
 ---
 
