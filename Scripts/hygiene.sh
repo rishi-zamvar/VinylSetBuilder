@@ -17,6 +17,13 @@ fail() { printf 'FAIL %s  %s\n' "$1" "$2"; FAILS=$((FAILS + 1)); [ $# -ge 3 ] &&
 skip() { printf 'SKIP %s  %s\n' "$1" "$2"; FAILS=$((FAILS + 1)); }   # a skipped gate is NOT a passed gate
 
 CODE_TREES=(App VinylSetBuilderCore/Sources VinylSetBuilderCore/Tests UITests)
+# Where a REFERENCE to a declaration may legitimately live. Tools/ is included from Phase 7:
+# the acceptance-gate harnesses compile the SHIPPING transport, decoder and clients into a
+# macOS binary and run them, which is exactly what ocr-score.sh has always done with the
+# shipping recogniser. A caller that runs the code every gate run is not a dead reference.
+# Declarations are still only SCANNED FOR under Core Sources and App — Tools declares nothing
+# the app depends on.
+REF_TREES=("${CODE_TREES[@]}" Tools)
 # .build is gitignored SPM output; it retains dependency manifests naming files that were
 # deleted from Sources, so an unscoped grep reports references that do not exist in source.
 EXCL=(--exclude-dir=.build --exclude-dir=__pycache__ --exclude-dir=.git)
@@ -114,13 +121,11 @@ fi
 #   OrderingMode        reachable only through CrateDetailModel.orderingMode, whose type is
 #                       inferred at the call site, so a name-exact scan cannot see the use.
 #                       ManualOrderTests.swift:56 exercises it.
-#   MetadataResolving   a DECLARED SEAM, not dead code. It lost its only conformance when
-#                       FixtureMetadataResolver was deleted (04-02 Task 1), so it now has
-#                       zero references — but Phase 7 (RES-01..08) implements the real
-#                       resolver against it. SETUP-02 exists to create seams like this.
-#                       Deleting a seam because it currently has no caller is deleting the
-#                       architecture. The rule: keep a protocol iff a NAMED future phase's
-#                       requirements implement it. This one names Phase 7.
+#   MetadataResolving   HISTORICAL. It was allowlisted through Phases 4-6 as a seam with no
+#                       conformance, on the rule "keep a protocol iff a NAMED future phase's
+#                       requirements implement it". Phase 7 did: TrackResolver conforms to it
+#                       and TrackResolverTests exercise it, so the entry is now inert and is
+#                       kept only so the reasoning survives. It can go when someone tidies.
 G5_ALLOW="^(VinylSetBuilderApp|OrderingMode|MetadataResolving)$"
 g5_decls() {  # $1 = root, $2 = visibility prefix ("public " or "")
     local f
@@ -134,7 +139,7 @@ g5_decls() {  # $1 = root, $2 = visibility prefix ("public " or "")
 G5_DEAD=$( { g5_decls VinylSetBuilderCore/Sources "public "; g5_decls App ""; } | sort -u | \
     while IFS=$'\t' read -r name file; do
         printf '%s' "$name" | grep -qE "$G5_ALLOW" && continue
-        n=$(grep -rl --include='*.swift' "${EXCL[@]}" "\b${name}\b" "${CODE_TREES[@]}" 2>/dev/null \
+        n=$(grep -rl --include='*.swift' "${EXCL[@]}" "\b${name}\b" "${REF_TREES[@]}" 2>/dev/null \
             | grep -v "^${file}$" | wc -l | tr -d ' ')
         [ "$n" -eq 0 ] && printf '%s  (%s)\n' "$name" "$file"
     done )

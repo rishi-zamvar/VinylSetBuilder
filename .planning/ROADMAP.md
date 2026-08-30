@@ -51,8 +51,8 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 - [ ] **Phase 4: Act I Sign-off — Every Screen, Photographed** - Settle-delay screenshots of every screen committed, first codebase-wide hygiene sweep, and the visual defects Phase 2's audit recorded but did not fix (V3 Medium, V4–V7 Low). **V1 and V2 are already closed** — Phase 2 shut them with evidence, so Phase 4 no longer owns them. **2026-08-30: 6 of 6 plans delivered. 04-05 returned REFUSED on gate S3; 04-06 closed V18 and re-ran `./Scripts/screenshots.sh` clean three times (rc=0/rc=0/rc=0), so S3 — and all seven gates — now hold. Two Medium-or-above ledger rows (V3, V12) stay carried. See `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md` and its ADDENDUM.**
 - [ ] **Phase 5: The OCR Engine** - Vision text recognition behind a `TextRecognizing` seam, EXIF orientation passed and coordinates transformed exactly once, measured against the 12 fixtures
 - [ ] **Phase 6: The Segmentation Engine** - Baseline-angle clustering, noise filtering, side markers and catalogue-number extraction, measured as track-count accuracy on the 12 fixtures
-- [ ] **Phase 7: The Identity Resolver** - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
-- [ ] **Phase 8: The BPM & Key Ladder** - Bundled tier-0 corpus, SoundCloud audio acquisition, and the in-house Accelerate/vDSP analyser behind `AudioAnalyzing` — measured against the 29-track ground truth
+- [x] **Phase 7: Resolution & the BPM Ladder** (absorbed Phase 8) - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
+- [x] **Phase 8: The BPM & Key Ladder** - DELIVERED INSIDE PHASE 7 on 2026-08-30. Tier-0 hit rate 0%, SoundCloud match 85%, analyser tempo 41% usable / key 34% usable
 - [ ] **Phase 9: The Sequencer, Finished and Proven Deterministic** - Q1 answered, tolerance slider, rejoin-on-add, off-main-thread, beam divergence check — measured as determinism across seeded shuffles
 - [ ] **Phase 10: The Camera, Live** - Real `AVCaptureSession` behind the shell's capture screen, non-blocking shutter, 20-record session measured for memory and thermals
 - [ ] **Phase 11: The Swap** - Each stub replaced by its real implementation one at a time, the walk re-verified and re-screenshotted after every single swap
@@ -286,6 +286,13 @@ goes into `research/` as the baseline every later change is measured against.
 ---
 
 ### Phase 7: The Identity Resolver
+**Status**: COMPLETE (2026-08-30) — executed as one phase together with Phase 8, in
+`.planning/phases/07-resolution-bpm/`. See `07-SUMMARY.md` for every measured number.
+**Measured**: catalogue-number resolution **6 of 6** against a baseline of 5 of 6, twice, with
+three live negative controls. Overall 17-18 of 21 track lines identified across the twelve
+photographs; the artist+title fallback rung produces confident wrong answers and is the
+weakest part of the ladder. MusicBrainz answered 2-3 of the 6 catalogue lookups for free
+(it knows 5 of 6 when it is not returning 503).
 **Goal**: A candidate track line becomes an artist and a title — or is honestly marked failed —
 climbing the cheapest-first ladder and never spending a quota call on a datum available free.
 **Depends on**: Phase 6
@@ -309,6 +316,14 @@ before it is trusted; investigate the equivalent failure mode on Discogs search.
 ---
 
 ### Phase 8: The BPM & Key Ladder
+**Status**: COMPLETE (2026-08-30) — delivered inside Phase 7.
+**Measured**: Gate A tier-0 hit rate **0 of 17 and 0 of 18** on the real collection (control
+against the corpus's own source library 40 of 40, so the reader works — the corpus simply does
+not contain this music). Gate B SoundCloud match rate **85%** (34 of 40) against a 72%
+baseline, twice, second run offline from cache; analyser tempo **38% exact / 41% usable**
+octave-aware and **59% within 5%**, key **24% exact / 34% within one Camelot hop**.
+**DECISION: key degrades to a soft/manual field**, kept automatically only above a 0.8
+confidence where its precision is 71%. BPM stays automatic.
 **Goal**: Every resolved track carries a BPM and a Camelot key, or is honestly marked as
 lacking them — via the cheapest route that can supply it. This phase carries the project's
 largest remaining unknown and closes on two separate measured gates.
@@ -611,5 +626,5 @@ against the wrong sequencer and retrofitting later is the expensive order.
   **three** stale tests, one unmarked.~~ **CLOSED by Phase 5, 2026-08-30.** All 17 artefacts of
   `CARRIED-DEBT.md` §2a are gone, including the enforcement itself; hygiene gate G8 now asserts
   their absence structurally rather than counting them in a ledger.
-- **V3** stays open pending the owner's answer on U8. ~~**V12** is Phase 6's.~~ **V12 CLOSED by Phase 6 (commit `f980c1a`).** V15 and V16 were also Phase 6's and are RE-CARRIED to Phase 8: the de-duplication they need is built and measured, but reaches the inspect sheet only when `CaptureView`'s `FixtureLineSegmenter` is swapped, which is Phase 8's per-swap-verified job.
+- **V3** stays open pending the owner's answer on U8. ~~**V12** is Phase 6's.~~ **V12 CLOSED by Phase 6 (commit `f980c1a`).** V15 and V16 were also Phase 6's and are RE-CARRIED to **Phase 11** (corrected 2026-08-30 — they said Phase 8, meaning the stub-swap phase, which this roadmap numbers 11): the de-duplication they need is built and measured, but reaches the inspect sheet only when `CaptureView`'s `FixtureLineSegmenter` is swapped, which is Phase 11's per-swap-verified job.
 - Act I's phase criterion clause 2 remains **NOT MET** and is not laundered by this compression.

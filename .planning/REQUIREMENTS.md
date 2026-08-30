@@ -53,25 +53,25 @@ key transitions, that re-optimises when you add more.
 
 ### Metadata Resolution
 
-- [ ] **RES-01**: Each candidate track resolves to an artist and a title, or is explicitly marked as failed
+- [x] **RES-01**: Each candidate track resolves to an artist and a title, or is explicitly marked as failed
 - [ ] **RES-02**: Resolution runs in the background per vinyl, with at most 3 requests in flight, and per-item status visible in the UI
-- [ ] **RES-03**: Discogs supplies release, artist, label and format; MusicBrainz is the fallback
-- [ ] **RES-08**: When a catalogue number is present it is used as the primary Discogs key ahead of artist+title — it read cleanly on 6 of 12 fixtures and is far more discriminating for white labels
-- [ ] **RES-04**: A match above 0.75 normalised similarity is accepted, 0.50–0.75 is queued for user confirmation, below 0.50 is rejected
-- [ ] **RES-05**: HTTP 429 triggers backoff and retry rather than a failed resolution
-- [ ] **RES-06**: Resolution results are cached, so re-running the sequencer never re-issues a network request
-- [ ] **RES-07**: Cancelling or leaving a crate cancels that crate's in-flight resolution work
+- [x] **RES-03**: Discogs supplies release, artist, label and format; MusicBrainz is the fallback
+- [x] **RES-08**: When a catalogue number is present it is used as the primary Discogs key ahead of artist+title — it read cleanly on 6 of 12 fixtures and is far more discriminating for white labels
+- [x] **RES-04**: A match above 0.75 normalised similarity is accepted, 0.50–0.75 is queued for user confirmation, below 0.50 is rejected
+- [x] **RES-05**: HTTP 429 triggers backoff and retry rather than a failed resolution
+- [x] **RES-06**: Resolution results are cached, so re-running the sequencer never re-issues a network request
+- [x] **RES-07**: Cancelling or leaving a crate cancels that crate's in-flight resolution work
 
 ### BPM and Key
 
-- [ ] **BPM-01**: Every resolved track carries a BPM and a Camelot key, or is explicitly marked as lacking them
-- [ ] **BPM-02**: A bundled read-only copy of the owner's existing 7,010-track BPM/Camelot corpus is consulted first, before any network call
-- [ ] **BPM-03**: When the bundled corpus misses, audio is fetched from SoundCloud using the owner's existing OAuth credentials
-- [ ] **BPM-04**: Fetched audio is analysed on-device by the app's own Accelerate/vDSP analyser to produce tempo and key, and is not retained afterwards
-- [ ] **BPM-08**: Audio analysis sits behind an `AudioAnalyzing` protocol, so Apple's Music Understanding can replace the in-house analyser as a drop-in when an iOS 27 SDK exists
-- [ ] **BPM-09**: The analyser's accuracy is measured against the 29-track ground-truth set (known BPM + Camelot, audio already cached in `.local/`) and the figure is recorded — tempo scored octave-aware, key scored by Camelot distance
-- [ ] **BPM-05**: A detected key is converted to Camelot notation
-- [ ] **BPM-06**: Any BPM below 100 is doubled, unconditionally, to fold half-time reads into the genre's real range
+- [x] **BPM-01**: Every resolved track carries a BPM and a Camelot key, or is explicitly marked as lacking them
+- [x] **BPM-02**: A bundled read-only copy of the owner's existing 7,010-track BPM/Camelot corpus is consulted first, before any network call
+- [x] **BPM-03**: When the bundled corpus misses, audio is fetched from SoundCloud using the owner's existing OAuth credentials
+- [x] **BPM-04**: Fetched audio is analysed on-device by the app's own Accelerate/vDSP analyser to produce tempo and key, and is not retained afterwards
+- [x] **BPM-08**: Audio analysis sits behind an `AudioAnalyzing` protocol, so Apple's Music Understanding can replace the in-house analyser as a drop-in when an iOS 27 SDK exists
+- [x] **BPM-09**: The analyser's accuracy is measured against the 29-track ground-truth set (known BPM + Camelot, audio already cached in `.local/`) and the figure is recorded — tempo scored octave-aware, key scored by Camelot distance
+- [x] **BPM-05**: A detected key is converted to Camelot notation
+- [x] **BPM-06**: Any BPM below 100 is doubled, unconditionally, to fold half-time reads into the genre's real range
 - [ ] **BPM-07**: A track whose BPM cannot be established by any route is surfaced for manual entry rather than silently dropped
 
 ### Manual Entry
@@ -180,23 +180,23 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SEG-05 | Act II — Phase 6 | Complete — 06 |
 | SEG-06 | Act II — Phase 6 | Complete — 06 |
 | SEG-08 | Act II — Phase 6 | Complete — 06 |
-| RES-01 | Act II — Phase 7 | Pending |
-| RES-02 | Act II — Phase 7 | Pending |
-| RES-03 | Act II — Phase 7 | Pending |
-| RES-04 | Act II — Phase 7 | Pending |
-| RES-05 | Act II — Phase 7 | Pending |
-| RES-06 | Act II — Phase 7 | Pending |
-| RES-07 | Act II — Phase 7 | Pending |
-| RES-08 | Act II — Phase 7 | Pending |
-| BPM-01 | Act II — Phase 8 | Pending |
-| BPM-02 | Act II — Phase 8 | Pending |
-| BPM-03 | Act II — Phase 8 | Pending |
-| BPM-04 | Act II — Phase 8 | Pending |
-| BPM-05 | Act II — Phase 8 | Pending |
-| BPM-06 | Act II — Phase 8 | Pending |
-| BPM-07 | Act II — Phase 8 | Pending |
-| BPM-08 | Act II — Phase 8 | Pending |
-| BPM-09 | Act II — Phase 8 | Pending |
+| RES-01 | Act II — Phase 7 | Complete |
+| RES-02 | Act II — Phase 7 | Partial — engine done (max 3 in flight, proved by peak-in-flight); the per-item UI status is wired in Phase 11 |
+| RES-03 | Act II — Phase 7 | Complete |
+| RES-04 | Act II — Phase 7 | Complete |
+| RES-05 | Act II — Phase 7 | Complete |
+| RES-06 | Act II — Phase 7 | Complete |
+| RES-07 | Act II — Phase 7 | Complete |
+| RES-08 | Act II — Phase 7 | Complete |
+| BPM-01 | Act II — Phase 7 | Complete |
+| BPM-02 | Act II — Phase 7 | Complete |
+| BPM-03 | Act II — Phase 7 | Complete |
+| BPM-04 | Act II — Phase 7 | Complete |
+| BPM-05 | Act II — Phase 7 | Complete |
+| BPM-06 | Act II — Phase 7 | Complete |
+| BPM-07 | Act II — Phase 7 | Partial — engine done (Track.needsManualBPM, identity kept, reason recorded); the manual-entry screen is Phase 12 |
+| BPM-08 | Act II — Phase 7 | Complete |
+| BPM-09 | Act II — Phase 7 | Complete |
 | SEQ-01 | Act II — Phase 9 | Complete — 01-03 |
 | SEQ-02 | Act II — Phase 5 | Complete — re-validated under the bidirectional search |
 | SEQ-03 | Act II — Phase 5 | Complete — 05, bidirectional gate + full-neighbour search |

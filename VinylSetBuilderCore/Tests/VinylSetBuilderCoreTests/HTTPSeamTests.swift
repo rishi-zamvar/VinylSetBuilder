@@ -49,3 +49,18 @@ func test_givenFakeTransport_whenSent_thenRecorded() async throws {
     _ = try await transport.send(HTTPRequest(url: URL(string: "https://example.test/2")!))
     #expect(await transport.count == 2)
 }
+
+@Test("the seam's own vocabulary types are the ones the clients use")
+func test_givenTheSeamTypes_whenNamedExplicitly_thenTheyAreWhatTheyClaim() {
+    // Named rather than inferred on purpose: `HTTPRequest.Method`, `MatchBand` and
+    // `BPMKeyEntry` are reached everywhere else through type inference, which makes them
+    // invisible to the dead-declaration sweep. A type nothing ever NAMES looks dead and is not.
+    let method: HTTPRequest.Method = .post
+    #expect(method.rawValue == "POST")
+
+    let band: MatchBand = MatchScoring.band(0.9)
+    #expect(band == .accepted)
+
+    let entry = BPMKeyEntry(artist: "Goldie", title: "Terminator", bpm: 168, camelot: "5A")
+    #expect(entry.bpm == 168)
+}

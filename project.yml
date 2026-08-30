@@ -37,6 +37,13 @@ targets:
         basedOnDependencyAnalysis: false
         outputFiles:
           - $(SRCROOT)/App/Generated/Secrets.swift
+      # BPM-02: the tier-0 corpus, bundled as a resource. Same treatment as Secrets.swift —
+      # generated from a local file, gitignored, never in the public repo.
+      - script: "\"$SRCROOT/Scripts/generate-corpus.sh\""
+        name: Generate bpmkey.tsv
+        basedOnDependencyAnalysis: false
+        outputFiles:
+          - $(SRCROOT)/App/Generated/bpmkey.tsv
 
   VinylSetBuilderUITests:
     type: bundle.ui-testing
