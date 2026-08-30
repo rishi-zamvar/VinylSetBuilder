@@ -1,0 +1,123 @@
+import Foundation
+import Testing
+@testable import VinylSetBuilderCore
+
+/// SEQ-08 — the phase's success bar (CONTEXT.md: "If that has no test, this phase is not
+/// done."). Every fixture in this file is hand-constructed; no `makeCrateFixture` randomness
+/// anywhere here — the claim being proven is exact, not statistical.
+@Suite("Rejoin")
+struct RejoinTests {
+
+    @Test("A vinyl outside the BPM window is excluded, carrying the tempo reason")
+    func test_givenAVinylOutsideTheBPMWindow_whenSequenced_thenItIsExcluded() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+
+        let result = BeamSearchSequencer().sequence(candidates: v1 + v2, bpmTolerance: 4.0)
+
+        #expect(result.sequence.count == 1)
+        #expect(result.sequence.first?.vinylID == vinylID(1))
+        #expect(result.notIncluded.count == 1)
+        #expect(result.notIncluded.first?.vinylID == vinylID(2))
+        #expect(result.notIncluded.first?.reason == "No track within 4 BPM of the set")
+    }
+
+    // THE defining test of Phase 1: a previously excluded vinyl rejoins, in the right
+    // position, once a bridging vinyl is added. If this fails, nothing else matters.
+    @Test("The previously excluded vinyl rejoins, in last position, once a bridge is added")
+    func test_givenABridgingVinylIsAdded_whenResequenced_thenThePreviouslyExcludedVinylRejoins() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+        let v3 = makeVinyl(3, bpms: [174], camelots: ["8B"])
+
+        let result = BeamSearchSequencer().sequence(candidates: v1 + v2 + v3, bpmTolerance: 4.0)
+
+        #expect(result.sequence.count == 3)
+        #expect(result.notIncluded.isEmpty)
+        #expect(result.sequence.map(\.bpm) == [170, 174, 178])
+        #expect(result.sequence.map(\.vinylID) == [vinylID(1), vinylID(3), vinylID(2)])
+    }
+
+    @Test("Removing the bridge again excludes the vinyl once more — no memory of the prior run")
+    func test_givenTheBridgeIsRemovedAgain_whenResequenced_thenTheVinylIsExcludedOnceMore() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+
+        let result = BeamSearchSequencer().sequence(candidates: v1 + v2, bpmTolerance: 4.0)
+
+        #expect(result.sequence.count == 1)
+        #expect(result.notIncluded.count == 1)
+        #expect(result.notIncluded.first?.vinylID == vinylID(2))
+    }
+
+    @Test("Candidate order does not affect the result — re-optimisation is order-independent")
+    func test_givenTheSameCandidatesInADifferentOrder_whenSequenced_thenTheResultIsIdentical() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+        let v3 = makeVinyl(3, bpms: [174], camelots: ["8B"])
+        let unshuffled = v1 + v2 + v3
+
+        var rng = SeededRandom(seed: 12345)
+        let shuffled = unshuffled.shuffled(using: &rng)
+        // A degenerate shuffle would defeat the point of this test.
+        #expect(shuffled != unshuffled)
+
+        let expected = BeamSearchSequencer().sequence(candidates: unshuffled, bpmTolerance: 4.0)
+        let actual = BeamSearchSequencer().sequence(candidates: shuffled, bpmTolerance: 4.0)
+
+        #expect(actual == expected)
+    }
+
+    @Test("The bridge is found among a vinyl's candidates, not just its first one")
+    func test_givenABridgingVinylWhoseOnlyUsableCandidateIsItsSecond_whenResequenced_thenItStillBridges() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+        // Position 0 is a useless 190 BPM candidate; position 1 at 174 is the real bridge.
+        let v3 = makeVinyl(3, bpms: [190, 174], camelots: ["8B", "8B"])
+
+        let result = BeamSearchSequencer().sequence(candidates: v1 + v2 + v3, bpmTolerance: 4.0)
+
+        #expect(result.sequence.count == 3)
+        #expect(result.notIncluded.isEmpty)
+        let bridgeTrack = result.sequence.first { $0.vinylID == vinylID(3) }
+        #expect(bridgeTrack?.bpm == 174)
+        #expect(bridgeTrack?.position == 1)
+    }
+
+    @Test("A half-time bridge (87 -> folds to 174) still bridges on the re-run path")
+    func test_givenABridgeAddedAtHalfTime_whenResequenced_thenItStillBridges() {
+        let v1 = makeVinyl(1, bpms: [170], camelots: ["8A"])
+        let v2 = makeVinyl(2, bpms: [178], camelots: ["9A"])
+        let v3 = makeVinyl(3, bpms: [87], camelots: ["8B"])
+
+        let result = BeamSearchSequencer().sequence(candidates: v1 + v2 + v3, bpmTolerance: 4.0)
+
+        #expect(result.sequence.count == 3)
+        #expect(result.notIncluded.isEmpty)
+        #expect(result.sequence.map(\.bpm) == [170, 174, 178])
+        #expect(result.sequence.map(\.vinylID) == [vinylID(1), vinylID(3), vinylID(2)])
+    }
+
+    @Test("Two disjoint BPM islands merge into one sequence once a bridge is added")
+    func test_givenTwoDisjointBPMIslands_whenBridged_thenBothIslandsMergeIntoOneSequence() {
+        // Islands chosen so each is internally within tolerance (gap 2) but the islands are
+        // 8 BPM apart (exceeds tolerance 4) — genuinely disjoint before the bridge.
+        let v1 = makeVinyl(1, bpms: [168], camelots: ["5A"])
+        let v2 = makeVinyl(2, bpms: [170], camelots: ["5A"])
+        let v3 = makeVinyl(3, bpms: [178], camelots: ["6A"])
+        let v4 = makeVinyl(4, bpms: [180], camelots: ["6A"])
+        let islands = v1 + v2 + v3 + v4
+
+        let before = BeamSearchSequencer().sequence(candidates: islands, bpmTolerance: 4.0)
+        #expect(before.sequence.count == 2)
+        #expect(before.notIncluded.count == 2)
+
+        // The bridge sits exactly tolerance (4) from each island's nearest edge.
+        let bridge = makeVinyl(5, bpms: [174], camelots: ["5B"])
+        let merged = BeamSearchSequencer().sequence(candidates: islands + bridge, bpmTolerance: 4.0)
+
+        #expect(merged.sequence.count == 5)
+        #expect(merged.notIncluded.isEmpty)
+        #expect(merged.sequence.map(\.bpm) == [168, 170, 174, 178, 180])
+    }
+}
