@@ -109,7 +109,7 @@ add more → remove vinyl → delete crate without a single stub throwing, and e
 states is screenshotted into `Artifacts/screenshots/` after a settle delay.
 **Plans**: 5 planned, 4 waves
   - [x] 02-01 — `CrateDetailModel`: running order, the CRATE-07 pin, the manual override that survives a re-sequence, `addMore`/`update` (CRATE-03/04/05/07)
-  - [ ] 02-02 — XCUITest target, shared scheme, unattended run script, settle-delay screenshot pipeline proven end to end (CRATE-01)
+  - [x] 02-02 — XCUITest target, shared scheme, unattended run script, settle-delay screenshot pipeline proven end to end (CRATE-01)
   - [ ] 02-03 — `CrateDetailView`, `RootView` wiring, V1's inflection fix, the frozen accessibility-identifier contract (CRATE-01/02/03/04/05/06/07, SEQ-07, SEQ-11)
   - [ ] 02-04 — the whole-flow XCUITest walk and its fifteen photographed states (all nine requirements)
   - [ ] 02-05 — V1/V2 closure with evidence, visual audit of all fifteen pictures, hygiene sweep, ship-criterion audit

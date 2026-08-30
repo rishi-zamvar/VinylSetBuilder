@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: `CrateDetailModel` + `OrderingMode` + `CrateStore.addMore`/`update` shipped,
-last_updated: "2026-08-30T07:45:51.133Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-08-30T07:47:21.999Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 0
   total_plans: 13
-  completed_plans: 7
+  completed_plans: 8
   percent: 8
 ---
 
@@ -41,8 +41,8 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 2 of 14 (The Crate Screens, Stubbed)
-Plan: 02-01 complete (of 3 planned for Phase 2)
-Status: In progress — 02-02 and 02-03 outstanding
+Plan: 3-01 complete (of 3 planned for Phase 2)
+Status: Ready to execute
 Last activity: 2026-08-30
 
 Progress: [█░░░░░░░░░] 8%
@@ -88,6 +88,7 @@ Do not re-plan this. It is TDD'd and on disk.
 
 *Plan numbering restarts under the new phase structure. The old `01-0x` plans are preserved
 in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of what was built.*
+| Phase 02-crate-screens-stubbed P02 | 25m | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 - [Phase 02]: Membership is the sequencer's, arrangement is the user's — a manual order survives a re-sequence filtered to survivors, newcomers append, one call restores (D2-1)
 - [Phase 02]: moveRows hand-rolls the offset shift: SwiftUI's move(fromOffsets:toOffset:) is unreachable from Core under the D2-6 purity scan
+- [Phase 02-crate-screens-stubbed]: Shared scheme declared in project.yml — xcodebuild's autocreated scheme has no test action and cannot run a UI test target
+- [Phase 02-crate-screens-stubbed]: UI assertions match crate names only, never record-count strings — V1's rewording landed mid-run and would have broken a text-matching test
 
 ### Pending Todos
 
@@ -186,8 +189,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30 — executed plan 02-01.
-Stopped at: `CrateDetailModel` + `OrderingMode` + `CrateStore.addMore`/`update` shipped,
+Last session: 2026-08-30T07:47:21.996Z
+Stopped at: Completed 02-02-PLAN.md
 88 -> 113 tests green, V1 pluralisation fixed and closed.
 Next: plans 02-02 and 02-03 — the crate detail screen and the XCUITest walk.
 Resume file: None
