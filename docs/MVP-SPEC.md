@@ -128,8 +128,18 @@ Runs on Done and on every vinyl added afterward. Full re-optimization, not incre
 **Hard gate (BPM only):**
 ```
 |bpm[i+1] - bpm[i]| <= BPM_TOLERANCE     // default 4.0, user-tunable 3-6
-bpm sequence is non-decreasing
+                                         // EITHER direction, between consecutive tracks
 ```
+
+> **SUPERSEDED 2026-08-30** — this gate used to carry a second line, "bpm sequence is
+> non-decreasing", and that rule is retired. See `.planning/SEQUENCER-SPEC.md` for the owner's
+> revised statement. Tempo may now step down as well as up between consecutive tracks, so
+> `170 -> 174 -> 172` is a legal set when the keys make it the better one. Implemented in
+> Phase 5; `SequencerAdjacencyTests` is the executable statement of the gate.
+>
+> Note the owner's illustration `170 -> 178 -> 174` is **not** reachable under the confirmed
+> consecutive reading: `|178 - 170| = 8`, which exceeds the tolerance at every point of the
+> 3-6 range. It is legal only under the two-apart reading, which the spec explicitly kills.
 
 **Soft objective (Camelot):**
 ```
@@ -220,6 +230,6 @@ MVP ships when you can:
 
 1. Create a crate, scan 20 vinyls without waiting on any screen
 2. See metadata auto-resolve for most of them, hand-enter the rest in under 15 seconds each
-3. Get a sequenced set with ascending BPM and sensible harmonic neighbors
+3. Get a sequenced set whose consecutive tempo steps stay inside the tolerance, and whose harmonic neighbors make sense
 4. Add 5 more vinyls and watch the whole sequence re-optimize, including a previously excluded record rejoining
 5. Close the app, reopen it, and find the crate intact

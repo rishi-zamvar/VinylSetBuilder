@@ -78,11 +78,27 @@ fi
 # be planned against an unavailable SDK.
 absent G3 "no MusicUnderstanding reference" "MusicUnderstanding" App VinylSetBuilderCore UITests
 
-# ------------------------------------------- G4: the Phase 9 gap, re-confirmed not closed
-# Plan 01-05 was written and never executed. This gate RE-CONFIRMS the absence; it does not
-# close it. SEQ-08/09/10 are wholly outstanding. See phases/04-act-i-signoff/CARRIED-DEBT.md.
-absent G4 "AsyncSequencer/BeamDivergenceCheck still absent (Phase 9 gap, confirmed not closed)" \
-       "AsyncSequencer|BeamDivergenceCheck" App VinylSetBuilderCore UITests
+# ----------------------------------------------- G4: the Phase 9 gap, now CLOSED and held open
+# Plan 01-05 promised AsyncSequencer and BeamDivergenceCheck and was never executed; this gate
+# used to RE-CONFIRM their absence. Phase 5 built both, so the gate is inverted: it now fails if
+# either disappears, and it demands a real declaration rather than a passing mention, so a stray
+# comment naming the type cannot hold the gate up on its own.
+G4_ERR=""
+for sym in AsyncSequencer BeamDivergenceCheck; do
+    decl="VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/${sym}.swift"
+    [ -f "$decl" ] || G4_ERR="${G4_ERR}${sym}: ${decl} does not exist"$'\n'
+    grep -qE "^public struct ${sym}\b" "$decl" 2>/dev/null \
+        || G4_ERR="${G4_ERR}${sym}: no 'public struct ${sym}' declaration in ${decl}"$'\n'
+    # Referenced from somewhere OTHER than its own declaring file, or it is not wired in.
+    n=$(grep -rl --include='*.swift' "${EXCL[@]}" "\b${sym}\b" "${CODE_TREES[@]}" 2>/dev/null \
+        | grep -vc "^${decl}$")
+    [ "${n:-0}" -eq 0 ] && G4_ERR="${G4_ERR}${sym}: declared but referenced nowhere else"$'\n'
+done
+if [ -n "$G4_ERR" ]; then
+    fail G4 "SEQ-09/SEQ-10 seams missing (the Phase 5 gap has reopened)" "$(printf '%s' "$G4_ERR")"
+else
+    pass G4 "AsyncSequencer + BeamDivergenceCheck declared and referenced (SEQ-09, SEQ-10)"
+fi
 
 # ---------------------------------------------------------------- G5: no dead declarations
 # For every public type/func/var under Core Sources and every type under App/, count files
@@ -164,40 +180,44 @@ else
     fi
 fi
 
-# ------------------------------------- G8: the monotonic-BPM inventory matches the tree
-# SEQ-03 went bidirectional on 2026-08-30. The retired non-decreasing rule survives in the
-# shipped Act I code and docs. Phase 4 owns the LEDGER; Phase 9 owns the CODE, and must
-# start from an unmodified baseline, so nothing here edits an artefact.
+# ------------------------------------ G8: the retired non-decreasing BPM rule stays retired
+# SEQ-03 went bidirectional on 2026-08-30 and Phase 5 cleared all 17 artefacts that
+# CARRIED-DEBT.md section 2a inventoried. That ledger was a device for CARRYING an open debt --
+# it asserted "A-rows + N-rows == live sweep hits", which is the right shape while the debt is
+# outstanding and the wrong shape once it is paid: every new sentence merely DESCRIBING the
+# change would break the sum, and it did (the gate was already red at 34 hits against 32 rows
+# before Phase 5 touched anything).
 #
-# The gate: CARRIED-DEBT.md classifies EVERY hit of the two-pass sweep as either an
-# artefact (A-rows: asserts or implements the retired rule) or a non-artefact (N-rows:
-# matched the sweep for an unrelated reason). Deleting a row, or a new artefact appearing
-# in the tree, breaks the sum.
+# With the debt paid the honest gate is structural, in three parts.
 #
-# Pass 1 is prose and is case-INSENSITIVE: the case-sensitive form specified at planning
-# time silently missed "Non-decreasing" and "Monotonic" in BPMRules.swift.
-# Pass 2 is structural. It exists because the actual enforcement — `b >= a` in
-# BPMRules.canFollow — contains no matching word at all and no prose pass can ever find it.
-DEBT=.planning/phases/04-act-i-signoff/CARRIED-DEBT.md
-DEBT_TREES=(VinylSetBuilderCore App UITests docs .planning/ROADMAP.md)
-if [ ! -f "$DEBT" ]; then
-    skip G8 "monotonic-BPM inventory — $DEBT not found"
+# (a) The retired rule has two unmistakable executable forms and one marker. None has any
+#     legitimate use. Prose words like "monotonic" or "ascending" are NOT usable here any more,
+#     because the codebase now legitimately DESCRIBES the retirement and searches ascending in
+#     stage 1 -- an absence gate on those words would ban explaining the change.
+#     The patterns are built from concatenated fragments so this file cannot match itself.
+# (b) The specs may discuss the retired rule but may not state it as current: any line naming it
+#     must carry a supersession marker on that same line.
+# (c) A positive check. Absence alone cannot tell you the RIGHT rule is in place, and a gate that
+#     only proves something is missing is half a gate.
+G8_ERR=""
+
+G8_DEAD="$(printf 'b >''= a|bpm! >''= |\xe2\x9a\xa0\xef\xb8\x8f ST''ALE')"
+G8_HITS=$(grep -rInE "${EXCL[@]}" "$G8_DEAD" "${CODE_TREES[@]}" docs .planning/ROADMAP.md 2>/dev/null)
+[ -n "$G8_HITS" ] && G8_ERR="${G8_ERR}the retired rule is still written down as code or flagged stale:"$'\n'"$G8_HITS"$'\n'
+
+# Markers accepted: SUPERSEDED, retired/RETIRED. A line may name the dead rule only to bury it.
+G8_UNMARKED=$(grep -rInE "${EXCL[@]}" "non-decreasing|nondecreasing|monotonic" docs .planning/ROADMAP.md 2>/dev/null \
+              | grep -vE "SUPERSEDED|retired|RETIRED")
+[ -n "$G8_UNMARKED" ] && G8_ERR="${G8_ERR}spec states the retired rule with no supersession marker:"$'\n'"$G8_UNMARKED"$'\n'
+
+G8_GATE=VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/BPMRules.swift
+grep -qF 'abs(b - a) <= tolerance' "$G8_GATE" 2>/dev/null \
+    || G8_ERR="${G8_ERR}${G8_GATE}: canFollow is not the symmetric form 'abs(b - a) <= tolerance'"$'\n'
+
+if [ -n "$G8_ERR" ]; then
+    fail G8 "the retired non-decreasing BPM rule has come back" "$(printf '%s' "$G8_ERR")"
 else
-    UNION=$( { grep -rniE "${EXCL[@]}" "non-decreasing|nondecreasing|monotonic|ascending" "${DEBT_TREES[@]}" 2>/dev/null
-               grep -rnE  "${EXCL[@]}" "bpm! >= |b >= a|canFollow|⚠️ STALE"          "${DEBT_TREES[@]}" 2>/dev/null
-             } | sort -u | wc -l | tr -d ' ')
-    A=$(grep -cE '^\| A[0-9]+ \|' "$DEBT")
-    N=$(grep -cE '^\| N[0-9]+ \|' "$DEBT")
-    DECL=$(grep -oE 'ARTEFACT_COUNT=[0-9]+' "$DEBT" | head -1 | cut -d= -f2)
-    G8_ERR=""
-    [ -z "$DECL" ] && DECL=-1 && G8_ERR="${G8_ERR}no ARTEFACT_COUNT= declared in the inventory"$'\n'
-    [ "$A" -ne "$DECL" ] && G8_ERR="${G8_ERR}inventory declares ARTEFACT_COUNT=$DECL but the table has $A A-rows"$'\n'
-    [ $((A + N)) -ne "$UNION" ] && G8_ERR="${G8_ERR}A-rows($A) + N-rows($N) = $((A + N)), but the live two-pass sweep finds $UNION hits — $(( UNION > A+N ? UNION-A-N : A+N-UNION )) unaccounted"$'\n'
-    if [ -n "$G8_ERR" ]; then
-        fail G8 "monotonic-BPM inventory disagrees with the tree" "$(printf '%s' "$G8_ERR")"
-    else
-        pass G8 "monotonic-BPM inventory accounts for all $UNION sweep hits ($A artefacts + $N non-artefacts)"
-    fi
+    pass G8 "retired non-decreasing rule absent from code and marked superseded in the specs; gate is the symmetric form"
 fi
 
 # ------------------------------------------------- G9: the defect ledger is adjudicated

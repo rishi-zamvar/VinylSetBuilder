@@ -86,14 +86,14 @@ key transitions, that re-optimises when you add more.
 
 - [x] **SEQ-01**: Camelot distance is computed as flat hop count around the 12-position wheel, plus 1 for a letter change
 - [x] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
-- [ ] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE in EITHER direction — `|bpm[i+1] − bpm[i]| ≤ tolerance`. **The non-decreasing requirement is removed** (owner decision 2026-08-30, see `.planning/SEQUENCER-SPEC.md`). ⚠️ REOPENED — the shipped implementation enforces the old monotonic rule and its tests assert it, so both are now wrong
+- [x] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE in EITHER direction — `|bpm[i+1] − bpm[i]| ≤ tolerance`. The previous ordering clause is retired (owner decision 2026-08-30, see `.planning/SEQUENCER-SPEC.md`). Closed by Phase 5: `BPMRules.canFollow` is `abs(b - a) <= tolerance + 1e-9`, proved symmetric over a swept grid, and the search expands over the full neighbour set
 - [x] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
 - [ ] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
 - [x] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
 - [x] **SEQ-07**: Unresolved and excluded records share one collapsed section, each row carrying its own reason
-- [ ] **SEQ-08**: Adding a vinyl re-runs the whole optimisation, and a previously excluded record rejoins if a new addition bridges the gap
-- [ ] **SEQ-09**: Sequencing runs off the main thread and completes fast enough to feel instant at 100 vinyls / 400 candidates
-- [ ] **SEQ-10**: Beam search is checked against a wider beam for divergence, so a silently suboptimal path is detectable
+- [x] **SEQ-08**: Adding a vinyl re-runs the whole optimisation, and a previously excluded record rejoins if a new addition bridges the gap — `RejoinTests`, vinyl IDs `[1, 3, 2]`, and removing the bridge excludes it again
+- [x] **SEQ-09**: Sequencing runs off the main thread and completes fast enough to feel instant at 100 vinyls / 400 candidates — `AsyncSequencer` on a `Task.detached`; measured 1.1 s debug / 0.27 s release, 100 of 100 vinyls sequenced
+- [x] **SEQ-10**: Beam search is checked against a wider beam for divergence, so a silently suboptimal path is detectable — `BeamDivergenceCheck`; 20 runs vs width 150 (19 identical counts, width 50 never the loser) and 20 vs width 400 (20 identical)
 - [x] **SEQ-11**: Every track in a crate shows its BPM and Camelot key as a badge in the sequenced list
 
 ### Persistence
@@ -198,14 +198,14 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | BPM-08 | Act II — Phase 8 | Pending |
 | BPM-09 | Act II — Phase 8 | Pending |
 | SEQ-01 | Act II — Phase 9 | Complete — 01-03 |
-| SEQ-02 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
-| SEQ-03 | Act II — Phase 9 | ⚠️ REOPENED — spec changed 2026-08-30 |
-| SEQ-04 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
+| SEQ-02 | Act II — Phase 5 | Complete — re-validated under the bidirectional search |
+| SEQ-03 | Act II — Phase 5 | Complete — 05, bidirectional gate + full-neighbour search |
+| SEQ-04 | Act II — Phase 5 | Complete — re-validated; two-stage search, count then distance |
 | SEQ-05 | Act II — Phase 9 | Pending |
-| SEQ-06 | Act II — Phase 9 | Complete — 01-04, re-validate under bidirectional search |
-| SEQ-08 | Act II — Phase 9 | Pending |
-| SEQ-09 | Act II — Phase 9 | Pending |
-| SEQ-10 | Act II — Phase 9 | Pending |
+| SEQ-06 | Act II — Phase 5 | Complete — re-validated under the bidirectional search |
+| SEQ-08 | Act II — Phase 5 | Complete — 05 |
+| SEQ-09 | Act II — Phase 5 | Complete — 05 |
+| SEQ-10 | Act II — Phase 5 | Complete — 05 |
 | CAP-01 | Act III — Phase 10 | Pending |
 | CAP-04 | Act III — Phase 10 | Pending |
 | MAN-01 | Act III — Phase 12 | Pending |

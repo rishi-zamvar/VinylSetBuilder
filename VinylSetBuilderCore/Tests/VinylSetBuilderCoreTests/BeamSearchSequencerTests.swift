@@ -27,10 +27,10 @@ func test_givenAnyFixture_whenSequenced_thenVinylIDsAreUnique() {
 
 // MARK: - SEQ-03: BPM gate, bidirectional since 2026-08-30
 //
-// The three assertions that used to live here defended the RETIRED non-decreasing rule
-// (`b.bpm! >= a.bpm!`) and were green while doing it. They are gone. Adjacency, both
-// boundary directions and the backward step now live in SequencerAdjacencyTests.swift,
-// which asserts the window rather than the direction.
+// The three assertions that used to live here defended the RETIRED non-decreasing rule — a
+// raw "next BPM is at least the previous BPM" comparison — and were green while doing it.
+// They are gone. Adjacency, both boundary directions and the backward step now live in
+// SequencerAdjacencyTests.swift, which asserts the window rather than the direction.
 
 @Test("Every adjacent pair of the winning sequence is within tolerance, either direction")
 func test_givenSequence_whenInspected_thenEveryAdjacentPairIsWithinTolerance() {

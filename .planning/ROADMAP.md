@@ -338,13 +338,13 @@ sequencer would silently produce a different set each time.
 **Requirements**: SEQ-01, SEQ-02, SEQ-03, SEQ-04, SEQ-05, SEQ-06, SEQ-08, SEQ-09, SEQ-10
 **Already delivered** (Phase 1 plans 01-03 and 01-04, mapped here because sequencing is Act II
 work): SEQ-01 (`Camelot` flat hop count +1 for letter change), SEQ-02 (`Set<UUID>` enforcing
-one track per vinyl), SEQ-03 (BPM gate, non-decreasing), SEQ-04 (most vinyls wins, ties on
+one track per vinyl), SEQ-03 (BPM gate, bidirectional since 2026-08-30), SEQ-04 (most vinyls wins, ties on
 lowest total Camelot distance), SEQ-06 (exclusion with a plain-language reason) —
 `BeamSearchSequencer`, width 50.
 **Still outstanding**: SEQ-05, SEQ-08, SEQ-09, SEQ-10, and **Q1**.
 **Success Criteria** (what must be TRUE):
   1. **Q1 is answered.** `.planning/open-questions/Q1-sequencer-determinism.md` records that the rank tuple ends in `start-index asc`, derived from array position — so a shuffle may change which equal-ranked states survive pruning. A test builds a crate, sequences it, shuffles the candidate array with a **seeded** RNG, sequences again, and asserts the resulting **vinyl ID order** is identical — comparing IDs, not `Track` structs — across several seeds. The interrupted WIP test's `170 → 178 → 174` output must be explained: either the test was malformed (printing the input array) or the sequencer is genuinely order-dependent, and the answer is written down.
-  2. **If confirmed, it is fixed** by making the rank tuple a **total order** — appending a stable, position-independent tiebreaker, the track's UUID being the obvious candidate. `SEQ-03`'s non-decreasing guarantee is re-asserted on the fixed sequencer.
+  2. **If confirmed, it is fixed** by making the rank tuple a **total order** — appending a stable, position-independent tiebreaker, the track's UUID being the obvious candidate. `SEQ-03`'s **bidirectional adjacency** gate is then re-asserted on the fixed sequencer.
   3. `BPM_TOLERANCE` is a slider from 3 to 6 defaulting to 4.0, and moving it re-optimises the whole sequence live.
   4. Adding a vinyl re-runs the **whole** optimisation as a pure re-derivation with no memory of the prior run, and a previously excluded record **rejoins** when a new addition bridges the gap — proven on a hand-constructed fixture, not a random one.
   5. Sequencing runs off the main thread, and beam width 50 is checked against a wider beam so a silently suboptimal path is *detectable* rather than assumed absent.
@@ -449,7 +449,7 @@ and the final hygiene sweep that closes the project.
   1. `vinylctl` is a real executable target in the repo, built by the same `Scripts/` toolchain, composed from the Act II measurement harnesses rather than duplicating them. It links `VinylSetBuilderCore` and the same adapters the app does — **one pipeline, two front ends**, no second implementation.
   2. `vinylctl sequence <photos…>` runs photographs → OCR → segmentation → resolution → BPM/key → sequence and prints the ordered set with per-track BPM and Camelot, plus the not-included bucket with each row's reason.
   3. Subcommands expose each stage on its own (`ocr`, `segment`, `resolve`, `analyze`) so any future regression is bisectable to one stage from the command line, with no simulator involved.
-  4. **Definition of Done, walked end to end** (MVP-SPEC §9): create a crate and scan 20 vinyls without waiting on any screen; most auto-resolve and the rest hand-entered in under 15 s each; a sequenced set with ascending BPM and sensible harmonic neighbours; add 5 more and watch the sequence re-optimise **including a previously excluded record rejoining**; quit, reopen, crate intact.
+  4. **Definition of Done, walked end to end** (MVP-SPEC §9): create a crate and scan 20 vinyls without waiting on any screen; most auto-resolve and the rest hand-entered in under 15 s each; a sequenced set whose consecutive tempo steps stay inside the tolerance and whose harmonic neighbours make sense; add 5 more and watch the sequence re-optimise **including a previously excluded record rejoining**; quit, reopen, crate intact.
   5. Final hygiene sweep: zero dead code, zero unused protocol conformances, zero `TODO`/`FIXME`, consistent naming, purity guard green, and every stub from Act I deleted.
 **Ship criterion (measured)**: `vinylctl sequence` run over the 12 real photographs prints a
 non-empty sequenced set, and its output is committed as the project's closing artefact.
@@ -502,21 +502,21 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 14 | — (DoD proof + final sweep) | 0 |
 | **Total** | | **67** |
 
-**Already complete: 23 of 67.** SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07,
-CAP-02/03/05/06, OCR-04, SEG-07, SEQ-01/02/04/06/07/11.
-**Outstanding: 44 of 67.**
+**Already complete: 27 of 67.** SETUP-01/02/03/04, CRATE-01/02/03/04/05/06/07,
+CAP-02/03/05/06, OCR-04, SEG-07, SEQ-01/02/03/04/06/07/08/09/10/11.
+**Outstanding: 40 of 67.**
 
 *Recounted 2026-08-30 by plan 03-05's audit, from the ticked boxes in `REQUIREMENTS.md` and not
 by incrementing the previous line. Re-derive both halves in two commands:*
 
 ```
-grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  23
-grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  44        23 + 44 = 67
+grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md   ->  27
+grep -c "^- \[ \] \*\*" .planning/REQUIREMENTS.md   ->  40        27 + 40 = 67
 ```
 
 *Phase 3 contributed all six of its requirements. The previous figure of 17 was plan 02-05's and
-was correct when written — it predates Phase 3. `SEQ-03` remains **REOPENED** and is still not
-counted among the complete.*
+was correct when written — it predates Phase 3. The figure of 23 was correct until Phase 5, which
+closed `SEQ-03` (reopened by the spec change), `SEQ-08`, `SEQ-09` and `SEQ-10`: +4, hence 27.*
 
 ### Two placement notes, stated openly
 
@@ -549,7 +549,7 @@ Both were rejected. Time is not a constraint; quality is the focal point.
 The owner revised the BPM rule. See `.planning/SEQUENCER-SPEC.md` for the full statement.
 
 **Was:** consecutive tracks within tolerance AND BPM never decreases.
-**Now:** consecutive tracks within tolerance **in either direction**. Monotonicity is gone.
+**Now:** consecutive tracks within tolerance **in either direction**. SUPERSEDED: monotonic BPM is retired.
 
 ### Why this is not a small edit
 
@@ -597,7 +597,7 @@ against the wrong sequencer and retrofitting later is the expensive order.
 
 | # | Phase | Merges | Measured acceptance gate |
 |---|-------|--------|--------------------------|
-| **5** | **The Sequencer, Rewritten** | was 9 | Bidirectional adjacency `\|Δbpm\| ≤ tol` either direction; `170 → 178 → 174` produced when keys favour it; one track per vinyl; excluded vinyl **rejoins** when a later addition bridges the gap; identical vinyl order across 10 seeded shuffles (Q1); beam-50 vs beam-150 agree; 100 vinyls / 400 candidates inside a stated bound |
+| **5** | **The Sequencer, Rewritten** | was 9 | **DELIVERED 2026-08-30.** Bidirectional adjacency `\|Δbpm\| ≤ tol` either direction; a backward step produced when the keys favour it (the owner's literal `170 → 178 → 174` is unreachable at any tolerance — `\|Δ\| = 8` — and a test pins that finding); one track per vinyl; excluded vinyl **rejoins** at IDs `[1, 3, 2]` when a later addition bridges the gap; identical vinyl order across 10 seeded shuffles (Q1, measured 3x); beam 50 never loses records to beam 150 or 400; 100 vinyls / 400 candidates in 1.1 s debug / 0.27 s release |
 | **6** | **OCR & Segmentation** | was 5 + 6 | Both operate on the same 12 fixtures, so they share a harness. **≥ 6 clean / 5 partial / 1 fail** and **≥ 9 of 12** usable track counts. Angle clustering, EXIF orientation, catalogue numbers KEPT not discarded, price stickers filtered (closes V12) |
 | **7** | **Resolution & BPM Ladder** | was 7 + 8 | One ladder, one phase. Catalogue-number resolution **≥ 5 of 6** with the artist cross-check; SoundCloud match **≥ 72%**; tier-0 hit rate **measured**; vDSP analyser scored against the 29 cached ground-truth tracks — tempo octave-aware, key by Camelot distance |
 | **8** | **Wiring & Camera** | was 10 + 11 | Each stub swapped for its real implementation, walk green after each swap; live `AVCaptureSession` capture (device behaviour → UAT) |
@@ -607,8 +607,9 @@ against the wrong sequencer and retrofitting later is the expensive order.
 ## Carried into this compression, unchanged
 
 - **Q1** — sequencer determinism — is Phase 5's gate, not a footnote.
-- The retired non-decreasing rule survives in **17 places including executable code**
-  (`BPMRules.swift:17`, `b >= a && (b - a) <= tolerance + 1e-9`) and **three** stale tests, one
-  unmarked. Phase 5 clears all of it.
+- ~~The retired non-decreasing rule survives in **17 places including executable code** and
+  **three** stale tests, one unmarked.~~ **CLOSED by Phase 5, 2026-08-30.** All 17 artefacts of
+  `CARRIED-DEBT.md` §2a are gone, including the enforcement itself; hygiene gate G8 now asserts
+  their absence structurally rather than counting them in a ledger.
 - **V3** stays open pending the owner's answer on U8. **V12** is Phase 6's.
 - Act I's phase criterion clause 2 remains **NOT MET** and is not laundered by this compression.

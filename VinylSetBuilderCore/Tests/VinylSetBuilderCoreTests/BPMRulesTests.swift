@@ -31,7 +31,8 @@ func test_givenVeryLowBPM_whenFolded_thenFoldsOnlyOnce() {
 }
 
 // MARK: - Gate (SEQ-03, revised 2026-08-30: |Δbpm| ≤ tolerance, in EITHER direction.
-//         See .planning/SEQUENCER-SPEC.md. The old rule also demanded b >= a; it is retired.)
+//         See .planning/SEQUENCER-SPEC.md. The old rule also demanded the tempo never fall;
+//         that clause is retired, and hygiene gate G8 keeps it retired.)
 
 @Test("A gap exactly at tolerance is allowed going UP")
 func test_givenExactToleranceGapUpward_whenGated_thenAllowed() {
