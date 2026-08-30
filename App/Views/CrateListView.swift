@@ -17,7 +17,8 @@ struct CrateListView: View {
                     HStack {
                         Text(summary.name)
                         Spacer()
-                        Text("\(summary.recordCount) records")
+                        // V1: automatic grammar agreement — "1 record" / "4 records".
+                        Text("^[\(summary.recordCount) record](inflect: true)")
                             .foregroundStyle(.secondary)
                     }
                 }

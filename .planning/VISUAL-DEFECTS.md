@@ -5,10 +5,10 @@ which is exactly why the screenshot matters.
 
 | # | Defect | Evidence | Severity | Owner |
 |---|--------|----------|----------|-------|
-| V1 | **"1 records"** — pluralisation not handled | `01-06-crate-list.png`, row "Sunday Chill — 1 records" | Low, but it is the first thing anyone notices | Phase 1 polish |
+| ~~V1~~ | ~~**"1 records"** — pluralisation not handled~~ | **FIXED 2026-08-30 (plan 02-01).** `CrateListView` now uses `Text("^[\(count) record](inflect: true)")`. Verified on screen after a 5-second settle: `02-01-crate-list-pluralised.png` reads "Sunday Chill — 1 record" and "Friday Warehouse — 4 records". | — | Closed |
 | ~~V2~~ | ~~Whole UI washed out to near-invisible grey~~ | **NOT A DEFECT — RESOLVED 2026-08-30.** Re-captured after a 4-second settle delay: `sim-settled-crate-list.png` shows correct label-black title and rows with grey secondary counts. The original capture caught the **launch fade animation**. | — | Closed |
 
-## V1 fix
+## V1 fix — applied
 
 Use an inflected format rather than string interpolation:
 
