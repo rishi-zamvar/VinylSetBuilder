@@ -180,6 +180,10 @@ func test_givenAnOutOfRangeMove_whenApplied_thenNothingTraps() throws {
     let onlyID = try #require(single.rows.sequenced.first?.id)
     single.moveRows(fromOffsets: IndexSet(integer: 0), toOffset: 0)
     #expect(single.rows.sequenced.map(\.id) == [onlyID])
+    // V18. The displayed order alone is not the whole claim: a move that changed NOTHING must
+    // not commit an override either, or the screen offers a Restore with nothing to restore.
+    #expect(single.crate.manualOrder == nil)
+    #expect(single.orderingMode == .sequenced)
 
     // An index past the end of the list.
     var ladder = CrateDetailModel(crate: ladderCrate())
@@ -193,6 +197,28 @@ func test_givenAnOutOfRangeMove_whenApplied_thenNothingTraps() throws {
     // A row moved to its own index changes nothing about the displayed order.
     ladder.moveRows(fromOffsets: IndexSet(integer: 1), toOffset: 1)
     #expect(ladder.rows.sequenced.map(\.id) == before)
+    // V18, and the assertion this case omitted while its out-of-range sibling twelve lines
+    // above made it. An identity drag is a no-op: it may not put the crate into .manual.
+    #expect(ladder.crate.manualOrder == nil)
+    #expect(ladder.orderingMode == .sequenced)
+}
+
+/// V18, the OTHER direction. The guard that stops an identity drag committing an override must
+/// not become a guard that CLEARS one: on a list the user has already arranged by hand, a drag
+/// that lands where it started has to leave that arrangement exactly as it is. Without this
+/// test, "clear manualOrder on a no-op move" would pass the case above and silently throw the
+/// user's ordering away on a mistimed touch.
+@Test("CRATE-04: an identity drag on an ALREADY-MANUAL list preserves the order it already has")
+func test_givenAManualOrder_whenARowIsMovedOntoItsOwnIndex_thenTheExistingOrderIsPreserved() throws {
+    var (model, _) = try draggedLadder()
+    let manualBefore = try #require(model.crate.manualOrder, "the dragged ladder must be manual")
+    let displayedBefore = model.rows.sequenced.map(\.id)
+
+    model.moveRows(fromOffsets: IndexSet(integer: 1), toOffset: 1)
+
+    #expect(model.crate.manualOrder == manualBefore)
+    #expect(model.orderingMode == .manual)
+    #expect(model.rows.sequenced.map(\.id) == displayedBefore)
 }
 
 // MARK: - CRATE-05: Add More
