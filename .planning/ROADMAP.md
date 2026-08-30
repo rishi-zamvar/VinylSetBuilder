@@ -107,8 +107,18 @@ Act I work): CRATE-01, CRATE-02, CRATE-06, CRATE-07 (`CrateStore`, `FixtureCrate
 **Ship criterion (measured)**: an XCUITest walks list → create → capture → detail → reorder →
 add more → remove vinyl → delete crate without a single stub throwing, and every one of those
 states is screenshotted into `Artifacts/screenshots/` after a settle delay.
-**Plans**: TBD
+**Plans**: 5 planned, 4 waves
+  - [ ] 02-01 — `CrateDetailModel`: running order, the CRATE-07 pin, the manual override that survives a re-sequence, `addMore`/`update` (CRATE-03/04/05/07)
+  - [ ] 02-02 — XCUITest target, shared scheme, unattended run script, settle-delay screenshot pipeline proven end to end (CRATE-01)
+  - [ ] 02-03 — `CrateDetailView`, `RootView` wiring, V1's inflection fix, the frozen accessibility-identifier contract (CRATE-01/02/03/04/05/06/07, SEQ-07, SEQ-11)
+  - [ ] 02-04 — the whole-flow XCUITest walk and its fifteen photographed states (all nine requirements)
+  - [ ] 02-05 — V1/V2 closure with evidence, visual audit of all fifteen pictures, hygiene sweep, ship-criterion audit
 **UI hint**: yes
+**Planned against three facts worth carrying forward**: plan 01-05 was never executed, so
+`AsyncSequencer` and `BeamDivergenceCheck` do not exist on disk and SEQ-08/09/10 are wholly
+Phase 9's; SEQ-05 (the tolerance slider) is Phase 9's requirement and is deliberately absent
+here; and `BPMRules`/`BeamSearchSequencer` are untouched by Phase 2, so Phase 9's bidirectional
+rewrite starts from an unmodified baseline.
 
 ---
 
@@ -389,7 +399,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Protocol Seams | 4/4 | Complete | 2026-08-30 |
-| 2. The Crate Screens, Stubbed | 4/TBD | In progress | - |
+| 2. The Crate Screens, Stubbed | 0/5 | Planned | - |
 | 3. The Capture & Correction Screens, Stubbed | 0/TBD | Not started | - |
 | 4. Act I Sign-off — Every Screen, Photographed | 0/TBD | Not started | - |
 | 5. The OCR Engine | 0/TBD | Not started | - |
