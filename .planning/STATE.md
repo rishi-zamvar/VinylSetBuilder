@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-08-30T12:08:46.482Z"
+stopped_at: Completed 04-01-PLAN.md — screenshot inventory content-hashed; walk non-determinism found
+last_updated: "2026-08-30T12:31:52.420Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 2
   total_plans: 23
-  completed_plans: 17
+  completed_plans: 18
   percent: 89
 ---
 
@@ -143,6 +143,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 03 P04 | 48 | 2 tasks | 5 files |
 | Phase 03 P05 | ~95 min | 2 tasks | 40 files |
 | Phase 04 P02 | 25m | 3 tasks | 5 files |
+| Phase 04 P01 | 37m | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -222,6 +223,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 04]: 04-02: monotonic-BPM artefact count corrected to 17 (ledger said 'five places', table listed six); BPMRules.swift:17 `b >= a` is the retired rule as executable code, findable only by a structural pass
 - [Phase 04]: 04-02: THREE green assertions defend the retired BPM rule, not two — test_givenDescendingCandidates_whenSequenced_thenOrderIsAscending carries no STALE marker. Phase 9 rewrites three
 - [Phase 04]: 04-02: MetadataResolving kept with zero references — a declared seam Phase 7 (RES-01..08) implements, allowlisted in hygiene.sh G5 with its phase named
+- [Phase 04]: Gate B's whole-frame pixel fraction is a candidate generator, not a decider — declared duplicates carry a kind (IDENTICAL collapses the state count, DISTINCT does not)
+- [Phase 04]: sim-settled-crate-list.png deleted as the one orphan; 01-06-crate-list.png carries the same unfixed '1 records' state and is cited twice
 
 ### Pending Todos
 
@@ -301,8 +304,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T12:08:13.815Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-08-30T12:31:52.417Z
+Stopped at: Completed 04-01-PLAN.md — screenshot inventory content-hashed; walk non-determinism found
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.

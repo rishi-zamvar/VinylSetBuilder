@@ -177,7 +177,7 @@ fixed and the codebase swept clean before any engine work starts.
 `VISUAL-DEFECTS.md` has zero rows at Medium or above still open; a grep for `TODO`/`FIXME`
 across `App/` and `VinylSetBuilderCore/Sources/` returns zero hits.
 **Plans**: 5 planned, 0 delivered
-  - [ ] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
+  - [x] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
   - [x] 04-02 — `Scripts/hygiene.sh`: eight gates each proven able to fail, plus the carried-debt inventory corrected (S5/S6)
   - [ ] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
   - [ ] 04-04 — the defect ledger adjudicated row by row, `Scripts/ledger-check.py` as gate G9, U11 filed (S7)
