@@ -45,3 +45,41 @@ What was automated instead, so the phases could still be verified:
 |---|-------|--------------|-------|
 | ~~U5~~ | Walk the whole crate flow — create, view sequenced order, reorder, Add More, delete | **RESOLVED — now automated.** The simulator is installed; the flow is driven by XCUITest and every screen is screenshotted overnight. Screenshots land in `Artifacts/screenshots/`. Your review becomes 'look at the pictures', not 'run the app'. | 1 (CRATE-03..07) |
 | U6 | Judge whether the sequenced set reads correctly to a DJ | Irreducibly human. The assertions prove the ordering obeys its rules; only you can say the rules produce a good set. | 1 / 4 |
+
+---
+
+## Your decision — not a blocker, not urgent
+
+### D-1: Team ID committed to the public repo
+
+Plan 01-02 found a code-signing identity in your Keychain and wired its Team ID into
+`project.yml`, which is committed:
+
+```yaml
+DEVELOPMENT_TEAM: 373D7DZ9NM
+```
+
+**Upside:** device-signed builds now succeed. `xcodebuild -destination 'generic/platform=iOS'
+-allowProvisioningUpdates build` works. The only thing still blocking install on your phone is
+the phone not being connected (`xcrun devicectl list devices` → `unavailable`).
+
+**The honest risk assessment: near zero.** A Team ID is an identifier, not a credential.
+It cannot sign anything without the private key in your Keychain. It is routinely visible in
+App Store metadata, MDM profiles and thousands of public repositories.
+
+**But** it is a personal identifier tied to your paid account, and this project's stated rule
+is that nothing personal lives in the public repo. So it is your call, not mine — and I did
+not change it overnight because doing so risks breaking a build that currently works, for a
+non-secret.
+
+**If you want it out** (one line, ~2 minutes):
+
+```yaml
+# project.yml
+DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
+```
+
+then add `export DEVELOPMENT_TEAM=373D7DZ9NM` to `~/.config/keys/.env`, which
+`Scripts/generate-secrets.sh` already sources. Re-run `xcodegen generate` and rebuild.
+
+**If you are happy leaving it**, nothing to do — the build keeps working as-is.
