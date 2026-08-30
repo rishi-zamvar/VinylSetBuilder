@@ -6,7 +6,7 @@
 # This script is that sentence, decidable by one command.
 #
 # set -u and pipefail, but deliberately NOT -e: every gate must run and report, so that
-# one red gate cannot hide the state of the other seven.
+# one red gate cannot hide the state of the other eight.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -197,6 +197,36 @@ else
         fail G8 "monotonic-BPM inventory disagrees with the tree" "$(printf '%s' "$G8_ERR")"
     else
         pass G8 "monotonic-BPM inventory accounts for all $UNION sweep hits ($A artefacts + $N non-artefacts)"
+    fi
+fi
+
+# ------------------------------------------------- G9: the defect ledger is adjudicated
+# Sign-off gate S7: every V-row in VISUAL-DEFECTS.md is either CLOSED with a re-runnable
+# evidence path, or CARRIED with a named owner phase and a written reason. Nothing may sit
+# in between. S7 was the one sign-off gate judged by READING, and Phase 4's whole argument
+# is that reading is not a gate.
+#
+# Shells out to Scripts/ledger-check.py rather than re-implementing the parse, for the same
+# reason G2 shells out to the purity guard: there is one checker and it lives in one file.
+#
+# The checker PRINTS the Medium-or-above open count and never fails on it being non-zero.
+# Two Medium rows are legitimately carried; S7 is about adjudication being complete, not
+# about the count being zero. What that count means for the verdict is plan 04-05's call,
+# against rules CONTEXT.md fixed in advance.
+if [ ! -f Scripts/ledger-check.py ]; then
+    skip G9 "defect ledger (S7) — Scripts/ledger-check.py not found"
+else
+    G9_OUT=$(python3 Scripts/ledger-check.py 2>&1); G9_RC=$?
+    G9_SUMMARY=$(printf '%s\n' "$G9_OUT" | grep -E '^ledger: [0-9]+ rows,' | tail -1)
+    if [ "$G9_RC" -ne 0 ]; then
+        fail G9 "defect ledger not fully adjudicated (S7)" "$(printf '%s\n' "$G9_OUT" | grep -v '^ledger: [0-9]* rows,')"
+    elif [ -z "$G9_SUMMARY" ]; then
+        # A zero exit with no summary line means the checker did not actually run the
+        # ledger. Same hazard as G2's: a gate that passes having measured nothing is the
+        # worst kind, and ui-test.sh has exited 0 having run zero tests twice on this repo.
+        skip G9 "defect ledger — checker exited 0 but printed no summary; it measured nothing"
+    else
+        pass G9 "${G9_SUMMARY#ledger: }"
     fi
 fi
 
