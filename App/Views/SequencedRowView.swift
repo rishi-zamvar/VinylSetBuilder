@@ -14,7 +14,7 @@ struct SequencedRowView: View {
                 .frame(minWidth: 20, alignment: .leading)
             Text(row.title)
             Spacer()
-            BadgePairView(badges: row.badges)
+            BadgePairView(badges: row.badges, identifier: "badge-pair-seq-\(row.indexLabel)")
         }
     }
 }

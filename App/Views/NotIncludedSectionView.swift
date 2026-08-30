@@ -12,17 +12,25 @@ struct NotIncludedSectionView: View {
 
     var body: some View {
         DisclosureGroup(isExpanded: $expanded) {
-            ForEach(rows) { row in
+            // One-based within the bucket. SEQ-07's rows had NO identifier at all until now,
+            // which is why defects V3 and V4 both had to be argued from photographs rather
+            // than queried. `.contain` and not `.combine`: a combined row would swallow the
+            // badge pair's own element and the pair would stop being screenshot-able, which
+            // is the whole point of giving it one.
+            ForEach(Array(rows.enumerated()), id: \.element.id) { offset, row in
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(row.label)
                         Spacer()
-                        BadgePairView(badges: row.badges)
+                        BadgePairView(badges: row.badges,
+                                      identifier: "badge-pair-notincluded-\(offset + 1)")
                     }
                     Text(row.reason)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("not-included-row-\(offset + 1)")
             }
         } label: {
             Text(header)
