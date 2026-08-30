@@ -23,10 +23,20 @@ public struct BPMLadder: Sendable {
     private let analyser: any AudioAnalyzing
     private let keyConfidenceFloor: Double
 
-    /// Below this the Krumhansl-Schmuckler correlation is not holding a key, it is holding
-    /// noise, and a wrong key is worse than none: the sequencer can order round a missing key
-    /// but it cannot know a wrong one is wrong.
-    public static let defaultKeyConfidenceFloor = 0.5
+    /// MEASURED, on the 29-track ground truth (Artifacts/bpm/analyser-run1.json).
+    ///
+    /// Confidence does predict correctness — usable keys averaged 0.76, wrong ones 0.64 — but
+    /// only weakly, so the floor buys precision by throwing answers away:
+    ///
+    ///     floor 0.5   24 keys kept, 9 usable   38% precision
+    ///     floor 0.6   21 keys kept, 9 usable   43%
+    ///     floor 0.7   15 keys kept, 8 usable   53%
+    ///     floor 0.8    7 keys kept, 5 usable   71%
+    ///
+    /// 0.8 is the choice: seven keys of which five are usable beats twenty-four of which nine
+    /// are. A wrong key is worse than none, because the sequencer can order round a missing key
+    /// and cannot know a wrong one is wrong. Everything below the floor becomes a manual field.
+    public static let defaultKeyConfidenceFloor = 0.8
 
     public init(corpus: TierZeroCorpus?, soundCloud: SoundCloudClient? = nil,
                 decoder: (any AudioDecoding)? = nil,
