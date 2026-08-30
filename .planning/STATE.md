@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 03-05-PLAN.md — Phase 3 closed, 5 of 5
-last_updated: "2026-08-30T11:27:48Z"
+status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-08-30T12:08:46.482Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
-  completed_phases: 3
-  total_plans: 18
-  completed_plans: 16
+  completed_phases: 2
+  total_plans: 23
+  completed_plans: 17
   percent: 89
 ---
 
@@ -41,8 +41,8 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 3 of 14 (The Capture & Correction Screens, Stubbed) — **COMPLETE, 5 of 5**
-Plan: 03-05 complete. Next: **Phase 4 — Act I Sign-off — Every Screen, Photographed.**
+Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — IN PROGRESS
+Plan: 04-02 complete (2 of 5). Next: **04-03 — close V4 and V5 with measurements.**
 Status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
         drives all 12 fixture photographs through the capture screen in one session; the flip
         prompt fires on exactly `[1, 3, 4, 5, 7, 8, 10, 11, 12]` and is suppressed on exactly
@@ -142,6 +142,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 03 P03 | 47min | 3 tasks | 9 files |
 | Phase 03 P04 | 48 | 2 tasks | 5 files |
 | Phase 03 P05 | ~95 min | 2 tasks | 40 files |
+| Phase 04 P02 | 25m | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -218,6 +219,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 03]: 03-05: the two sheet frames are taken on fixtures 5 and 8, not on one fixture, because those are the only two carrying the corpus's longest trusted read (44 chars) and its longest read overall (106 chars) — the frames that make V13 answerable
 - [Phase 03]: 03-05: V9 narrowed to a repro — every frame with a large navigation title was taken before any .sheet was presented, every frame without one after; 33 of 33 frames obey it across three runs
 - [Phase 03]: 03-05: V3's second sighting was obtained by EXPANDING the not-included bucket, which 03-03 was forbidden to do; the walk photographs it and prints the labels but asserts nothing about them, so Phase 4's fix does not have to edit a test
+- [Phase 04]: 04-02: monotonic-BPM artefact count corrected to 17 (ledger said 'five places', table listed six); BPMRules.swift:17 `b >= a` is the retired rule as executable code, findable only by a structural pass
+- [Phase 04]: 04-02: THREE green assertions defend the retired BPM rule, not two — test_givenDescendingCandidates_whenSequenced_thenOrderIsAscending carries no STALE marker. Phase 9 rewrites three
+- [Phase 04]: 04-02: MetadataResolving kept with zero references — a declared seam Phase 7 (RES-01..08) implements, allowlisted in hygiene.sh G5 with its phase named
 
 ### Pending Todos
 
@@ -297,8 +301,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T10:17:59.764Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-08-30T12:08:13.815Z
+Stopped at: Completed 04-02-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
