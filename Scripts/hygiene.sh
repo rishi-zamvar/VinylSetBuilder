@@ -55,11 +55,16 @@ if [ ! -x Scripts/test.sh ]; then
 else
     G2_OUT=$(./Scripts/test.sh --filter CorePurity 2>&1); G2_RC=$?
     G2_N=$(printf '%s\n' "$G2_OUT" | sed -nE 's/.*Test run with ([0-9]+) tests? .*/\1/p' | tail -1)
-    if [ -z "$G2_N" ]; then
-        skip G2 "CorePurityTests — no toolchain or unparseable runner output (rc=$G2_RC)"
-    elif [ "$G2_RC" -ne 0 ]; then
-        fail G2 "CorePurityTests failed (rc=$G2_RC, $G2_N test(s) ran)" \
-                "$(printf '%s\n' "$G2_OUT" | grep -E '✘|failed|Core purity violated' | head -20)"
+    # rc is checked BEFORE parseability, deliberately. A mutation can CRASH the runner rather
+    # than fail cleanly — `import UIKit` in a Core source stops the package compiling, so no
+    # "Test run with N tests" line is ever printed. Reporting that as SKIP would describe a
+    # broken build as a missing toolchain. A crashed runner is not a red assertion, but it is
+    # certainly not a pass.
+    if [ "$G2_RC" -ne 0 ]; then
+        fail G2 "CorePurityTests did not pass (rc=$G2_RC, runner reported ${G2_N:-no} test count)" \
+                "$(printf '%s\n' "$G2_OUT" | grep -E '✘|error:|Core purity violated' | grep -v '^ ' | head -10)"
+    elif [ -z "$G2_N" ]; then
+        skip G2 "CorePurityTests — exited 0 but printed no test count; no toolchain?"
     elif [ "$G2_N" -ne 1 ]; then
         fail G2 "CorePurityTests ran $G2_N tests, expected exactly 1 — the filter is wrong, so a green here proves nothing"
     else
