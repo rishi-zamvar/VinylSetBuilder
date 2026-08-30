@@ -27,3 +27,12 @@ What was automated instead, so the phases could still be verified:
   build-phase hook is unverified.
 - **U4** → the sequencer is verified against hand-constructed fixtures with known-correct
   orderings, including the excluded-vinyl-rejoins case.
+
+---
+
+## Added during Phase 1 planning
+
+| # | Check | Why deferred | Phase |
+|---|-------|--------------|-------|
+| U5 | Walk the whole crate flow — create, view sequenced order, reorder, Add More, delete | Needs a running app and a human eye. No simulator runtime installed. All underlying logic IS covered by `swift test` (sequencer, rejoin, divergence, per-crate selection, manual order). | 1 (CRATE-03..07) |
+| U6 | Judge whether the sequenced set reads correctly to a DJ | Irreducibly human. The assertions prove the ordering obeys its rules; only you can say the rules produce a good set. | 1 / 4 |
