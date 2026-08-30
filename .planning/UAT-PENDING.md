@@ -155,3 +155,97 @@ question. Phase 4 implements whichever you pick.
 **Phase 3 needs nothing else from you.** All six of its requirements landed and are visible in
 the committed photographs. U1 (device install), U4 and U6 remain open from earlier phases and
 are unaffected.
+
+---
+
+## Added at Phase 4 close (plan 04-04, 2026-08-30)
+
+**Nothing in Phase 4 stopped for a UAT item.** Every plan in the phase ran to completion, and
+every item on this page is *recorded*, not blocking. That is CONTEXT.md's autonomy rule made
+auditable rather than asserted — the proof is U8 itself, which has been open since Phase 2
+while three consecutive phases carried V3 forward unfixed rather than guessing an answer.
+
+| # | Check | Why it can't be automated | Phase |
+|---|-------|---------------------------|-------|
+| U11 | **Should the capture strip count the session, or the crate?** Add More opens the capture screen reading `0 records` for a crate that already holds four — `Artifacts/screenshots/02-walk-11-add-more-capture.png` (Friday Warehouse, four records in it, `0 records` on the strip). The number is **correct as specified**: CAP-03's own wording is *"scanned so far in this session"*, and decision D-03-3 fixed it that way deliberately. The question is not whether it is right, it is whether it is the right number to **show**. Session count, or crate total? | It is a taste call about your own workflow, exactly like U8. Every automated measurement can confirm the number is 0 and that 0 is what the session contains; **none can say 0 is the right thing to put in front of a DJ** who is standing over a four-record crate. Filed now because V11 had sat as "informational" since Phase 3 with no mechanism to ever get answered — an unanswered question with no U-number is not a question, it is a shrug. | 4 |
+
+**U11 changes nothing until it is answered, and blocks nothing.** Phase 11 re-runs both walks
+and re-photographs this exact screen after each of its five stub swaps, so whichever number you
+pick lands in a set that is being regenerated anyway. Defect **V11** is carried against it —
+see `.planning/VISUAL-DEFECTS.md`, owner `Phase 4 / U11`.
+
+### U8 — what Phase 4 learned, and deliberately did not do
+
+U8 is unchanged as a question. Phase 4 **did not fix V3** — decision D-04-1, taken before any
+plan in the phase ran a command, precisely so that no plan could drift into answering it.
+
+What Phase 4 adds is one measured fact, and it is offered as **input to your decision, not as a
+recommendation**: the two candidate fixes are **not equivalent in their side effects.**
+
+| Candidate fix | What it costs elsewhere |
+|---|---|
+| **A — code side.** Give `VinylEntry.label` the same first-candidate `Track.displayName` fallback that `SequencedRow.title` already has | Nothing measured moves. The capture strip's tally is untouched. |
+| **B — fixture side.** Mark the fixture tracks `.resolved` | **Moves Phase 3's measured `6 Read / 5 Partial / 1 Unread` strip tally**, which is a committed baseline with a negative control behind it (mutation I reddens on exactly that tally). |
+
+That asymmetry is a fact about the two fixes. It is **not** an argument for A: which reading is
+right — "which record got left out must be legible in Act I" versus "it can wait until real
+resolution lands in Act III" — is still the product judgement only you can make, and a baseline
+being inconvenient to move is not a reason to prefer one product answer over another. Phase 4
+implements whichever you pick, in one plan, either way.
+
+Second sighting obtained since U8 was filed, on a screen that did not exist then:
+`03-walk-07-done-sequenced.png` shows twelve records in the bucket as `Vinyl 1` … `Vinyl 8`
+while `03-walk-04-strip-twelve.png`, four frames earlier **in the same session**, names the same
+records `HIGHER` / `Zzz.` / `inckatecks*`. One record, two names, two screens.
+
+### U9 — unchanged by Phase 4, and now the named blocker on a carried defect
+
+Phase 4 measured nothing that answers U9; the question is still a stopwatch and a thumb on a
+real layout. What changed is that U9 is now **named as the blocker on defect V15** in the
+adjudicated ledger, so the two cannot drift apart:
+
+- **V15** (the correction field truncates a 44-character line to `EXCLUSIVE NEW MIXES FR…`) is
+  carried to **Phase 6**, not to Phase 4, and the reason is written down: whether the truncation
+  matters depends on your answer to U9, **and** the population of long lines changes before any
+  layout fix would be designed, because SEG-03's filter drops the price-sticker, address and URL
+  fragments that make the longest lines long.
+- **V16** (the draft carries `SIMON BASSLINE SMITH` twice) is carried to Phase 6 for the same
+  reason and is part of the same question: U9 asks whether merge-up, split and hand-type are the
+  right three operations, and deleting a line you cannot tell apart from the one you are keeping
+  is a fourth thing the sheet currently asks of you.
+
+Nothing about the sheet was changed in Phase 4. The two frames U9 names are unchanged apart from
+the simulator clock and the badge-pair restyle that closed V4 elsewhere on other screens.
+
+### U10 — explicitly unchanged, said out loud rather than left to go quiet
+
+Phase 4 built no camera, touched no capture view geometry, and measured nothing new about
+`FramingGuide.sleeve`. **U10 is exactly as it was at the close of Phase 3**: the guide is
+verified as *geometry* (`290.67 × 291 pt`, square to within half a point, on three runs) and
+unanswerable as *ergonomics* until a camera is behind it.
+
+Recorded here rather than left silent because a UAT item that stops being mentioned reads, a
+phase later, like one that was resolved. It was not. Defect **V10** — the guide resizing when
+the flip prompt appears — is carried to **Phase 10** against the same wall, for the same reason:
+the preview is a black rectangle until an `AVCaptureSession` is behind it.
+
+### What Phase 4 needs from you
+
+**U8 (defect V3) and U11 (defect V11).** Both are product calls, both have a defect carried
+against them in `.planning/VISUAL-DEFECTS.md`, and neither blocks anything: Act I signs off with
+them open, and the verdict says so in those words rather than quietly re-wording the criterion.
+
+**U1, U4, U6, U9 and U10 remain open from earlier phases, and Phase 4 did not change them.**
+U1 needs the phone connected and Xcode signed into your Apple ID; U4 and U6 need you to look at
+a set and say whether you would play it; U9 needs a stopwatch on the correction sheet; U10 needs
+a camera. **U2, U3, U5 and U7 are resolved** and are struck through above.
+
+**Cross-reference audit, run in both directions by plan 04-04**, because a one-directional check
+passes on a dangling reference:
+
+- Every U-number cited in `VISUAL-DEFECTS.md` — U8 (V3), U9 (V15), U10 (V10's section), U11 (V11)
+  — exists here. **4 of 4, no dangling reference.**
+- Every U-number here whose phase is 4 — U4, U6, U8, U9, U11 — is cited by a ledger row, except
+  **U4 and U6**, and that is legitimate and is named rather than assumed: *"is this a set you
+  would actually play"* is not a visual defect, has no screenshot that could evidence it, and
+  therefore correctly has no V-row. **3 of 5 cited, 2 named as deliberately uncited.**
