@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md (VinylSetBuilderCore scaffold + domain model + protocol seams, 5/5 tests green)
-last_updated: "2026-08-30T06:48:35.123Z"
+stopped_at: Completed 01-03-PLAN.md (Camelot wheel + BPMRules, 20/20 new tests green, 25/25 full suite)
+last_updated: "2026-08-30T06:56:32.924Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 7
-  completed_plans: 1
+  total_plans: 8
+  completed_plans: 3
   percent: 14
 ---
 
@@ -27,7 +27,7 @@ key transitions, that re-optimises when you add more.
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
-Plan: 2 of 7
+Plan: 4 of 7
 Status: Ready to execute
 Last activity: 2026-08-30
 12 real fixture photos (65/65 requirements mapped, up from 63)
@@ -55,6 +55,8 @@ Progress: [█░░░░░░░░░] 14%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 2 | 3 tasks | 16 files |
+| Phase 01 P02 | 20min | 3 tasks | 11 files |
+| Phase 01 P03 | 12min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -80,6 +82,8 @@ Recent decisions affecting current work:
   seams, so each later phase's real implementation swaps in for a stub without new plumbing.
 
 - [Phase 01]: VinylSetBuilderCore SPM package created: 7 domain value types, 3 protocol seams (Sequencing/LabelSegmenting/MetadataResolving), 2 fixture stubs, purity guard test enforcing SETUP-02 (no AVFoundation/Vision/UIKit/AppKit/SwiftUI/SwiftData/URLSession in Core)
+- [Phase 01]: 01-02: DEVELOPMENT_TEAM recovered from local Apple Development signing identity (OU field) and set in project.yml, pushing device-signed build to succeed end-to-end; only the physically-disconnected iPhone now blocks install
+- [Phase 01-03]: Camelot distance = flat hop count + 1 for letter change (D1, locked); BPMRules.fold applies bpm<100 -> *2 exactly once (D6, locked)
 
 ### Pending Todos
 
@@ -109,7 +113,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-30T06:48:35.119Z
-Stopped at: Completed 01-01-PLAN.md (VinylSetBuilderCore scaffold + domain model + protocol seams, 5/5 tests green)
+Last session: 2026-08-30T06:56:22.691Z
+Stopped at: Completed 01-03-PLAN.md (Camelot wheel + BPMRules, 20/20 new tests green, 25/25 full suite)
 updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
 Resume file: None

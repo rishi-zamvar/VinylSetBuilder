@@ -72,8 +72,8 @@ as a natural consequence of that architecture, not as separate integration work.
 
 Plans:
 - [x] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
-- [ ] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
-- [ ] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
+- [x] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
+- [x] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
 - [ ] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
 - [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
 - [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
@@ -151,7 +151,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation, Domain Model & Sequencer | 0/7 | Not started | - |
+| 1. Foundation, Domain Model & Sequencer | 3/8 | In Progress|  |
 | 2. Camera + OCR | 0/TBD | Not started | - |
 | 3. Segmentation | 0/TBD | Not started | - |
 | 4. Metadata Resolution (identity + BPM/Key) | 0/TBD | Not started | - |

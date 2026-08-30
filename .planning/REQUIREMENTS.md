@@ -8,9 +8,9 @@ key transitions, that re-optimises when you add more.
 
 ### Project Setup
 
-- [ ] **SETUP-01**: Xcode project builds and runs on a physical iPhone 14 Pro under the paid developer account, targeting **iOS 26** — the installed SDK
+- [x] **SETUP-01**: Xcode project builds and runs on a physical iPhone 14 Pro under the paid developer account, targeting **iOS 26** — the installed SDK
 - [x] **SETUP-02**: Algorithm code (segmentation, sequencing, Camelot maths) lives in a local Swift package that links neither AVFoundation nor URLSession, so its tests cannot touch a camera or a network
-- [ ] **SETUP-03**: API credentials are read from `~/.config/keys/` at build time into a gitignored `Secrets.swift`, so no secret is ever committed to the public repo
+- [x] **SETUP-03**: API credentials are read from `~/.config/keys/` at build time into a gitignored `Secrets.swift`, so no secret is ever committed to the public repo
 - [x] **SETUP-04**: The full test suite runs from the command line with no device, no camera and no network
 
 ### Crate Management
@@ -84,7 +84,7 @@ key transitions, that re-optimises when you add more.
 
 ### Sequencing
 
-- [ ] **SEQ-01**: Camelot distance is computed as flat hop count around the 12-position wheel, plus 1 for a letter change
+- [x] **SEQ-01**: Camelot distance is computed as flat hop count around the 12-position wheel, plus 1 for a letter change
 - [ ] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
 - [ ] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE, and BPM never decreases along the sequence
 - [ ] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
@@ -147,11 +147,11 @@ key transitions, that re-optimises when you add more.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase 1 | Pending |
+| SETUP-01 | Phase 1 | Complete |
 | SETUP-02 | Phase 1 | Complete |
-| SETUP-03 | Phase 1 | Pending |
+| SETUP-03 | Phase 1 | Complete |
 | SETUP-04 | Phase 1 | Complete |
-| SEQ-01 | Phase 1 | Pending |
+| SEQ-01 | Phase 1 | Complete |
 | SEQ-02 | Phase 1 | Pending |
 | SEQ-03 | Phase 1 | Pending |
 | SEQ-04 | Phase 1 | Pending |
