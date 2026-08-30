@@ -203,6 +203,8 @@ key transitions, that re-optimises when you add more.
 | BPM-05 | Phase 4 | Pending |
 | BPM-06 | Phase 4 | Pending |
 | BPM-07 | Phase 4 | Pending |
+| BPM-08 | Phase 4 | Pending |
+| BPM-09 | Phase 4 | Pending |
 | MAN-01 | Phase 5 | Pending |
 | MAN-02 | Phase 5 | Pending |
 | MAN-03 | Phase 5 | Pending |
@@ -215,8 +217,8 @@ key transitions, that re-optimises when you add more.
 
 **Coverage:**
 - v1 requirements: 67 total
-- Mapped to phases: 65/67 — BPM-08, BPM-09 pending remap
-- Unmapped: 2 (BPM-08, BPM-09) ⚠️
+- Mapped to phases: 67/67 ✓
+- Unmapped: 0
 
 **Note:** `SEG-01` moved from Phase 2 into Phase 3 during the roadmap revision. The Phase 2
 OCR spike ran early (see `research/OCR-SPIKE.md`) and already answered the layout question
