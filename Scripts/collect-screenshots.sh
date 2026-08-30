@@ -6,16 +6,28 @@
 # out of build/ui.xcresult because xcresulttool's export subcommand has changed spelling across
 # Xcode releases, whereas `simctl get_app_container` has not.
 #
-# MEASURED 2026-08-30, do not re-derive: the runner is reinstalled on every `xcodebuild test`
-# and gets a BRAND NEW data container each time (verified by comparing container UUIDs across
-# two consecutive runs). So the container's Documents holds exactly this run's screenshots and
-# never a stale one — the names printed below are the run's real output.
+# CONTAINER FRESHNESS — re-measured 02-04, 2026-08-30, because 02-02 and 02-03 disagreed.
 #
-# Artifacts/screenshots/ on the HOST is a different matter: it accumulates, and nothing here
-# deletes from it. A caller whose gate counts files by glob — 02-04's is
-# `ls Artifacts/screenshots/02-walk-*.png | wc -l` == 15 — must clear its own glob first, or a
-# run that captured only fourteen will still count fifteen and pass on a leftover. Prefer
-# asserting on what this script reports it copied.
+# 02-02 said the runner gets a brand new data container on every `xcodebuild test`. 02-03 said
+# it observed PNGs persisting across five runs and called that claim wrong. 02-02 is right:
+# three consecutive `xcodebuild test` runs produced three different container UUIDs
+# (1CE93729… -> 498F1B2B… -> F69EAB81…), each holding only its own run's output.
+#
+# What 02-03 actually saw was the PREVIOUS run's complete output still sitting in the last
+# container — including four `02-03-probe-*.png` files that plan had deleted from the host but
+# not from the simulator. That is accumulation across PLANS, not across runs, and it matters
+# for one specific reason: this script copies whatever is in the current container, so running
+# it WITHOUT a preceding test run silently re-copies the previous run's PNGs onto the host and
+# they look like the current run's evidence. Always run Scripts/ui-test.sh first.
+#
+# The gate hazard is at the HOST end, and it is real: Artifacts/screenshots/ accumulates and
+# nothing here deletes from it. A caller whose gate counts files by glob — 02-04's is
+# `ls Artifacts/screenshots/02-walk-*.png | wc -l` == 15 — MUST clear its own glob first:
+#
+#     find Artifacts/screenshots -name '02-walk-*.png' -delete
+#
+# or a run that captured only fourteen states still counts fifteen and passes on a leftover.
+# Better still: assert on the filenames printed below, which are this run's real output.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
