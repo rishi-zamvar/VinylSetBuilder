@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 04-06-PLAN.md — gate S3 HOLDS (rc=0 x3), V18 CLOSED
-last_updated: "2026-08-30T15:55:28.770Z"
+status: in-progress
+stopped_at: Completed 05-PLAN.md — the sequencer is rewritten; Q1 CLOSED; hygiene 9/9
+last_updated: "2026-08-30T20:40:00.000Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 3
-  total_plans: 24
-  completed_plans: 22
-  percent: 91
+  total_plans: 25
+  completed_plans: 23
+  percent: 92
 ---
 
 # Project State
@@ -23,10 +23,13 @@ See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
 
-**Current focus:** Act I, Phase 4 — **the refusal is answered. Gate S3 HOLDS.** Plan 04-06 fixed
-V18, replaced the presence assertion that hid it, and ran `./Scripts/screenshots.sh` three
-consecutive times from a purged host: **rc=0 / rc=0 / rc=0**, where 04-05 measured
-rc=0 / rc=1 / rc=1. All seven gates S1–S7 now hold. Phases 1, 2 and 3 are closed.
+**Current focus:** Act II, Phase 5 — **The Sequencer, Rewritten. DELIVERED 2026-08-30.**
+Bidirectional BPM adjacency replaces the retired non-decreasing rule, as a two-stage search:
+an ascending sweep that maximises vinyl count, then 2-opt that minimises Camelot distance.
+`AsyncSequencer` and `BeamDivergenceCheck` — promised by plan 01-05 and never written — exist.
+All 17 artefacts of `CARRIED-DEBT.md` §2a are cleared. **Q1 is CLOSED: the sequencer is not
+order-dependent.** Suite 172 → 200 green; hygiene 8/9 → **9/9** (G8 was already red at baseline).
+Phases 1–4 are closed.
 
 ## The shape of the work
 
@@ -40,108 +43,41 @@ Three acts, strictly linear, no interleaving:
 
 ## Current Position
 
-Act: I of III
-Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — **6 of 6 plans delivered.**
-Plan: 6 of 6. Phase complete — ready for verification.
-Status: **Gate S3 HOLDS**, cleared 2026-08-30 by plan 04-06. The verdict 04-05 issued is
-        preserved verbatim in `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md`; what
-        changed is recorded in that file's **ADDENDUM**, appended rather than merged.
+Act: II of III
+Phase: 5 (The Sequencer, Rewritten) — **DELIVERED 2026-08-30.**
+Plan: 05, complete. See `.planning/phases/05-sequencer-rewritten/05-SUMMARY.md`.
+Status: **The product's core value is now real and measured.**
 
-        **The gate that failed, re-measured.** `./Scripts/screenshots.sh`, three consecutive
-        runs from a purged host against the final code: **rc=0, rc=0, rc=0**. Each run:
-        36 frames purged and 0 remaining, UI suite `Executed 7 tests, with 0 failures` from the
-        log *and* `passed=7 failed=0` from `build/ui.xcresult`, `totalTestCount=7` from
-        `ui-test.sh`'s zero-test guard, `AUDIT PASSED`, and 15 walk files → 14 distinct states.
-        The three runs are not three repetitions of one path: drag recipes **2, 1, 2** won, so
-        both edit-mode branches of the walk were exercised and both produced the same 14 states.
+        `./Scripts/test.sh` 200 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
+        `./Scripts/build-app.sh` SUCCEEDED · `./Scripts/ui-test.sh` totalTestCount=7.
 
-        **V18 is CLOSED**, with both halves of a route. Back to the defect: delete
-        `guard order != ids else { return }` from `CrateDetailModel.moveRows` and
-        `ManualOrderTests` reddens with 4 expectations, rc=1 — measured, then reverted. The
-        opposite mutation (clear the override on a no-op) reddens the preserve-direction test
-        with 3, rc=1 — also measured and reverted. To the fix: `a20a43d` the guard, `d658e3e`
-        the assertions the suite omitted, `fbcf12c` the walk's row-order measurement, `3efc975`
-        the edit-mode normalisation, `009ff13` `probe-frames --drift`.
+        **Measured.** Adjacency holds both directions (4.0 passes / 4.01 fails, up and down,
+        at the gate and through the sequencer, plus an 11,236-assertion symmetry sweep). A
+        backward step is produced when the keys favour it — distance 6 against the ascending
+        order's 11. The rejoin returns vinyl IDs `[1, 3, 2]`, present and last, and leaves
+        again when the bridge is removed. 100 vinyls / 400 candidates: 100 of 100 sequenced,
+        1.1 s debug / **0.27 s release**, off the main actor via `Task.detached`.
 
-        **The presence check is gone.** `reorderTookEffect()` polls `sequencedRowLabels()` for a
-        genuine permutation instead of asking whether a button exists, and the walk runs three
-        controls on that comparator **in band on every run** — it must reject a list against
-        itself, accept a reversal, and prove its position strip fires.
+        **Q1 — ANSWERED.** Identical vinyl-ID order across 10 seeded shuffles × 5 fixtures ×
+        4 tolerances. Measured three times, the third in a **separate process**, which rules
+        out per-process hash seeding as a same-binary re-run could not. The original WIP test
+        failed because it compared whole `SequenceResult` values and `notIncluded` is ordered
+        by input first-appearance **by design** — the comparison was too wide, not the
+        algorithm too loose.
 
-        **Two things were measured that nobody had:** recipe 1 (press-and-drag, edit mode ON)
-        genuinely reorders on only **3 of 8** runs — every green run through the old presence
-        check was recipe 1 "succeeding" on the identity move it had just committed, which is
-        V18's mechanism seen directly. And a **second defect** surfaced once recipe 1 could
-        lose: the walk's post-drag edit mode followed the gesture routing, so `02-walk-10` came
-        back byte-identical to `02-walk-07` (0 differing pixels) and an earlier three-run series
-        went rc=0 / rc=0 / rc=1. Fixed in `3efc975`; series-B run 3 is that exact case, at rc=0.
+        **Two acceptance items did not land as written, and are not laundered.**
+        1. `170 → 178 → 174` is arithmetically **unreachable** — `|Δ| = 8` exceeds tolerance at
+           every point of the 3–6 range. It is legal only under the two-apart reading the spec
+           kills. Pinned by a test and written into `MVP-SPEC.md` §5.
+        2. Beam 50 and beam 150 do **not** always agree: 19 of 20 identical counts, and the
+           one exception is width **150** finding fewer (39) where 50, 400 and 1000 find 40.
+           Beam search is not monotone in width — I claimed it was and measured it false. The
+           shipped gate asserts the true, stronger property: width 50 never loses records.
 
-        **The blind instrument now has a positional check.** `probe-frames.py --drift A B`
-        reports the mean delta **and** the differing-pixel count below y=150, failing on either.
-        Its permanent negative control is a synthetic permutation in `--selftest`:
-        `mean_delta=0.0` inside the ±0.06 bar while `content_px=20000`. The ±0.06 mean bar must
-        never be quoted on its own again. Used immediately: all **34** regenerated PNGs are
-        content-identical to the committed set below y=150 — 0 differing pixels each. The
-        `02-walk-08` vs `02-walk-09` pair is back at **31,273 px / 0.009890**, 04-05's figure for
-        the correct swapped state, against the defect's 9,131 px / 0.002888.
-
-        **All seven gates, re-measured:** S1 and S2 `AUDIT PASSED` (5 observations); **S3 rc=0
-        ×3**; S4 `test.sh` **172 green** (171 + 1 new case) and UI 7/0 from log and bundle
-        (3 each); S5 `hygiene.sh` **9 pass, 0 fail** (4); S6 23 + 44 = 67 (3); S7
-        `ledger-check.py` rc=0, **18 rows, 9 closed, 9 carried** (3, plus `--selftest`).
-
-        **What is still NOT met, said plainly.** The **act** criterion was already MET and is
-        unchanged. The **phase** criterion's clause 2 is **still NOT MET** and 04-06 did not
-        touch it: two Medium-or-above rows remain open — **V3**, blocked on the owner's
-        unanswered U8, and **V12**, owned by Phase 6's SEG-03 filter. Closing V18 moved the
-        ledger from 8 closed / 10 carried to 9 / 9; the Medium-or-above count is 2, as before.
-        `ui-test.sh`'s dead `RC=$?` under `set -e` (04-05 §11 finding 6) was left alone
-        deliberately — outside 04-06's scope, and the S3 evidence was gathered with the script
-        exactly as the verdict measured it. Three green tests still defend a retired
-        specification and `AsyncSequencer` / `BeamDivergenceCheck` still do not exist; both are
-        Phase 9's.
-
-Last activity: 2026-08-30
-
-Progress: [█████████░] 92%
-
-21 of the 23 plans on disk have summaries. The two that do not are **not** pending work:
-
-- `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
-  exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
-  Re-confirmed three times tonight by hygiene gate G4 (`rc=1`, no hits).
-
-- `01-08-PLAN.md` — **superseded, not skipped.** Its CRATE-03/04/05 content was delivered by
-  02-01 (`CrateDetailModel`) and 02-03 (`CrateDetailView`); its SEQ-05 tolerance slider moved
-  to Phase 9 by decision D2-4.
-
-**Requirements:** 67 total, 67 mapped, **23 complete, 44 outstanding**.
-
-> **Re-derived at Phase 4 close (plan 04-05) by EIGHT commands that had to agree — not copied
-> from anywhere, including from this file's previous figure:**
->
-> ```
-> grep -c "^- \[x\] \*\*"  .planning/REQUIREMENTS.md            ->  23   complete
-> grep -c "^- \[ \] \*\*"  .planning/REQUIREMENTS.md            ->  44   outstanding
-> grep -cE "^- \[.\] \*\*" .planning/REQUIREMENTS.md            ->  67   total
-> ... | sort -u | wc -l                                            ->  67   distinct IDs
-> ... | sort | uniq -d                                             ->  (empty)
-> ```
->
-> Plus: the traceability table has **67** rows; the ROADMAP phase table sums to **67** with no
-> duplicates; the set difference between the checkbox list and the traceability table is **empty
-> in both directions**; and — an extra check nobody asked for — the phase assignment per
-> requirement agrees between ROADMAP and traceability for all 67. `hygiene.sh` G7 agrees.
-> Nothing in `REQUIREMENTS.md` needed correcting.
->
-> `SEQ-03` is still **REOPENED** and still not counted. `./Scripts/test.sh` printed, on all three
-> runs tonight, a green line reading *"[STALE — retired spec, Phase 9 replaces] BPM is
-> non-decreasing across the whole winning sequence"*. That test passes and is **wrong**.
-> Phase 9's.
->
-> One stale figure was found and annotated rather than deleted: `ROADMAP.md`'s sequencer
-> amendment ends *"Requirements complete drops from 15 to 14"* — correct when written, three
-> counts ago.
+        **The divergence check earned its place on its first run**, catching a real bug: the
+        first bidirectional implementation returned 34 vinyls at widths 50–1000 and **37 at
+        width 10**. A narrower beam finding more records is a bug, not an approximation — the
+        primary objective had no search pressure because every state in a round ties on length.
 
 ## What already exists — 113 tests green, committed
 

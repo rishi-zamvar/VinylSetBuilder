@@ -1,6 +1,33 @@
 # Q1 — Is `BeamSearchSequencer` order-dependent?
 
-**Status:** OPEN. Must be answered by the rebuilt roadmap before the sequencer is signed off.
+**Status: CLOSED 2026-08-30 by Phase 5.** ANSWER: **the sequencer is NOT order-dependent.**
+
+Identical vinyl-ID order across 10 seeded shuffles x 5 fixtures x 4 tolerances, and on the dense
+100-vinyl / 400-candidate crate. Measured three times, the third in a **separate process**
+(release build) — which matters, because Swift's `Hasher` is seeded per process, so a same-binary
+re-run could not have ruled hash seeding out. Degenerate shuffles are counted and required to be
+zero, so the test cannot pass by failing to shuffle.
+
+**Possibility 1 was the right one, with a twist.** The WIP test compared whole `SequenceResult`
+values. `notIncluded` is built in input first-appearance order **by design**, so the not-included
+bucket reads in the order the user added the records; shuffle the input and that ORDER moves while
+its membership does not. The comparison was too wide, not the algorithm too loose. A control
+assertion in `SequencerDeterminismTests` requires that order to actually move, so the diagnosis is
+not vacuous.
+
+**The `170 → 178 → 174` output was indeed the INPUT array**, printed (v1@170, v2@178, v3@174) — as
+this document suspected. It is unreachable as an output: `|178 − 170| = 8` exceeds tolerance at
+every point of the 3–6 range.
+
+**The total-order fix was applied anyway**, and it is not decoration: the rank's `first`/`last`/path
+tiebreakers are sound only because the BPM-sorted array's key ends in the track UUID.
+
+Tests: `SequencerDeterminismTests.swift`, `RejoinTests.swift`. Summary:
+`.planning/phases/05-sequencer-rewritten/05-SUMMARY.md`.
+
+---
+
+*Original text as raised, preserved:*
 **Raised:** 2026-08-30, from a half-written test left by an interrupted executor.
 
 ## What was seen
