@@ -582,3 +582,33 @@ Requirements complete drops from **15 to 14**.
 > out of date now. The live count at Phase 4 close is **23 complete / 44 outstanding / 67 total**,
 > re-derived by eight commands that had to agree (plan 04-05, see
 > `.planning/phases/04-act-i-signoff/ACT-I-SIGNOFF.md` §5). Re-derive it; do not copy it.*
+
+---
+
+# COMPRESSED ROADMAP — 2026-08-30 (owner decision)
+
+Act I is built. Phases 5–14 are replaced by **six** phases. Rationale in
+`.planning/RIGOR-POLICY.md`. Target: completion by end of day.
+
+**The sequencer moves FIRST**, ahead of the engine — owner's decision, and the right one:
+it is algorithmic (a DAG traversal becomes a general-graph search), three currently-green tests
+defend the rule it retired, and every downstream stage consumes its output. Building the engine
+against the wrong sequencer and retrofitting later is the expensive order.
+
+| # | Phase | Merges | Measured acceptance gate |
+|---|-------|--------|--------------------------|
+| **5** | **The Sequencer, Rewritten** | was 9 | Bidirectional adjacency `\|Δbpm\| ≤ tol` either direction; `170 → 178 → 174` produced when keys favour it; one track per vinyl; excluded vinyl **rejoins** when a later addition bridges the gap; identical vinyl order across 10 seeded shuffles (Q1); beam-50 vs beam-150 agree; 100 vinyls / 400 candidates inside a stated bound |
+| **6** | **OCR & Segmentation** | was 5 + 6 | Both operate on the same 12 fixtures, so they share a harness. **≥ 6 clean / 5 partial / 1 fail** and **≥ 9 of 12** usable track counts. Angle clustering, EXIF orientation, catalogue numbers KEPT not discarded, price stickers filtered (closes V12) |
+| **7** | **Resolution & BPM Ladder** | was 7 + 8 | One ladder, one phase. Catalogue-number resolution **≥ 5 of 6** with the artist cross-check; SoundCloud match **≥ 72%**; tier-0 hit rate **measured**; vDSP analyser scored against the 29 cached ground-truth tracks — tempo octave-aware, key by Camelot distance |
+| **8** | **Wiring & Camera** | was 10 + 11 | Each stub swapped for its real implementation, walk green after each swap; live `AVCaptureSession` capture (device behaviour → UAT) |
+| **9** | **Manual Entry & Persistence** | was 12 + 13 | Hand-entry under 15 s measured as tap/keystroke count; a 20-vinyl crate survives terminate-and-reload with a field-by-field diff of 0 |
+| **10** | **`vinylctl` & Definition of Done** | was 14 | `vinylctl` prints a real sequenced set from the owner's 12 photographs; MVP-SPEC §9 walked |
+
+## Carried into this compression, unchanged
+
+- **Q1** — sequencer determinism — is Phase 5's gate, not a footnote.
+- The retired non-decreasing rule survives in **17 places including executable code**
+  (`BPMRules.swift:17`, `b >= a && (b - a) <= tolerance + 1e-9`) and **three** stale tests, one
+  unmarked. Phase 5 clears all of it.
+- **V3** stays open pending the owner's answer on U8. **V12** is Phase 6's.
+- Act I's phase criterion clause 2 remains **NOT MET** and is not laundered by this compression.
