@@ -34,22 +34,22 @@ key transitions, that re-optimises when you add more.
 
 ### Text Recognition
 
-- [ ] **OCR-01**: Each captured photo yields text observations with bounding boxes, per-observation confidence, and baseline angle
-- [ ] **OCR-02**: EXIF orientation is passed to `VNImageRequestHandler`, and the returned coordinates — which Vision reports in the ORIGINAL unrotated buffer space — are transformed into one documented convention exactly once
-- [ ] **OCR-03**: Recognition is seeded with a custom vocabulary of the owner's recurring label and artist names
+- [x] **OCR-01**: Each captured photo yields text observations with bounding boxes, per-observation confidence, and baseline angle
+- [x] **OCR-02**: EXIF orientation is passed to `VNImageRequestHandler`, and the returned coordinates — which Vision reports in the ORIGINAL unrotated buffer space — are transformed into one documented convention exactly once
+- [x] **OCR-03**: Recognition is seeded with a custom vocabulary of the owner's recurring label and artist names
 - [x] **OCR-04**: Raw recognised text for a label can be inspected on screen, for debugging a bad read
-- [ ] **OCR-05**: OCR runs off the main thread and never blocks the capture loop
+- [x] **OCR-05**: OCR runs off the main thread and never blocks the capture loop
 
 ### Segmentation
 
-- [ ] **SEG-01**: Angle-cluster segmentation is validated against the 12 committed fixture photographs, reporting per-fixture track-count accuracy (baseline established in `research/OCR-SPIKE.md`: 6 clean / 5 partial / 1 fail)
-- [ ] **SEG-02**: Observations are grouped by BASELINE ANGLE to separate physical surfaces (sleeve vs. record label), then grouped within each cluster — not by radial distance from a label centre, which the fixtures disproved
-- [ ] **SEG-03**: Non-track text is filtered before clustering — shop price stickers (currency/decimal regex), RPM, ℗/© lines, addresses, URLs and emails. Catalogue numbers are EXTRACTED AND KEPT, not discarded
-- [ ] **SEG-04**: A side or track marker splits tracks in preference to geometry — covering `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:` / `STEEL SIDE:` found in the fixtures
-- [ ] **SEG-05**: A parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one
-- [ ] **SEG-06**: The app infers whether an unscanned flip side probably exists, from side markers or their absence
+- [x] **SEG-01**: Angle-cluster segmentation is validated against the 12 committed fixture photographs, reporting per-fixture track-count accuracy (baseline established in `research/OCR-SPIKE.md`: 6 clean / 5 partial / 1 fail)
+- [x] **SEG-02**: Observations are grouped by BASELINE ANGLE to separate physical surfaces (sleeve vs. record label), then grouped within each cluster — not by radial distance from a label centre, which the fixtures disproved
+- [x] **SEG-03**: Non-track text is filtered before clustering — shop price stickers (currency/decimal regex), RPM, ℗/© lines, addresses, URLs and emails. Catalogue numbers are EXTRACTED AND KEPT, not discarded
+- [x] **SEG-04**: A side or track marker splits tracks in preference to geometry — covering `A`/`AA`/`B`/`BB`, `A1`/`B2`, `SIDE A`, `Side One`, and arbitrary named sides such as `COLD SIDE:` / `STEEL SIDE:` found in the fixtures
+- [x] **SEG-05**: A parenthetical suffix (`(VIP)`, `(Remix)`, `(Dub)`) attaches to the preceding track rather than starting a new one
+- [x] **SEG-06**: The app infers whether an unscanned flip side probably exists, from side markers or their absence
 - [x] **SEG-07**: User can correct any segmentation result — split a track, merge two, or type a track line by hand
-- [ ] **SEG-08**: Only observations at the trusted confidence tier are used for track lines; the fixtures showed confidence is effectively binary (1.00 vs 0.50/0.30), so a fractional threshold is not a useful filter
+- [x] **SEG-08**: Only observations at the trusted confidence tier are used for track lines; the fixtures showed confidence is effectively binary (1.00 vs 0.50/0.30), so a fractional threshold is not a useful filter
 
 ### Metadata Resolution
 
@@ -169,17 +169,17 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | CAP-06 | Act I — Phase 3 | Complete — 03-03/03-05 |
 | OCR-04 | Act I — Phase 3 | Complete — 03-02/03-04/03-05 |
 | SEG-07 | Act I — Phase 3 | Complete — 03-02/03-04/03-05 |
-| OCR-01 | Act II — Phase 5 | Pending |
-| OCR-02 | Act II — Phase 5 | Pending |
-| OCR-03 | Act II — Phase 5 | Pending |
-| OCR-05 | Act II — Phase 5 | Pending |
-| SEG-01 | Act II — Phase 6 | Pending |
-| SEG-02 | Act II — Phase 6 | Pending |
-| SEG-03 | Act II — Phase 6 | Pending |
-| SEG-04 | Act II — Phase 6 | Pending |
-| SEG-05 | Act II — Phase 6 | Pending |
-| SEG-06 | Act II — Phase 6 | Pending |
-| SEG-08 | Act II — Phase 6 | Pending |
+| OCR-01 | Act II — Phase 6 | Complete — 06 |
+| OCR-02 | Act II — Phase 6 | Complete — 06 |
+| OCR-03 | Act II — Phase 6 | Complete — 06 |
+| OCR-05 | Act II — Phase 6 | Complete — 06 |
+| SEG-01 | Act II — Phase 6 | Complete — 06 |
+| SEG-02 | Act II — Phase 6 | Complete — 06 |
+| SEG-03 | Act II — Phase 6 | Complete — 06 |
+| SEG-04 | Act II — Phase 6 | Complete — 06 |
+| SEG-05 | Act II — Phase 6 | Complete — 06 |
+| SEG-06 | Act II — Phase 6 | Complete — 06 |
+| SEG-08 | Act II — Phase 6 | Complete — 06 |
 | RES-01 | Act II — Phase 7 | Pending |
 | RES-02 | Act II — Phase 7 | Pending |
 | RES-03 | Act II — Phase 7 | Pending |

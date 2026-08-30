@@ -65,7 +65,7 @@ HUMAN_ROW = re.compile(r"^\| ~{0,2}(V\d+)~{0,2} \|")
 PNG = re.compile(r"[\w.\-]+\.png")
 HEADLINE = re.compile(
     r"\*\*(\d+) rows: (\d+) closed, (\d+) carried, "
-    r"of which (\d+) are Medium or above\.\*\*"
+    r"of which (\d+) (?:is|are) Medium or above\.\*\*"    # grammar only; the number is the gate
 )
 EVIDENCE_FORMS = (
     ("a .png basename", PNG),
