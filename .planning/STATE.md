@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-04-PLAN.md
-last_updated: "2026-08-30T08:22:27.179Z"
+status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
+stopped_at: Completed 02-05-PLAN.md — Phase 2 CLOSED
+last_updated: "2026-08-30T08:34:33.132Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 13
-  completed_plans: 10
-  percent: 77
+  completed_plans: 11
+  percent: 85
 ---
 
 # Project State
@@ -40,18 +40,31 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 2 of 14 (The Crate Screens, Stubbed)
-Plan: 02-04 complete (of 5 planned for Phase 2 — 02-05 remains)
-Status: In progress
+Phase: 2 of 14 (The Crate Screens, Stubbed) — **COMPLETE**
+Plan: 02-05 complete. All 5 of Phase 2's plans delivered.
+Status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
 Last activity: 2026-08-30
 
-Progress: [████████░░] 77%
+Progress: [█████████░] 85%
 
-**Requirements:** 67 total, 67 mapped, 19 complete, 48 outstanding.
+11 of the 13 plans on disk have summaries. The two that do not are **not** pending work:
 
-> CRATE-03/04/05 are checked off at the **Core value-type** layer (plan 02-01). The
-> crate detail screen that makes them user-visible is plan 02-03; the phase does not
-> ship until its XCUITest walk and 15 screenshots are green.
+- `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
+  exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
+  This is the one real gap between the Phase 1 record and what is on disk.
+
+- `01-08-PLAN.md` — **superseded, not skipped.** Its CRATE-03/04/05 content was delivered by
+  02-01 (`CrateDetailModel`) and 02-03 (`CrateDetailView`); its SEQ-05 tolerance slider moved
+  to Phase 9 by decision D2-4. Nothing from it is missing except SEQ-05, which is tracked
+  there.
+
+**Requirements:** 67 total, 67 mapped, 17 complete, 50 outstanding.
+
+> **Corrected 2026-08-30 by plan 02-05's audit: 17 complete, 50 outstanding — not 19.**
+> Recounted from the ticked boxes: `grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17.
+> CRATE-03/04/05 are complete at every layer now: the value types (02-01), the screen (02-03),
+> and photographed in the walk (02-04). `SEQ-03` is **not** complete — it was REOPENED when the
+> sequencer spec went bidirectional, and both ROADMAP and REQUIREMENTS had been counting it.
 
 ## What already exists — 113 tests green, committed
 
@@ -91,6 +104,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 02-crate-screens-stubbed P02 | 25m | 2 tasks | 6 files |
 | Phase 02 P03 | 55 min | 2 tasks | 5 files |
 | Phase 02 P04 | ~50 min | 2 tasks | 18 files |
+| Phase 02-crate-screens-stubbed P05 | 35m | 2 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -147,6 +161,10 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 02]: Accessibility identifiers are verified against the live tree with a throwaway probe, never assumed — it found three functional defects no unit test could reach
 - [Phase 02]: 02-04: the crate walk asserts on frozen identifiers only; the one caption under test (ordering-mode-label) is captured before the act and asserted CHANGED, never hardcoded
 - [Phase 02]: 02-04: container freshness re-measured across three runs — 02-02 was right (fresh container per xcodebuild test); 02-03's persistence reading was the previous run's own output. The screenshot count gate must purge the HOST glob, which is the real hazard
+- [Phase 02]: 02-05: every behavioural claim in the phase record now carries its sample count — nothing is asserted from one observation, after 02-03 and 02-04 both got container freshness wrong that way
+- [Phase 02]: 02-05: V2's closure re-confirmed FUNCTIONALLY, not photometrically — the walk taps six controls and they all respond, and disabled content is not tappable, which no pixel measurement can match
+- [Phase 02]: 02-05: the requirement count was wrong in BOTH directions (counted reopened SEQ-03, omitted CRATE-03/04/05) and the two errors cancelled to a plausible 15/52 — corrected to 17/50, recount command written beside the figure
+- [Phase 02]: 02-05: the mktemp XXXXXX gate hit is reported, not filtered — narrowing the grep to manufacture a green exit code is exactly the gate-weakening the plan forbids
 
 ### Pending Todos
 
@@ -155,6 +173,26 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ### Blockers/Concerns
 
+- **V3 — the not-included bucket cannot tell you which record it excluded.** It labels the row
+  `Vinyl 2` while showing that record's real `178` / `6A` badges and the reason "No track within
+  4 BPM of the set". The app can name that track `Dillinja — Angels Fell`. Root cause read from
+  source: `VinylEntry.label` requires `resolutionState == .resolved` while `SequencedRow.title`
+  uses `Track.displayName` which does not, and **no fixture `Track` ever sets `.resolved`**.
+  Medium. Evidence `Artifacts/screenshots/02-walk-07-not-included-expanded.png`. Phase 4 owns
+  the fix; the owner owns the call (U8 in `UAT-PENDING.md`) because it is defensibly either a
+  code defect or a fixture defect.
+
+- **SEQ-08 / SEQ-09 / SEQ-10 are wholly outstanding, and the Phase 1 record implies otherwise.**
+  Plan 01-05 was never executed; `AsyncSequencer` and `BeamDivergenceCheck` do not exist on
+  disk. Phase 9 inherits `01-05-PLAN.md` and `RejoinTests.swift.wip`. **This is Phase 9 debt,
+  not Phase 2 debt.**
+
+- **Six Act I artefacts still assert the removed non-decreasing BPM rule** (SEQ-03 went
+  bidirectional 2026-08-30), including a currently-green test named *"BPM is non-decreasing
+  across the whole winning sequence"*. Deliberately NOT fixed in Phase 2 — `Sequencing/` is
+  provably untouched since `59e2f3c feat(01-04)`, so Phase 9 rewrites from a clean baseline.
+  Full inventory in `REQUIREMENTS.md`.
+
 - **Q1 — the sequencer may be order-dependent.** The beam's rank tuple ends in
   `start-index asc`, derived from array position, so a shuffle can change which equal-ranked
   states survive pruning. Because the sequencer re-runs on every vinyl added, this would
@@ -162,7 +200,15 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
   confirmed, fix it by making the rank tuple a total order with a position-independent
   tiebreaker (the track UUID). See `.planning/open-questions/Q1-sequencer-determinism.md`.
 
-- **V1 / V2 — visual defects, open.** "1 records" pluralisation, and the whole UI washed out
+- **V1 / V2 — CLOSED 2026-08-30 by plan 02-05.** V1 fixed and verified in
+  `02-walk-01-crate-list.png` with a two-sided assertion; V2 was never a defect (launch fade)
+  and its closure was re-confirmed on the four screens Phase 2 added, probed twice with
+  `SUSPECT: none`, plus a functional disproof — the walk taps six controls and they all
+  respond, and disabled content is not tappable. **Phase 4 instead inherits V3 (Medium — the
+  not-included bucket names a fully-known record "Vinyl 2") and V4–V7 (Low).** V3 needs the
+  owner's call, logged as U8. Original wording, kept for the record:
+
+- ~~**V1 / V2 — visual defects, open.**~~ "1 records" pluralisation, and the whole UI washed out
   to near-invisible grey. **V2 must first rule out a launch-fade screenshot artefact** by
   re-screenshotting after a settle delay, before any restyling; then check `.disabled(true)`
   on an enclosing view, because that would make it a functional bug wearing a cosmetic
@@ -196,8 +242,10 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T08:21:58.813Z
-Stopped at: Completed 02-04-PLAN.md
-88 -> 113 tests green, V1 pluralisation fixed and closed.
-Next: plans 02-02 and 02-03 — the crate detail screen and the XCUITest walk.
+Last session: 2026-08-30T08:33:38.864Z
+Stopped at: Completed 02-05-PLAN.md — Phase 2 CLOSED
+113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
+after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
+recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
+Next: Phase 3 — The Capture & Correction Screens, Stubbed.
 Resume file: None
