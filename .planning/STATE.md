@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 3 in progress. 03-03 done (the capture screen); 03-04 and 03-05 remain.
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-08-30T09:34:16.529Z"
+status: completed
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-08-30T10:18:34.402Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 1
   total_plans: 18
-  completed_plans: 14
-  percent: 85
+  completed_plans: 15
+  percent: 83
 ---
 
 # Project State
@@ -41,17 +41,21 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 3 of 14 (The Capture & Correction Screens, Stubbed) — **IN PROGRESS**
-Plan: 03-03 complete. 3 of Phase 3's 5 plans delivered (03-01, 03-02, 03-03).
-Next: 03-04 (the inspect / correct sheet), then 03-05 (the 12-fixture walk and the audits).
-Status: The capture screen is live. CAP-02/03/05/06 complete; Phase 2's fifteen-state walk
-        repaired and green against it (3 UI tests, 0 failures, confirmed from log AND
-        build/ui.xcresult). New visual defects V9/V10/V11 filed; V7 and V8 closed.
+Plan: 03-04 complete. 4 of Phase 3's 5 plans delivered (03-01, 03-02, 03-03, 03-04).
+Next: 03-05 (the 12-fixture walk, the 21-item scroll test, the visual and ship-criterion audits).
+Status: The inspect / correct sheet is live. OCR-04 and SEG-07 complete — split, merge-up and
+        hand entry are each one tap, proved by two-sided line-count deltas on the owner's real
+        OCR, and the raw list keeps the 0.30 reads the segmenter drops. 4 UI tests, 0 failures,
+        confirmed from log AND build/ui.xcresult; 168 Core tests green; device-SDK build green.
+        Four mutations (E/F/G/H) reddened cleanly and were reverted. New visual defects V12
+        (a record titled "Zzz." from its first spatial read) and V13 (long-line behaviour not
+        assessable) filed.
 Last activity: 2026-08-30
 
-Progress: [████████░░] 78%
+Progress: [████████░░] 83%
 
-14 of the 18 plans on disk have summaries. Two of the four that do not are Phase 3's
-still-outstanding `03-04` and `03-05`; the other two are **not** pending work:
+15 of the 18 plans on disk have summaries. One of the three that do not is Phase 3's
+still-outstanding `03-05`; the other two are **not** pending work:
 
 - `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
   exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
@@ -116,6 +120,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 03 P02 | ~50 min | 2 tasks | 4 files |
 | Phase 03 P01 | ~40 min | 3 tasks | 12 files |
 | Phase 03 P03 | 47min | 3 tasks | 9 files |
+| Phase 03 P04 | 48 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -184,6 +189,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 03]: Capture screen holds no rules: framing-guide geometry derived from FramingGuide.sleeve, never retyped (measured 0.881 coverage on rendered pixels)
 - [Phase 03]: Thumbnail status pill sits outside the tile's Button — a SwiftUI Button merges its label's children into one accessibility element and capture-thumb-status-{n} would vanish
 - [Phase 03]: ScreenshotRecorder settle stays 3.0/4.0: raising to 4.0/5.0 was measured across 19 frames and changed nothing (V9 is not a timing artefact)
+- [Phase 03]: 03-04: the raw-text frame is photographed on fixture 1, not fixture 6 — IMG_0503's 16 observations are ALL confidence 1.00, so it cannot show OCR-04's untrusted reads at all
+- [Phase 03]: 03-04: commit a fix BEFORE mutating the file it lives in — reverting a mutation with git checkout also discards uncommitted work in that file
 
 ### Pending Todos
 
@@ -263,8 +270,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T09:34:04.144Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-08-30T10:17:59.764Z
+Stopped at: Completed 03-04-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.

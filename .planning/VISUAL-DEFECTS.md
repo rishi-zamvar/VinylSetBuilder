@@ -18,6 +18,8 @@ screenshot is an opinion, not a defect.
 | ~~V8~~ | ~~**The capture screen still reads as scaffolding**~~ | **CLOSED 2026-08-30 (plan 03-03).** `CapturePlaceholderView` is deleted and `RootView` routes `.capture` to the real `CaptureView`. No frame anywhere says "Camera arrives in Phase 3" any more. Evidence: `02-walk-03-capture-empty.png`, `02-walk-11-add-more-capture.png` and all four `03-03-capture-*.png`. | — | Closed |
 | V9 | **Thirteen of the walk's fifteen frames render no large navigation title.** The crate list shows "Crates" on `02-walk-01` and then never again; the crate detail never shows the crate's name at all; the capture screen shows "Capture" in one test and not in the other. A DJ two screens deep cannot tell from the picture which crate they are in. **Not a capture-timing artefact** — see "V9 — measured, not guessed" below. **Not introduced by plan 03-03**: it is equally absent on Phase 2's own `CrateDetailView` and `CrateListView`, which this plan did not touch, and plan 02-03's frames of the same screens have their titles. | absent: `02-walk-03` … `02-walk-15` (13 frames). present: `02-walk-01-crate-list.png`, all four `03-03-capture-*.png`, and every `02-03-crate-detail*.png` | **Low** | Phase 4 |
 | V10 | **The sleeve framing guide changes size when the flip-side prompt appears.** The preview is a flexible box, so the inline banner pushing in shrinks the preview and the guide follows it: the guide's stroked square measures **872x873 px** with no prompt and **686x686 px** with one — a 21% jump, mid-framing. Correct arithmetic (`edgeCoverage` holds at 0.881 and 0.879 of the preview's shorter edge in both cases, which is the point of deriving it from `FramingGuide.sleeve`), but with a live viewfinder a reticle that resizes while you are lining a sleeve up is its own annoyance. Belongs to Phase 10, where the preview stops being a flexible black rectangle and becomes a fixed-aspect camera layer. | `03-03-capture-flip-prompt.png` (686 px) against `03-03-capture-empty.png`, `03-03-capture-one-item.png`, `03-03-capture-flip-suppressed.png` (872 px). Measured on 7 frames across 3 runs. | Low | Phase 10 |
+| V12 | **The inspect sheet titles a record `Zzz.`** — a two-syllable fragment of a price sticker — on a photograph that also read `Cause 4 Concern` (the artist) and `A: High Down` (the title), both at confidence 1.00. `CaptureItem.displayLabel` takes the **first trusted observation in reading order**, and OCR reading order is spatial, not semantic, so whichever scrap of text sits highest-left on the sleeve becomes the record's name. Not a regression and not V3: it is the deliberate ceiling of D-03-6's naming rule (which exists to keep `"Vinyl N"` off the new screens) made visible for the first time. A DJ scrolling a twelve-tile strip cannot tell which record `Zzz.` is. Real segmentation (SEG-01…06) is what gives a title rule something better to pick from. | `03-04-sheet-lines.png`, `03-04-sheet-after-merge.png`, `03-04-sheet-after-split.png`, `03-04-sheet-hand-typed.png` (all four title-bars read `Zzz.`); independently, `FixtureObservations.swift:205` — IMG_0503's first observation is `"Zzz."` at 1.00; and XCUITest's own accessibility dump on this plan's second run printed `identifier: 'capture-thumb-6', label: 'Zzz.'` on the thumbnail strip, a different screen | **Medium** | Phase 6 |
+| V13 | **A long recognised line's behaviour in the correction field is not assessable from this capture.** The widest line any 03-04 frame renders is `AAA: Strange Nat ure` at 20 characters, which fits the field with room to spare. The corpus's longest real read is **106 characters** (`THEIEINE ENTR UNIO 82 21482E STREETPBYEO SASSLINETECHNQUERECORDINGS.CO.UK/ DRUMSOUNDATECHNIQUERECORDINGSCO`, IMG_0505) and the third longest is the 36-character `TH TRACKS WRITTENAND PRODUCED BY THE` on IMG_0506 — neither fixture is photographed here, so whether a single-line `TextField` scrolls them acceptably, and whether two long lines then read identically at a glance, is genuinely unknown rather than fine. 03-05 walks all twelve fixtures and can answer it. Honest "not assessable", not a guess either way. | none — measured from `FixtureObservations.swift` against the five 03-04 frames, not seen in a picture | Low | Phase 3, plan 03-05 |
 | V11 | **Add More opens a capture screen that says "0 records" for a crate that already holds four.** The session count is scoped to the visit, which is CAP-03's own wording ("scanned so far in this session") and decision D-03-3, so it is behaving as designed — recorded as informational so a reviewer looking at the picture is not surprised, and so the owner can say whether they would rather see the crate's total. | `02-walk-11-add-more-capture.png` (Friday Warehouse, 4 records in the crate, "0 records" on the strip) | Informational | Phase 4 |
 
 ---
@@ -216,3 +218,77 @@ Three things are **rules**, not suggestions:
 3. **Look at every picture, not a sample.** A phase that produces fifteen screenshots and audits
    three has produced twelve unread files. V3 is visible only on the seventh frame, in a section that is
    collapsed by default, and no automated probe would ever have found it.
+
+
+---
+
+## Plan 03-04 — all five frames looked at, and what they do NOT show
+
+Five states, five pictures, every one opened at 1206x2622 and read, not sampled. The plan named
+three specific things to look for, from Phase 2's own findings. Two came back clean and the
+third is un-assessable; all three are recorded, including the clean ones, because "we looked and
+found nothing" is only worth anything if it is written down.
+
+| Frame | Fixture | State | What it shows |
+|---|---|---|---|
+| `03-04-sheet-lines.png` | IMG_0503 | the draft as opened | 16 over-split lines, merge-up dimmed on row 1 |
+| `03-04-sheet-raw-text.png` | IMG_0498 | raw text expanded | 9 lines above, 11 raw rows below, the 0.30 read among them |
+| `03-04-sheet-after-merge.png` | IMG_0503 | after one `inspect-merge-up-2` | 15 lines; row 1 is `Zzz. Cause 4 Concern-` |
+| `03-04-sheet-after-split.png` | IMG_0503 | after one `inspect-split-1` | 16 lines; rows 1-2 are `Zzz. Cause` / `4 Concern-` |
+| `03-04-sheet-hand-typed.png` | IMG_0503 | after Add a line + typing | 17 lines; row 17 is `DUBPLATE WHITE LABEL` |
+
+**Contrast on the confidence values — NONE FOUND, and this was V4's exact failure mode.** V4 is
+`.secondary` on `.thinMaterial`: light grey on light grey, invisible in a photograph and
+invisible to every test. It is not repeated here. `03-04-sheet-raw-text.png` renders `1.00` as
+white on a solid dark green capsule and `0.30` as white on a solid dark red one, both legible at
+a glance, and the trusted/untrusted distinction is carried by the **number as well as** the
+colour, so it survives a colour-blind reader and a greyscale print. The plan required this to be
+checked on a picture rather than asserted; it was.
+
+**Truncated fields that make two lines read identically — NONE FOUND in these five frames**, and
+that is a weaker statement than it looks, which is why it is also filed as **V13** above. Every
+line in both photographed fixtures fits its field; the corpus contains a 106-character read that
+does not, on a fixture no 03-04 frame opens.
+
+**Controls colliding on a long line — NONE FOUND.** Scissors and merge-up are fixed-width on the
+right and the field flexes into what is left, so the row is stable at 9 lines
+(`03-04-sheet-raw-text.png`) and at 17 (`03-04-sheet-hand-typed.png`) with no reflow between
+them. This was checked at both counts rather than at one.
+
+**What the pictures found that no assertion did: V12.** Four of the five frames title the record
+`Zzz.`. Every test in this plan passes on that, and would pass on any string at all, because the
+identifier contract forbids asserting on a display string — which is the right rule and exactly
+why looking at the picture is a separate obligation.
+
+
+---
+
+## Negative controls run by plan 03-04 — the sheet's tests are provably able to fail
+
+A green suite is worth nothing until it has been made red on purpose. Four mutations, each
+applied, run, confirmed from **two independent sources** (xcodebuild's log and
+`build/ui.xcresult`'s own `failedTests`), and reverted. None crashed the runner; all four produced
+clean assertion failures at named lines.
+
+| # | Mutation | Expected to redden | What actually happened |
+|---|---|---|---|
+| E | `InspectCorrectSheet`'s merge-up button wired to `{ }` — the control is live and does nothing | SEG-07's merge claim | `InspectSheetUITests.swift:148` — "one merge-up took 16 lines to 16". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| F | `RawObservationListView` filters the list to `\.isTrusted` — the untrusted reads are hidden | OCR-04's entire point | `InspectSheetUITests.swift:97` — "IMG_0498 produced 11 observations; the sheet lists 3". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| G | `apply()` edits its copy of the crate but never calls `store.update` | the write-back | "Apply did not write 17 corrected lines back to the crate — reopened with 16". log: 1 test, 1 failure. xcresult: `passed 0 / failed 1`. |
+| H | the binding's equality guard removed, so a focus echo reaches `setText` | hand entry | the empty line is deleted by the tap that should focus it; `app.textFields` returns 16 of 17 identifiers and no keyboard ever appears. **Red 4 times, green 2 times with the guard.** |
+
+**F is worth reading twice.** Hiding the two 0.30 reads did not make the list *shorter by two* — it
+made the walk stop at **3**, because removing observation 4 breaks the contiguity the
+`inspect-raw-obs-{n}` family is counted by. That is the contiguity property doing real work
+rather than being a stylistic preference.
+
+**H was not a planned mutation.** It happened because reverting mutation E with
+`git checkout -- App/Views/InspectCorrectSheet.swift` also discarded an *uncommitted* fix in the
+same file, and the suite went red on the next run. The lesson is procedural and is written down
+here rather than learned twice: **commit a fix before mutating the file it lives in.** The
+accident was worth having — it turned a one-observation fix into a four-red/two-green
+measurement.
+
+Standing negative controls in the source, asserted every run and never removed:
+`inspect-raw-obs-999` and `inspect-line-99` must not resolve, in **both** sheets; and every line
+count is two-sided (`inspect-line-{k}` exists **and** `inspect-line-{k+1}` does not).
