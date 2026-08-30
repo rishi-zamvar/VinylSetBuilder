@@ -17,10 +17,8 @@ struct RootView: View {
             CrateListView(model: model)
         case .capture(let crateID):
             CapturePlaceholderView(model: model, crateID: crateID)
-        case .crateDetail:
-            // TODO(01-08): CrateDetailView — see 01-08-PLAN.md, which owns this file's
-            // .crateDetail case and App/Views/CrateDetailView.swift.
-            Text("Crate detail")
+        case .crateDetail(let crateID):
+            CrateDetailView(model: model, crateID: crateID)
         }
     }
 }
