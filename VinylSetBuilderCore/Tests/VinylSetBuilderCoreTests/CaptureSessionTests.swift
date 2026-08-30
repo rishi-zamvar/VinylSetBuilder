@@ -34,17 +34,19 @@ private struct CountingSegmenter: LabelSegmenting {
 
 // MARK: - CAP-03: the status a thumbnail shows
 
-@Test("CAP-03/D-03-5: read status has exactly three cases and every one of them says something")
-func test_givenCaptureItemStatus_whenEnumerated_thenThreeCasesAllCarryDistinctLabels() {
-    #expect(CaptureItemStatus.allCases.count == 3)
-    #expect(Set(CaptureItemStatus.allCases) == [.read, .partial, .unread])
+@Test("CAP-03/CAP-01: read status has four cases and every one of them says something")
+func test_givenCaptureItemStatus_whenEnumerated_thenFourCasesAllCarryDistinctLabels() {
+    #expect(CaptureItemStatus.allCases.count == 4)
+    #expect(Set(CaptureItemStatus.allCases) == [.reading, .read, .partial, .unread])
 
-    // Iterated, not named three times: a fourth case added later cannot slip through unlabelled.
+    // Iterated, not named four times: a fifth case added later cannot slip through unlabelled.
     for status in CaptureItemStatus.allCases {
         #expect(!status.label.isEmpty, "\(status) has no label")
     }
-    #expect(Set(CaptureItemStatus.allCases.map(\.label)).count == 3,
+    #expect(Set(CaptureItemStatus.allCases.map(\.label)).count == 4,
             "two statuses render the same label — the strip could not tell them apart")
+    // Exactly one of the four is not a verdict, and it is the one CAP-01 added.
+    #expect(CaptureItemStatus.allCases.filter { !$0.isVerdict } == [.reading])
 }
 
 // MARK: - CAP-03 / D-03-6: an item names itself from its own text
