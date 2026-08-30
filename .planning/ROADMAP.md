@@ -68,18 +68,19 @@ as a natural consequence of that architecture, not as separate integration work.
   3. Given a fixture set of `(vinylID, bpm, camelot)` tuples, the sequencer produces a one-track-per-vinyl, BPM-ascending sequence honouring `BPM_TOLERANCE` (slider 3-6, default 4.0), correctly excludes and later re-admits a vinyl when a bridging tuple is added, and breaks Camelot ties by lowest total hop distance.
   4. User can walk the entire crate flow against fixture data — list crates, create and name a new one, land on a capture screen, open a crate to see a sequenced list with BPM/Camelot badges and a plain-language reason on each excluded/unresolved row, drag to reorder, add more, remove a vinyl, delete a crate.
   5. The same fixture vinyl can be added to two different crates and carry a different selected track in each.
-**Plans**: 7 plans in 4 waves
+**Plans**: 8 plans in 5 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
+- [x] 01-01-PLAN.md — Core package, domain model, protocol seams, purity guard (SETUP-02, SETUP-04)
 - [ ] 01-02-PLAN.md — XcodeGen app target + build-time Secrets.swift (SETUP-01, SETUP-03)
 - [ ] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
 - [ ] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
 - [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
 - [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
-- [ ] 01-07-PLAN.md — Sequenced crate detail: badges, one-bucket exclusions, reorder, tolerance slider (CRATE-03, CRATE-04, CRATE-05, SEQ-05, SEQ-07, SEQ-11)
+- [ ] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
+- [ ] 01-08-PLAN.md — Crate detail: running order, manual override, tolerance slider, Add More (CRATE-03, CRATE-04, CRATE-05, SEQ-05)
 
-Waves: 1 → [01-01]; 2 → [01-02, 01-03]; 3 → [01-04, 01-06]; 4 → [01-05, 01-07]
+Waves: 1 → [01-01]; 2 → [01-02, 01-03]; 3 → [01-04, 01-06, 01-07]; 4 → [01-05]; 5 → [01-08]
 **UI hint**: yes
 
 ### Phase 2: Camera + OCR

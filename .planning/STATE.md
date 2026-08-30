@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: ROADMAP.md revised and rewritten; STATE.md updated; REQUIREMENTS.md traceability
-last_updated: "2026-08-30T06:48:02.937Z"
-last_activity: 2026-08-29 — Roadmap revised after the Phase 2 OCR spike ran early against
+status: executing
+stopped_at: Completed 01-01-PLAN.md (VinylSetBuilderCore scaffold + domain model + protocol seams, 5/5 tests green)
+last_updated: "2026-08-30T06:48:35.123Z"
+last_activity: 2026-08-30
 progress:
   total_phases: 6
   completed_phases: 0
@@ -27,9 +27,9 @@ key transitions, that re-optimises when you add more.
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
-Plan: Not yet planned
-Status: Ready to plan
-Last activity: 2026-08-29 — Roadmap revised after the Phase 2 OCR spike ran early against
+Plan: 2 of 7
+Status: Ready to execute
+Last activity: 2026-08-30
 12 real fixture photos (65/65 requirements mapped, up from 63)
 
 Progress: [█░░░░░░░░░] 14%
@@ -54,6 +54,7 @@ Progress: [█░░░░░░░░░] 14%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P01 | 2 | 3 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 
 - [Roadmap]: No separate "integration/wiring" phase — Phase 1 builds real UI against protocol
   seams, so each later phase's real implementation swaps in for a stub without new plumbing.
+
+- [Phase 01]: VinylSetBuilderCore SPM package created: 7 domain value types, 3 protocol seams (Sequencing/LabelSegmenting/MetadataResolving), 2 fixture stubs, purity guard test enforcing SETUP-02 (no AVFoundation/Vision/UIKit/AppKit/SwiftUI/SwiftData/URLSession in Core)
 
 ### Pending Todos
 
@@ -106,7 +109,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-29
-Stopped at: ROADMAP.md revised and rewritten; STATE.md updated; REQUIREMENTS.md traceability
+Last session: 2026-08-30T06:48:35.119Z
+Stopped at: Completed 01-01-PLAN.md (VinylSetBuilderCore scaffold + domain model + protocol seams, 5/5 tests green)
 updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
 Resume file: None
