@@ -56,7 +56,7 @@ public enum TrackTextFilter {
         if normal.contains(/[0-9]\s*%/) { return true }
         if normal.contains(/WWW\.|\.CO\.UK|\.COM|HTTP|@/) { return true }
         if normal.contains(/^[0-9]{1,2}"/) { return true }               // 12" — a format mark
-        if hasTrebledCharacter(letters) { return true }
+        if letters.count <= 4, hasTrebledCharacter(letters) { return true }
         // Sleeve furniture. Label names sit here too: a record's own label is printed on every
         // copy and is never one of its tracks. One alternation rather than an array of Regex,
         // because Regex is not Sendable and a stored array of them cannot be a static let.
@@ -67,8 +67,9 @@ public enum TrackTextFilter {
             || normal.contains(/\bJUNGLE\b|DRUM\s*[+N]?\s*BASS|DRUMBASS/)
     }
 
-    /// `Zzz`, `AAAA`. Three of the same letter in a row is a sticker artefact or a scanner
-    /// stutter, never a title in this collection.
+    /// `Zzz`. Three of the same letter in a row inside a SHORT string is a sticker artefact
+    /// or a scanner stutter. The length bound is not decoration: `AAA: Strange Nat ure` is
+    /// IMG_0503's B-side, and without it the trebled-A side marker is filtered as junk.
     private static func hasTrebledCharacter(_ letters: String) -> Bool {
         let characters = Array(letters)
         guard characters.count >= 3 else { return false }

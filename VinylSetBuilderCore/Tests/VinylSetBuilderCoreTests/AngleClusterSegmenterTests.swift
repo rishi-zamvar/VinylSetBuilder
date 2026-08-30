@@ -47,8 +47,8 @@ func test_givenTheTwelveFixtures_whenSegmented_thenNineOrMoreTrackCountsAreUsabl
         if count == row.tracks { usable += 1 }
         report.append("\(fixture.file) expected \(row.tracks) got \(count)")
     }
-    #expect(usable >= expected.baseline.usableTrackCounts,
-            "usable \(usable)/12\n" + report.joined(separator: "\n"))
+    let detail = report.joined(separator: "\n")
+    #expect(usable >= expected.baseline.usableTrackCounts, "usable \(usable)/12\n\(detail)")
 }
 
 @Test("SEG-03: a catalogue number is recovered on at least 5 of the 6 fixtures that carry one")

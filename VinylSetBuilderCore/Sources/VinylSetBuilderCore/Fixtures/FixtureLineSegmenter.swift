@@ -9,16 +9,17 @@ import Foundation
 public struct FixtureLineSegmenter: LabelSegmenting {
     public init() {}
 
-    public func segment(_ observations: [TextObservation], vinylID: UUID, side: Side) -> [Track] {
+    public func segment(_ observations: [TextObservation], vinylID: UUID, side: Side) -> LabelSegmentation {
         // conf >= 1.0 is the whole trusted tier: the spike measured confidence as effectively
         // binary (1.00 / 0.50 / 0.30, nothing between), so a fractional threshold would be
         // inventing precision the reader does not have.
-        observations
+        let tracks = observations
             .filter { $0.confidence >= 1.0 }
             .enumerated()
             .map { offset, observation in
                 Track(vinylID: vinylID, side: side, position: offset,
                       rawOCRText: observation.text, resolutionState: .pending)
             }
+        return LabelSegmentation(tracks: tracks)
     }
 }

@@ -44,6 +44,9 @@ func test_givenThePriceStickerFragment_whenFiltered_thenItIsNoise() {
     // Two independent rules reach it, so removing either one does not reopen V12.
     #expect(TrackTextFilter.alphanumeric("Zzz.").count < 4)
     #expect(TrackTextFilter.isNoise("ZZZ"))
+    // ...and the trebled-character rule is bounded to short strings, or IMG_0503's own
+    // B-side marker would be filtered as a stutter.
+    #expect(!TrackTextFilter.isNoise("AAA: Strange Nat ure"))
 }
 
 @Test("SEG-03: real track text is NOT filtered — the gate is not simply eating everything")

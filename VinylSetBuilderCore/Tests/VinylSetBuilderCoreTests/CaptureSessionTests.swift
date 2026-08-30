@@ -25,10 +25,10 @@ private func item(index: Int = 1,
 /// Deliberately not the real one — `vinylEntry(for:segmenter:)` is being tested here, not
 /// segmentation, and a local stub keeps the two failures distinguishable.
 private struct CountingSegmenter: LabelSegmenting {
-    func segment(_ observations: [TextObservation], vinylID: UUID, side: Side) -> [Track] {
-        observations.enumerated().map {
+    func segment(_ observations: [TextObservation], vinylID: UUID, side: Side) -> LabelSegmentation {
+        LabelSegmentation(tracks: observations.enumerated().map {
             Track(vinylID: vinylID, side: side, position: $0.offset, rawOCRText: $0.element.text)
-        }
+        })
     }
 }
 
@@ -262,7 +262,7 @@ func test_givenObservations_whenSegmented_thenOneTrackPerTrustedObservationInOrd
     let tracks = FixtureLineSegmenter().segment(
         [observation("SIDE A", 1.0), observation("noise", 0.3),
          observation("TYME 012", 1.0), observation("blur", 0.5)],
-        vinylID: vinylID, side: .a)
+        vinylID: vinylID, side: .a).tracks
 
     #expect(tracks.map(\.rawOCRText) == ["SIDE A", "TYME 012"])
     #expect(tracks.map(\.position) == [0, 1])
@@ -278,9 +278,9 @@ func test_givenOnlyUntrustedObservations_whenSegmented_thenNothingIsEmitted() {
     // trusted-count assertions elsewhere would still pass on the fixtures that read cleanly.
     let tracks = FixtureLineSegmenter().segment(
         [observation("a", 0.5), observation("b", 0.5), observation("c", 0.5)],
-        vinylID: UUID(), side: .b)
+        vinylID: UUID(), side: .b).tracks
     #expect(tracks.isEmpty)
-    #expect(FixtureLineSegmenter().segment([], vinylID: UUID(), side: .a).isEmpty)
+    #expect(FixtureLineSegmenter().segment([], vinylID: UUID(), side: .a).tracks.isEmpty)
 }
 
 @Test("D-03-4: on the real fixtures the segmenter emits the trusted counts, large and small")
@@ -288,7 +288,7 @@ func test_givenTwoRealFixtures_whenSegmented_thenSixteenLinesAndThreeLines() thr
     func lineCount(_ file: String) throws -> Int {
         let fixture = try #require(FixtureObservations.all.first { $0.file == file })
         return FixtureLineSegmenter().segment(fixture.observations,
-                                              vinylID: UUID(), side: .a).count
+                                              vinylID: UUID(), side: .a).tracks.count
     }
     #expect(try lineCount("IMG_0503.HEIC") == 16)   // the one that read everything
     #expect(try lineCount("IMG_0507.HEIC") == 3)    // the dubplate that read almost nothing

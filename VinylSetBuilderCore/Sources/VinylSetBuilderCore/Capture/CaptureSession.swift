@@ -94,14 +94,15 @@ public struct CaptureSession: Sendable, Equatable {
     public func vinylEntry(for itemID: CaptureItem.ID,
                            segmenter: some LabelSegmenting) -> VinylEntry? {
         guard let item = items.first(where: { $0.id == itemID }) else { return nil }
-        let tracks = segmenter.segment(item.observations, vinylID: item.id, side: .a)
+        let segmentation = segmenter.segment(item.observations, vinylID: item.id, side: .a)
         return VinylEntry(id: item.id,
                           photoRefs: [item.photoRef],
-                          candidates: tracks.enumerated().map { offset, track in
+                          candidates: segmentation.tracks.enumerated().map { offset, track in
                               var renumbered = track
                               renumbered.position = offset
                               return renumbered
                           },
-                          position: item.index - 1)
+                          position: item.index - 1,
+                          catalogueNumber: segmentation.catalogueNumber)
     }
 }
