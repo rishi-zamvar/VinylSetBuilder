@@ -26,11 +26,11 @@ key transitions, that re-optimises when you add more.
 ### Capture
 
 - [ ] **CAP-01**: User can photograph a vinyl label and the shutter returns to the camera immediately, with no blocking spinner
-- [ ] **CAP-02**: A framing guide overlay shows where to place the record sleeve, sized for a whole 12" sleeve rather than a label close-up
-- [ ] **CAP-03**: A thumbnail strip shows every vinyl scanned so far in this session with its per-item resolution status
+- [x] **CAP-02**: A framing guide overlay shows where to place the record sleeve, sized for a whole 12" sleeve rather than a label close-up
+- [x] **CAP-03**: A thumbnail strip shows every vinyl scanned so far in this session with its per-item resolution status
 - [ ] **CAP-04**: User can scan 20 vinyls in one session without the app stalling, running out of memory, or thermally throttling
-- [ ] **CAP-05**: When a scan yields tracks for only one side, an inline prompt offers Scan or Skip without leaving the camera — suppressed when both sides were already read from a single photo, which the fixtures show is common
-- [ ] **CAP-06**: User can tap Done to leave the capture loop and see the sequenced result
+- [x] **CAP-05**: When a scan yields tracks for only one side, an inline prompt offers Scan or Skip without leaving the camera — suppressed when both sides were already read from a single photo, which the fixtures show is common
+- [x] **CAP-06**: User can tap Done to leave the capture loop and see the sequenced result
 
 ### Text Recognition
 
@@ -163,10 +163,10 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | CRATE-07 | Act I — Phase 2 | Complete — 01-06 |
 | SEQ-07 | Act I — Phase 2 | Complete — 01-07 |
 | SEQ-11 | Act I — Phase 2 | Complete — 01-07 |
-| CAP-02 | Act I — Phase 3 | Pending |
-| CAP-03 | Act I — Phase 3 | Pending |
-| CAP-05 | Act I — Phase 3 | Pending |
-| CAP-06 | Act I — Phase 3 | Pending |
+| CAP-02 | Act I — Phase 3 | Complete |
+| CAP-03 | Act I — Phase 3 | Complete |
+| CAP-05 | Act I — Phase 3 | Complete |
+| CAP-06 | Act I — Phase 3 | Complete |
 | OCR-04 | Act I — Phase 3 | Complete |
 | SEG-07 | Act I — Phase 3 | Complete |
 | OCR-01 | Act II — Phase 5 | Pending |

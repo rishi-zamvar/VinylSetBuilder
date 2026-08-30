@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-08-30T09:03:02.807Z"
+status: Phase 3 in progress. 03-03 done (the capture screen); 03-04 and 03-05 remain.
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-08-30T09:34:16.529Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 1
   total_plans: 18
-  completed_plans: 13
+  completed_plans: 14
   percent: 85
 ---
 
@@ -40,14 +40,18 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: I of III
-Phase: 2 of 14 (The Crate Screens, Stubbed) — **COMPLETE**
-Plan: 02-05 complete. All 5 of Phase 2's plans delivered.
-Status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
+Phase: 3 of 14 (The Capture & Correction Screens, Stubbed) — **IN PROGRESS**
+Plan: 03-03 complete. 3 of Phase 3's 5 plans delivered (03-01, 03-02, 03-03).
+Next: 03-04 (the inspect / correct sheet), then 03-05 (the 12-fixture walk and the audits).
+Status: The capture screen is live. CAP-02/03/05/06 complete; Phase 2's fifteen-state walk
+        repaired and green against it (3 UI tests, 0 failures, confirmed from log AND
+        build/ui.xcresult). New visual defects V9/V10/V11 filed; V7 and V8 closed.
 Last activity: 2026-08-30
 
-Progress: [█████████░] 85%
+Progress: [████████░░] 78%
 
-11 of the 13 plans on disk have summaries. The two that do not are **not** pending work:
+14 of the 18 plans on disk have summaries. Two of the four that do not are Phase 3's
+still-outstanding `03-04` and `03-05`; the other two are **not** pending work:
 
 - `01-05-PLAN.md` — **never executed.** `AsyncSequencer` and `BeamDivergenceCheck` do not
   exist, so SEQ-08/09/10 are wholly outstanding and Phase 9 inherits this plan's content.
@@ -58,7 +62,11 @@ Progress: [█████████░] 85%
   to Phase 9 by decision D2-4. Nothing from it is missing except SEQ-05, which is tracked
   there.
 
-**Requirements:** 67 total, 67 mapped, 17 complete, 50 outstanding.
+**Requirements:** 67 total, 67 mapped, **23 complete, 44 outstanding**.
+
+> Recounted on disk after 03-03: `grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` -> 23,
+> `grep -c "^- \[ \] \*\*"` -> 44, and 23 + 44 = 67. Phase 3 has added six so far:
+> OCR-04 and SEG-07 (03-02's Core), then CAP-02/03/05/06 (03-03's screen).
 
 > **Corrected 2026-08-30 by plan 02-05's audit: 17 complete, 50 outstanding — not 19.**
 > Recounted from the ticked boxes: `grep -c "^- \[x\] \*\*" .planning/REQUIREMENTS.md` → 17.
@@ -107,6 +115,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 02-crate-screens-stubbed P05 | 35m | 2 tasks | 22 files |
 | Phase 03 P02 | ~50 min | 2 tasks | 4 files |
 | Phase 03 P01 | ~40 min | 3 tasks | 12 files |
+| Phase 03 P03 | 47min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -172,6 +181,9 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 03]: OCR-04 keeps the untrusted 0.50/0.30 reads — the discarded row is the evidence a bad read needs
 - [Phase 03]: Trusted OCR count is 89 not 88 — 88/101 is the first spike run; Act I fixtures come from the second (104/89). OCR-SPIKE.md and Phase 3 CONTEXT.md corrected.
 - [Phase 03]: FixturePhotoSource is an actor, not a struct — capture() advances a counter behind a Sendable protocol
+- [Phase 03]: Capture screen holds no rules: framing-guide geometry derived from FramingGuide.sleeve, never retyped (measured 0.881 coverage on rendered pixels)
+- [Phase 03]: Thumbnail status pill sits outside the tile's Button — a SwiftUI Button merges its label's children into one accessibility element and capture-thumb-status-{n} would vanish
+- [Phase 03]: ScreenshotRecorder settle stays 3.0/4.0: raising to 4.0/5.0 was measured across 19 frames and changed nothing (V9 is not a timing artefact)
 
 ### Pending Todos
 
@@ -210,7 +222,7 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - **V1 / V2 — CLOSED 2026-08-30 by plan 02-05.** V1 fixed and verified in
   `02-walk-01-crate-list.png` with a two-sided assertion; V2 was never a defect (launch fade)
   and its closure was re-confirmed on the four screens Phase 2 added, probed twice with
-  `SUSPECT: none`, plus a functional disproof — the walk taps six controls and they all
+  `SUSPECT: `, plus a functional disproof — the walk taps six controls and they all
   respond, and disabled content is not tappable. **Phase 4 instead inherits V3 (Medium — the
   not-included bucket names a fully-known record "Vinyl 2") and V4–V7 (Low).** V3 needs the
   owner's call, logged as U8. Original wording, kept for the record:
@@ -247,10 +259,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
   U4/U6 (whether the produced set is one you would actually play — the project's real
   success criterion).
 
+- V9: 13 of the walk's 15 frames render no large navigation title. Not settle (identical at 3.0s and 4.0s), not .disabled (every control taps), not caused by plan 03-03 — implicates RootView's Route-swap navigation. Filed for Phase 4.
+
 ## Session Continuity
 
-Last session: 2026-08-30T09:02:50.989Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-08-30T09:34:04.144Z
+Stopped at: Completed 03-03-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
