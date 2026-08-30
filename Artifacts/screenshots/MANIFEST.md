@@ -37,26 +37,25 @@
 
 ## Gate B — distinctness, measured
 
-Frames are compared only when their dimensions match and their means are within 0.1; 16 pairs qualified out of 946 possible. A pair under `NEAR_DUPLICATE_FRACTION` must be declared or the gate reddens.
+Frames are compared only when their dimensions match and their means are within 0.1; 15 pairs qualified out of 946 possible. A pair under `NEAR_DUPLICATE_FRACTION` must be declared or the gate reddens.
 
 | Fraction | Differing px | Below y=150 | bbox | Pair | Verdict |
 |---|---|---|---|---|---|
 | 0.000000 | 1 | 1 | (1151, 280, 1152, 281) | `02-walk-08-detail-edit-mode.png`<br>`02-walk-10-detail-restored.png` | IDENTICAL |
-| 0.000725 | 2293 | 0 | (167, 79, 277, 117) | `02-smoke-crate-list.png`<br>`02-walk-01-crate-list.png` | IDENTICAL |
-| 0.000976 | 3085 | 1026 | (173, 79, 1056, 758) | `02-03-crate-list-after-delete.png`<br>`02-smoke-crate-list.png` | DISTINCT |
-| 0.001024 | 3237 | 1026 | (167, 79, 1056, 758) | `02-03-crate-list-after-delete.png`<br>`02-walk-01-crate-list.png` | DISTINCT |
+| 0.000454 | 1437 | 0 | (170, 79, 275, 117) | `02-smoke-crate-list.png`<br>`02-walk-01-crate-list.png` | IDENTICAL |
+| 0.001017 | 3217 | 1026 | (170, 79, 1056, 758) | `02-03-crate-list-after-delete.png`<br>`02-walk-01-crate-list.png` | DISTINCT |
+| 0.001036 | 3275 | 1026 | (172, 79, 1056, 758) | `02-03-crate-list-after-delete.png`<br>`02-smoke-crate-list.png` | DISTINCT |
 | 0.002757 | 8719 | 8719 | (149, 436, 564, 600) | `03-04-sheet-after-split.png`<br>`03-04-sheet-lines.png` | DISTINCT |
 | 0.009890 | 31273 | 31273 | (98, 543, 1108, 1012) | `02-walk-09-detail-manual-order.png`<br>`02-walk-10-detail-restored.png` | above threshold |
 | 0.009890 | 31274 | 31274 | (98, 280, 1152, 1012) | `02-walk-08-detail-edit-mode.png`<br>`02-walk-09-detail-manual-order.png` | above threshold |
 | 0.050539 | 159812 | 159812 | (0, 1840, 1206, 2228) | `03-walk-08-strip-twentyone.png`<br>`03-walk-09-strip-scrolled-to-end.png` | above threshold |
-| 0.132455 | 418841 | 418841 | (48, 684, 1158, 1198) | `02-walk-06-crate-detail-sequenced.png`<br>`02-walk-12-detail-after-remove-vinyl.png` | above threshold |
+| 0.132576 | 419224 | 418841 | (48, 79, 1158, 1198) | `02-walk-06-crate-detail-sequenced.png`<br>`02-walk-12-detail-after-remove-vinyl.png` | above threshold |
 | 0.132756 | 419793 | 417068 | (48, 79, 1158, 1198) | `02-03-crate-detail-after-delete.png`<br>`02-03-crate-detail-custom-order.png` | above threshold |
 | 0.134399 | 424986 | 423749 | (48, 79, 1161, 1198) | `02-03-crate-detail-after-delete.png`<br>`02-03-crate-detail.png` | above threshold |
-| 0.146083 | 461933 | 452011 | (0, 79, 1206, 2622) | `02-03-crate-list-after-delete.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
-| 0.146099 | 461985 | 452012 | (0, 79, 1206, 2622) | `02-smoke-crate-list.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
-| 0.146211 | 462340 | 452012 | (0, 79, 1206, 2622) | `02-walk-01-crate-list.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
-| 0.168543 | 532956 | 531084 | (48, 79, 1158, 2320) | `03-04-sheet-hand-typed.png`<br>`03-04-sheet-raw-text.png` | above threshold |
-| 0.202693 | 640941 | 630569 | (0, 79, 1206, 2622) | `02-smoke-crate-list.png`<br>`02-walk-12-detail-after-remove-vinyl.png` | above threshold |
+| 0.145628 | 460496 | 452012 | (0, 79, 1206, 2622) | `02-walk-01-crate-list.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
+| 0.145988 | 461634 | 452012 | (0, 79, 1206, 2622) | `02-smoke-crate-list.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
+| 0.146222 | 462374 | 452011 | (0, 79, 1206, 2622) | `02-03-crate-list-after-delete.png`<br>`02-walk-13-second-crate-different-selection.png` | above threshold |
+| 0.167951 | 531084 | 531084 | (48, 234, 1158, 2320) | `03-04-sheet-hand-typed.png`<br>`03-04-sheet-raw-text.png` | above threshold |
 
 ### Declared duplicates, with the reason each was adjudicated that way
 
@@ -134,37 +133,37 @@ Only `IDENTICAL` pairs collapse in the distinct-state count. `DISTINCT` entries 
 | `02-03-crate-detail-empty.png` | 1206 | 2622 | 241.1837 | 0 | 255 | 136812 | `79a101e5c0784eb86d0169e9c24dbddf` |
 | `02-03-crate-detail.png` | 1206 | 2622 | 240.5032 | 0 | 255 | 188288 | `ecf6db465fc2b07bcb59645c33d53da3` |
 | `02-03-crate-list-after-delete.png` | 1206 | 2622 | 242.3844 | 0 | 255 | 103690 | `97a57ec759e3caa0f22f699a93a2a5b5` |
-| `02-smoke-crate-list.png` | 1206 | 2622 | 242.4049 | 0 | 255 | 102628 | `ac4925ff2b00888a412d038020751315` |
-| `02-walk-01-crate-list.png` | 1206 | 2622 | 242.3653 | 0 | 255 | 104987 | `61190fb531826a9cb76aaaa1c4e695c9` |
-| `02-walk-02-new-crate-sheet.png` | 1206 | 2622 | 233.6913 | 0 | 255 | 169553 | `fdf1ebc9c6bbc85b15db1b2db216afeb` |
-| `02-walk-03-capture-empty.png` | 1206 | 2622 | 157.2645 | 0 | 255 | 90868 | `89505705fa86f7c406a0d73a4703a6b7` |
-| `02-walk-04-capture-with-vinyl.png` | 1206 | 2622 | 173.2785 | 0 | 255 | 121100 | `9e2526816270642e4d75b909f159d5d2` |
-| `02-walk-05-new-crate-detail.png` | 1206 | 2622 | 242.7996 | 0 | 255 | 136422 | `8f5da327f9095c95fbb3918f81c1809f` |
-| `02-walk-06-crate-detail-sequenced.png` | 1206 | 2622 | 242.5174 | 0 | 255 | 172648 | `bcb9334cc81daf31e0d2a3f5d62a2984` |
-| `02-walk-07-not-included-expanded.png` | 1206 | 2622 | 243.4553 | 0 | 255 | 221190 | `bdc4a19b198d641859de7711303aef8d` |
-| `02-walk-08-detail-edit-mode.png` | 1206 | 2622 | 243.6473 | 0 | 255 | 229338 | `916c391acb3c896cb599aa6523d20b08` |
-| `02-walk-09-detail-manual-order.png` | 1206 | 2622 | 243.5764 | 0 | 255 | 234209 | `45b9e70a23afecd30a9aa16c39a54b34` |
-| `02-walk-10-detail-restored.png` | 1206 | 2622 | 243.6473 | 0 | 255 | 229333 | `2581dbaaf4bd7683e1576fc7fa6db218` |
-| `02-walk-11-add-more-capture.png` | 1206 | 2622 | 156.8472 | 0 | 255 | 94786 | `23a9a1d83c3f4db5d522111c196a26a6` |
-| `02-walk-12-detail-after-remove-vinyl.png` | 1206 | 2622 | 242.4919 | 0 | 255 | 150991 | `b13b58ddeca16e2920678883cfdf39ce` |
-| `02-walk-13-second-crate-different-selection.png` | 1206 | 2622 | 242.3453 | 0 | 255 | 143555 | `86d3e34ba8fde79e2539044ac105dd37` |
-| `02-walk-14-crate-list-after-delete.png` | 1206 | 2622 | 243.1321 | 0 | 255 | 94938 | `db164206c15c4a6e38eb83d502afdbb2` |
-| `02-walk-15-crate-list-empty.png` | 1206 | 2622 | 253.5328 | 0 | 255 | 84919 | `a91a52f80ba33edef9049351bdc7c1f2` |
-| `03-03-capture-empty.png` | 1206 | 2622 | 156.1346 | 0 | 255 | 100627 | `0f3a3eeb8b08dc898653df8b3e8ef0fe` |
-| `03-03-capture-flip-prompt.png` | 1206 | 2622 | 172.1487 | 0 | 255 | 129720 | `4b121c2a372d5de83522be659499b525` |
-| `03-03-capture-flip-suppressed.png` | 1206 | 2622 | 153.0439 | 0 | 255 | 120015 | `40cfb7e4e79c1e2273c3258aac6e817c` |
-| `03-03-capture-one-item.png` | 1206 | 2622 | 154.6943 | 0 | 255 | 108035 | `e26610cea8c8e34fd7625e129a8b13c9` |
-| `03-04-sheet-after-merge.png` | 1206 | 2622 | 237.5253 | 0 | 255 | 290726 | `7d63d4d6f146dfaac03d8f15ebeccddf` |
-| `03-04-sheet-after-split.png` | 1206 | 2622 | 237.6761 | 0 | 255 | 289148 | `b3cd45557ec0be6ca43b8c39a4086069` |
-| `03-04-sheet-hand-typed.png` | 1206 | 2622 | 237.8301 | 0 | 255 | 274202 | `c28ec9222239105b5ac45df4567f8507` |
-| `03-04-sheet-lines.png` | 1206 | 2622 | 237.6761 | 0 | 255 | 287589 | `3cf3a2f0bd215c7a9faa7c45cb16e31b` |
-| `03-04-sheet-raw-text.png` | 1206 | 2622 | 237.7936 | 0 | 255 | 248491 | `9d281c9b5228014366df385571e12573` |
-| `03-walk-01-capture-guide.png` | 1206 | 2622 | 157.0200 | 0 | 255 | 92136 | `639762e7662ae2650531e9d2d6796054` |
-| `03-walk-02-flip-prompt-fires.png` | 1206 | 2622 | 173.0341 | 0 | 255 | 122416 | `1ada716475c304c8de0dc023a29d5280` |
-| `03-walk-03-flip-suppressed.png` | 1206 | 2622 | 153.9308 | 0 | 255 | 110410 | `b4ec27387242656da75e44cc7a881d61` |
-| `03-walk-04-strip-twelve.png` | 1206 | 2622 | 152.0316 | 0 | 255 | 118810 | `ec9e50fbcc4fdf4840deea8df229a14f` |
-| `03-walk-05-inspect-sheet.png` | 1206 | 2622 | 242.1579 | 0 | 255 | 151324 | `23199e8b863e96390e563d931d599f07` |
-| `03-walk-06-inspect-raw-text.png` | 1206 | 2622 | 235.7758 | 0 | 255 | 285414 | `89ff44d72ccf64271c4591a1bb78e0d2` |
-| `03-walk-07-done-sequenced.png` | 1206 | 2622 | 245.8944 | 0 | 255 | 392023 | `95fff482af439f46016ea8e3f6ff40e2` |
-| `03-walk-08-strip-twentyone.png` | 1206 | 2622 | 151.1431 | 0 | 255 | 128307 | `4c232fe00dc2bdcc4998df5df2fc0e99` |
-| `03-walk-09-strip-scrolled-to-end.png` | 1206 | 2622 | 151.0928 | 0 | 255 | 121673 | `f372fef4d9f4cf97451a04d2cb1d7b53` |
+| `02-smoke-crate-list.png` | 1206 | 2622 | 242.3880 | 0 | 255 | 104316 | `5b16c000a5c9d868d0c7aa10762ded40` |
+| `02-walk-01-crate-list.png` | 1206 | 2622 | 242.3761 | 0 | 255 | 104014 | `df24781fcad1b985cb11e70577af4f4b` |
+| `02-walk-02-new-crate-sheet.png` | 1206 | 2622 | 233.6986 | 0 | 255 | 168782 | `05f3c4af9de407531c748efa05cbe9ee` |
+| `02-walk-03-capture-empty.png` | 1206 | 2622 | 157.2740 | 0 | 255 | 90383 | `f2d25c1513df80a77c62ac6886bb29d1` |
+| `02-walk-04-capture-with-vinyl.png` | 1206 | 2622 | 173.2881 | 0 | 255 | 120583 | `f9ded0c16d517c51f94fc106469f1ad0` |
+| `02-walk-05-new-crate-detail.png` | 1206 | 2622 | 242.8087 | 0 | 255 | 135780 | `eda288e3945e1a1bd762eb53582ccc86` |
+| `02-walk-06-crate-detail-sequenced.png` | 1206 | 2622 | 242.5265 | 0 | 255 | 171663 | `21da5940cdce82bf0ad4675199ff5ed6` |
+| `02-walk-07-not-included-expanded.png` | 1206 | 2622 | 243.4644 | 0 | 255 | 220503 | `66f11d8f4489c3581431c0a8430700ef` |
+| `02-walk-08-detail-edit-mode.png` | 1206 | 2622 | 243.6564 | 0 | 255 | 228629 | `e0820305d0070961a79e89a2f8eeaf96` |
+| `02-walk-09-detail-manual-order.png` | 1206 | 2622 | 243.5855 | 0 | 255 | 233268 | `c5770f6ee3e2d51d99a43b73b8a54924` |
+| `02-walk-10-detail-restored.png` | 1206 | 2622 | 243.6564 | 0 | 255 | 228629 | `a86b495c89b224f779c46a9138da2716` |
+| `02-walk-11-add-more-capture.png` | 1206 | 2622 | 156.8513 | 0 | 255 | 95004 | `b2e641c13fa84528a6fd12213d872b12` |
+| `02-walk-12-detail-after-remove-vinyl.png` | 1206 | 2622 | 242.4958 | 0 | 255 | 151136 | `f6135b2156f7690719815115ee46723e` |
+| `02-walk-13-second-crate-different-selection.png` | 1206 | 2622 | 242.3287 | 0 | 255 | 144538 | `ef4bb3e14c78293f06b0fdc5981f2772` |
+| `02-walk-14-crate-list-after-delete.png` | 1206 | 2622 | 243.1155 | 0 | 255 | 96033 | `650fb5010db89c81d9d9573d3c3417cd` |
+| `02-walk-15-crate-list-empty.png` | 1206 | 2622 | 253.5153 | 0 | 255 | 85920 | `3fb575535c15568d751ffa0b69f54b74` |
+| `03-03-capture-empty.png` | 1206 | 2622 | 156.1534 | 0 | 255 | 100858 | `2dcf29a9b45fed6de6c7f67f52f73bc0` |
+| `03-03-capture-flip-prompt.png` | 1206 | 2622 | 172.1675 | 0 | 255 | 129954 | `a67fbf45cbf97dfdd66cc8568a0b1ca4` |
+| `03-03-capture-flip-suppressed.png` | 1206 | 2622 | 153.0642 | 0 | 255 | 119599 | `25b3334877dbdbd1c2c02ac70edfd620` |
+| `03-03-capture-one-item.png` | 1206 | 2622 | 154.7131 | 0 | 255 | 108274 | `13fc638ea71a41131867f486e9fd1757` |
+| `03-04-sheet-after-merge.png` | 1206 | 2622 | 237.5111 | 0 | 255 | 292032 | `46da01d91d5cc6e3a4367df08ff128c5` |
+| `03-04-sheet-after-split.png` | 1206 | 2622 | 237.6619 | 0 | 255 | 290442 | `693a5ffe1b2bc082795ea022ced38256` |
+| `03-04-sheet-hand-typed.png` | 1206 | 2622 | 237.8159 | 0 | 255 | 275432 | `905bc1340d67b9f35181e26444e0390a` |
+| `03-04-sheet-lines.png` | 1206 | 2622 | 237.6619 | 0 | 255 | 288888 | `06cc432cccdee17fb9b6087d9c61bfce` |
+| `03-04-sheet-raw-text.png` | 1206 | 2622 | 237.7941 | 0 | 255 | 248846 | `1deecc6cd72f6479c91d0bb50a885e06` |
+| `03-walk-01-capture-guide.png` | 1206 | 2622 | 157.0403 | 0 | 255 | 91786 | `484b4c94b87d12941a9279bca1f0e7be` |
+| `03-walk-02-flip-prompt-fires.png` | 1206 | 2622 | 173.0544 | 0 | 255 | 122049 | `8da9c52a6a79a44e5677396c59d7f03b` |
+| `03-walk-03-flip-suppressed.png` | 1206 | 2622 | 153.9511 | 0 | 255 | 110069 | `4addb9d68684208f4117252845537f85` |
+| `03-walk-04-strip-twelve.png` | 1206 | 2622 | 152.0448 | 0 | 255 | 118284 | `d929623fd025471b666f403456d30310` |
+| `03-walk-05-inspect-sheet.png` | 1206 | 2622 | 242.1684 | 0 | 255 | 150514 | `e01637821a6fd43c62e6b0d507b7c1c7` |
+| `03-walk-06-inspect-raw-text.png` | 1206 | 2622 | 235.7863 | 0 | 255 | 284622 | `40a40ad072a218e54ab5c8357fdcd5e1` |
+| `03-walk-07-done-sequenced.png` | 1206 | 2622 | 245.9055 | 0 | 255 | 391972 | `97ac15dc76aa243253ba007c97e12284` |
+| `03-walk-08-strip-twentyone.png` | 1206 | 2622 | 151.1558 | 0 | 255 | 127812 | `89e4889fa0f6ce14ac33695944e4b00c` |
+| `03-walk-09-strip-scrolled-to-end.png` | 1206 | 2622 | 151.1056 | 0 | 255 | 121184 | `2192c8b0988c450745766d258d74a0bf` |
