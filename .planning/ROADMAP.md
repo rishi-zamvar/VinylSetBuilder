@@ -76,7 +76,7 @@ Plans:
 - [x] 01-03-PLAN.md — Camelot wheel + distance + BPM rules, ported from walkman-dj (SEQ-01)
 - [x] 01-04-PLAN.md — Beam-search sequencer, width 50 (SEQ-02, SEQ-03, SEQ-04, SEQ-06)
 - [ ] 01-05-PLAN.md — Rejoin-on-add, off-main-thread, beam divergence (SEQ-08, SEQ-09, SEQ-10)
-- [ ] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
+- [x] 01-06-PLAN.md — Crate list, create, capture stub, CrateStore + fixtures (CRATE-01, CRATE-02, CRATE-06, CRATE-07)
 - [x] 01-07-PLAN.md — Badges + the single not-included bucket, as row value types (SEQ-07, SEQ-11)
 - [ ] 01-08-PLAN.md — Crate detail: running order, manual override, tolerance slider, Add More (CRATE-03, CRATE-04, CRATE-05, SEQ-05)
 

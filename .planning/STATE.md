@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-07-PLAN.md
-last_updated: "2026-08-30T07:08:36.623Z"
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-08-30T07:12:21.989Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 14
 ---
 
@@ -27,7 +27,7 @@ key transitions, that re-optimises when you add more.
 ## Current Position
 
 Phase: 1 of 6 (Foundation, Domain Model & Sequencer)
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-08-30
 12 real fixture photos (65/65 requirements mapped, up from 63)
@@ -59,6 +59,7 @@ Progress: [█░░░░░░░░░] 14%
 | Phase 01 P03 | 12min | 2 tasks | 4 files |
 | Phase 01 P04 | 10 | 3 tasks | 3 files |
 | Phase 01 P07 | 8min | 3 tasks | 7 files |
+| Phase 01 P06 | 35min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,7 @@ Recent decisions affecting current work:
 - [Phase 01]: BeamSearchSequencer (SEQ-02/03/04/06) shipped: width-50 beam, unresolved-vs-tempo-excluded reasons distinguished by whether ANY candidate has a BPM
 - [Phase 01]: SEQ-07: notIncluded stays one array (D7) — no excluded/unresolved split in CrateRows
 - [Phase 01]: SEQ-11: TrackBadges folds BPM via BPMRules.fold before formatting so the badge never contradicts the sequencer's ordering
+- [Phase 01]: 01-06: CrateStore reducer ships CRATE-01/02/06/07; build-app.sh fixed to pass explicit SYMROOT/OBJROOT so the app target reliably finds the local package's built module
 
 ### Pending Todos
 
@@ -118,7 +120,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-30T07:08:36.620Z
-Stopped at: Completed 01-07-PLAN.md
+Last session: 2026-08-30T07:12:21.986Z
+Stopped at: Completed 01-06-PLAN.md
 updated to 65/65 mapped (SEG-01 moved Phase 2→3, SEG-08 and RES-08 mapped to Phase 3/4).
 Resume file: None

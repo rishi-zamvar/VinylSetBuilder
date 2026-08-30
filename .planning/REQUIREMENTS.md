@@ -15,13 +15,13 @@ key transitions, that re-optimises when you add more.
 
 ### Crate Management
 
-- [ ] **CRATE-01**: User can see a list of every saved crate with its name and record count
-- [ ] **CRATE-02**: User can create a new crate, name it, and land directly in the camera
+- [x] **CRATE-01**: User can see a list of every saved crate with its name and record count
+- [x] **CRATE-02**: User can create a new crate, name it, and land directly in the camera
 - [ ] **CRATE-03**: User can open a crate and see its sequenced running order
 - [ ] **CRATE-04**: User can manually reorder tracks in a crate, overriding the sequencer
 - [ ] **CRATE-05**: User can re-enter the capture loop from an existing crate via "Add More"
-- [ ] **CRATE-06**: User can delete a crate, and can remove a single vinyl from a crate
-- [ ] **CRATE-07**: The same vinyl can belong to several crates with a different selected track in each
+- [x] **CRATE-06**: User can delete a crate, and can remove a single vinyl from a crate
+- [x] **CRATE-07**: The same vinyl can belong to several crates with a different selected track in each
 
 ### Capture
 
@@ -162,13 +162,13 @@ key transitions, that re-optimises when you add more.
 | SEQ-09 | Phase 1 | Pending |
 | SEQ-10 | Phase 1 | Pending |
 | SEQ-11 | Phase 1 | Complete |
-| CRATE-01 | Phase 1 | Pending |
-| CRATE-02 | Phase 1 | Pending |
+| CRATE-01 | Phase 1 | Complete |
+| CRATE-02 | Phase 1 | Complete |
 | CRATE-03 | Phase 1 | Pending |
 | CRATE-04 | Phase 1 | Pending |
 | CRATE-05 | Phase 1 | Pending |
-| CRATE-06 | Phase 1 | Pending |
-| CRATE-07 | Phase 1 | Pending |
+| CRATE-06 | Phase 1 | Complete |
+| CRATE-07 | Phase 1 | Complete |
 | CAP-01 | Phase 2 | Pending |
 | CAP-02 | Phase 2 | Pending |
 | CAP-03 | Phase 2 | Pending |
