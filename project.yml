@@ -1,0 +1,39 @@
+name: VinylSetBuilder
+options:
+  bundleIdPrefix: com.rishizamvar
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+packages:
+  VinylSetBuilderCore:
+    path: VinylSetBuilderCore
+targets:
+  VinylSetBuilder:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - package: VinylSetBuilderCore
+        product: VinylSetBuilderCore
+    info:
+      path: App/Resources/Info.plist
+      properties:
+        UILaunchScreen: {}
+        CFBundleDisplayName: Vinyl Set Builder
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rishizamvar.VinylSetBuilder
+        ENABLE_USER_SCRIPT_SANDBOXING: NO       # D10: the secrets script reads ~/.config/keys/
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 373D7DZ9NM
+        GENERATE_INFOPLIST_FILE: NO
+    preBuildScripts:
+      - script: "\"$SRCROOT/Scripts/generate-secrets.sh\""
+        name: Generate Secrets.swift
+        basedOnDependencyAnalysis: false
+        outputFiles:
+          - $(SRCROOT)/App/Generated/Secrets.swift
