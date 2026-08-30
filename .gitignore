@@ -11,3 +11,6 @@ Resources/bpmkey.db
 
 # Fixture photographs of the owner's records — kept local, repo is public
 Tests/Fixtures/Labels/
+
+# Local, expensive-to-rebuild artifacts (public repo — never commit)
+.local/
