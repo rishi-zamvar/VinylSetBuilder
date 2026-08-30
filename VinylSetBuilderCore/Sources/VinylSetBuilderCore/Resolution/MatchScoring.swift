@@ -49,3 +49,19 @@ public enum MatchScoring {
         return ratio >= 0.5 && ratio <= 2.0
     }
 }
+
+extension MatchScoring {
+    /// How completely `needle` appears ANYWHERE inside `haystack`, 0...1.
+    ///
+    /// Whole-string similarity is the wrong tool against a SoundCloud upload: the wanted title
+    /// `Lavender Sunflower` sits inside `Tory Lanez - Lavender Sunflower` and scores only 0.65
+    /// compared whole, purely for the prefix somebody else typed. Containment scores it 1.0,
+    /// which is what it is.
+    public static func containment(of needle: String, in haystack: String) -> Double {
+        let pattern = TrackTextFilter.alphanumeric(needle)
+        let text = TrackTextFilter.alphanumeric(haystack)
+        guard !pattern.isEmpty, !text.isEmpty else { return 0 }
+        let distance = Double(FuzzyMatch.approximateDistance(of: pattern, in: text))
+        return max(0, 1 - distance / Double(pattern.count))
+    }
+}

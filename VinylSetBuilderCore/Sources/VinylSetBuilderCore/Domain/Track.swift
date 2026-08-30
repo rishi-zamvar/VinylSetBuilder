@@ -32,6 +32,10 @@ public struct Track: Identifiable, Sendable, Hashable, Codable {
         self.failureReason = failureReason
     }
 
+    /// BPM-07. No route could establish a tempo, so a person has to. The track keeps its
+    /// place in the crate and its identity; it simply cannot be sequenced until this is false.
+    public var needsManualBPM: Bool { bpm == nil }
+
     /// Display name for a UI row. Falls back to raw OCR text when unresolved.
     public var displayName: String {
         if let artist, let title {
