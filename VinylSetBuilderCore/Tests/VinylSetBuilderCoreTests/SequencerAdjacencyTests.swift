@@ -50,41 +50,46 @@ func test_givenJustOverToleranceUpward_whenSequenced_thenSecondIsExcluded() {
 }
 
 /// A two-vinyl fixture cannot express a DOWNWARD boundary — the winner between two records is
-/// always rendered lowest-first by the tiebreak, so the step is never negative. Four vinyls
-/// with a forced out-and-back shape are the smallest thing that can carry the claim.
+/// always rendered lowest-first by the canonical tiebreak, so the step is never negative. Four
+/// vinyls with a forced out-and-back shape are the smallest thing that can carry the claim.
 ///
-/// Legal edges at tolerance 4: 170–172, 170–174, 172–174, 172–176, 174–176. NOT 170–176.
-/// Keys 170=8A, 174=8A, 176=8A, 172=9A make `170 → 174 → 176 → 172` cost 1, uniquely cheapest
-/// after the tiebreak — and its final hop `176 → 172` is a step of exactly −4.0.
+/// Legal edges at tolerance 4: 170–172, 170–174, 172–174, 172–176, 174–176. NOT 170–176 (6).
+/// Keys 170=1A, 172=8A, 174=2A, 176=8A give edge costs
+/// (170,172)=5 (170,174)=1 (172,174)=6 (172,176)=0 (174,176)=6, whose uniquely cheapest
+/// Hamiltonian path is `174 → 170 → 172 → 176` at **6** — and its first hop is exactly −4.0.
+/// Every other complete order costs 7, 11, 12 or 17.
 @Test("A step of exactly −4.0 is admitted going DOWN, through the sequencer")
 func test_givenExactlyToleranceApartDownward_whenSequenced_thenTheDownwardStepIsAdmitted() {
-    let candidates = makeVinyl(1, bpms: [170], camelots: ["8A"])
-        + makeVinyl(2, bpms: [172], camelots: ["9A"])
-        + makeVinyl(3, bpms: [174], camelots: ["8A"])
+    let candidates = makeVinyl(1, bpms: [170], camelots: ["1A"])
+        + makeVinyl(2, bpms: [172], camelots: ["8A"])
+        + makeVinyl(3, bpms: [174], camelots: ["2A"])
         + makeVinyl(4, bpms: [176], camelots: ["8A"])
 
     let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
 
     #expect(result.sequence.count == 4)
-    #expect(result.sequence.map(\.bpm) == [170, 174, 176, 172])
-    #expect(adjacentDeltas(result).contains(-4.0))  // the 176 -> 172 hop
-    #expect(result.totalCamelotDistance == 1)
+    #expect(result.sequence.map(\.bpm) == [174, 170, 172, 176])
+    #expect(adjacentDeltas(result).contains(-4.0))   // the 174 -> 170 hop
+    #expect(result.totalCamelotDistance == 6)
 }
 
 @Test("At 4.01 that same downward pair is never adjacent — the boundary is symmetric")
 func test_givenJustOverToleranceDownward_whenSequenced_thenThatPairIsNeverAdjacent() {
-    // 171.99 instead of 172: 176 − 171.99 = 4.01, so the −4 hop above becomes illegal.
-    let candidates = makeVinyl(1, bpms: [170], camelots: ["8A"])
-        + makeVinyl(2, bpms: [171.99], camelots: ["9A"])
-        + makeVinyl(3, bpms: [174], camelots: ["8A"])
+    // 169.99 instead of 170: 174 − 169.99 = 4.01, so the −4.0 hop above becomes illegal and
+    // 169.99 is left with exactly one legal neighbour (172), forcing it to an end.
+    let candidates = makeVinyl(1, bpms: [169.99], camelots: ["1A"])
+        + makeVinyl(2, bpms: [172], camelots: ["8A"])
+        + makeVinyl(3, bpms: [174], camelots: ["2A"])
         + makeVinyl(4, bpms: [176], camelots: ["8A"])
 
     let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)
 
+    #expect(result.sequence.count == 4)
     let bpms = result.sequence.map { $0.bpm! }
+    #expect(bpms == [169.99, 172, 176, 174])
     for (a, b) in zip(bpms, bpms.dropFirst()) {
         #expect(abs(a - b) <= 4 + 1e-9)
-        #expect(Set([a, b]) != Set([176.0, 171.99]), "the 4.01 pair went adjacent anyway")
+        #expect(Set([a, b]) != Set([174.0, 169.99]), "the 4.01 pair went adjacent anyway")
     }
 }
 
