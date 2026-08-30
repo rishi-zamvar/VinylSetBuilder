@@ -167,3 +167,129 @@ func test_givenAnItemInASession_whenTurnedIntoAVinylEntry_thenItKeepsItsIdentity
     // Two-sided: an id the session does not hold yields nothing, so the lookup is a real lookup.
     #expect(session.vinylEntry(for: UUID(), segmenter: CountingSegmenter()) == nil)
 }
+
+// MARK: - D-03-3 / CAP-03 / CAP-05: the twelve-fixture source
+//
+// This is the phase's ground truth, hand-scored in CONTEXT.md §3 from the owner's own OCR run.
+// Every number below is a NAMED SET or a NAMED STRING, never a bare count: a table that
+// suppressed the flip prompt on the wrong three records would still produce a count of three.
+
+private func captureAll(_ n: Int, from source: FixturePhotoSource) async -> [CaptureItem] {
+    var captured: [CaptureItem] = []
+    for _ in 0..<n {
+        if let item = await source.capture() { captured.append(item) }
+    }
+    return captured
+}
+
+@Test("CAP-03: the source deals the twelve real photographs in order, once each")
+func test_givenTheFixtureSource_whenShotTwelveTimes_thenItYieldsTheTwelveRecordsInOrder() async {
+    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
+
+    #expect(items.count == 12)
+    #expect(items.map(\.photoRef) == FixtureObservations.all.map(\.file))
+    #expect(items.map(\.index) == Array(1...12))
+    #expect(Set(items.map(\.id)).count == 12, "two captures shared an id")
+}
+
+@Test("CAP-03: the twelve read 6 clean / 5 partial / 1 unread, exactly as the spike measured")
+func test_givenTheTwelveFixtures_whenTallied_thenSixReadFivePartialOneUnread() async {
+    var session = CaptureSession(crateID: UUID())
+    for item in await captureAll(12, from: FixturePhotoSource(crateID: UUID())) {
+        session.append(item)
+    }
+
+    #expect(session.statusTally == [.read: 6, .partial: 5, .unread: 1])
+    #expect(session.statusTally.values.reduce(0, +) == 12)
+}
+
+@Test("CAP-05: the flip prompt fires on nine named fixtures and is suppressed on {2, 6, 9}")
+func test_givenTheTwelveFixtures_whenAskedAboutFlips_thenExactlyTwoSixAndNineAreSuppressed() async {
+    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
+
+    let prompting = Set(items.filter(\.shouldPromptForFlip).map(\.index))
+    let suppressed = Set(items.filter { !$0.shouldPromptForFlip }.map(\.index))
+
+    // Both sets, not both counts. A count-only assertion passes on the wrong nine.
+    #expect(prompting == [1, 3, 4, 5, 7, 8, 10, 11, 12])
+    #expect(suppressed == [2, 6, 9])
+    #expect(prompting.isDisjoint(with: suppressed))
+}
+
+@Test("CAP-05: the three suppressed records are suppressed for the markers they actually read")
+func test_givenTheSuppressedFixtures_whenInspected_thenTheyCarryTheirRealSideMarkers() async throws {
+    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
+
+    func markers(_ index: Int) throws -> [String] {
+        try #require(items.first { $0.index == index }).sideMarkers
+    }
+
+    #expect(try items.first { $0.index == 6 }?.photoRef == "IMG_0503.HEIC")
+    #expect(try markers(6) == ["A", "AA"])
+    #expect(try items.first { $0.index == 9 }?.photoRef == "IMG_0506.HEIC")
+    #expect(try markers(9) == ["COLD", "STEEL"])
+    // One-sided reading is not the same as no reading: fixture 3 read "Side One" and only that.
+    #expect(try markers(3) == ["ONE"])
+    #expect(try markers(1).isEmpty)
+}
+
+@Test("CAP-03: the source wraps, so a session longer than twelve shots is reachable")
+func test_givenTwelveShotsTaken_whenTheThirteenthIsShot_thenTheSourceWrapsAndKeepsCounting() async throws {
+    let source = FixturePhotoSource(crateID: UUID())
+    let items = await captureAll(13, from: source)
+
+    let thirteenth = try #require(items.last)
+    #expect(thirteenth.photoRef == "IMG_0498.HEIC")
+    #expect(thirteenth.index == 13)
+    #expect(thirteenth.id != items[0].id, "the wrapped shot reused the first item's identity")
+}
+
+@Test("D-03-1: every dealt item carries the real observations, unmodified")
+func test_givenTheFixtureSource_whenItemsAreDealt_thenTheirTextIsTheGeneratedTable() async {
+    let items = await captureAll(12, from: FixturePhotoSource(crateID: UUID()))
+
+    for (item, fixture) in zip(items, FixtureObservations.all) {
+        #expect(!item.observations.isEmpty)
+        #expect(item.observations == fixture.observations, "\(fixture.file) drifted from the table")
+    }
+}
+
+// MARK: - D-03-4: the Act I segmenter
+
+@Test("D-03-4: the Act I segmenter emits one line per trusted observation, in reading order")
+func test_givenObservations_whenSegmented_thenOneTrackPerTrustedObservationInOrder() {
+    let vinylID = UUID()
+    let tracks = FixtureLineSegmenter().segment(
+        [observation("SIDE A", 1.0), observation("noise", 0.3),
+         observation("TYME 012", 1.0), observation("blur", 0.5)],
+        vinylID: vinylID, side: .a)
+
+    #expect(tracks.map(\.rawOCRText) == ["SIDE A", "TYME 012"])
+    #expect(tracks.map(\.position) == [0, 1])
+    #expect(tracks.allSatisfy { $0.vinylID == vinylID })
+    #expect(tracks.allSatisfy { $0.side == .a })
+    #expect(tracks.allSatisfy { $0.resolutionState == .pending })
+    #expect(tracks.allSatisfy { $0.bpm == nil && $0.camelot == nil })
+}
+
+@Test("D-03-4: untrusted observations produce no lines at all")
+func test_givenOnlyUntrustedObservations_whenSegmented_thenNothingIsEmitted() {
+    // Negative control: a segmenter that ignored confidence would emit three here and the
+    // trusted-count assertions elsewhere would still pass on the fixtures that read cleanly.
+    let tracks = FixtureLineSegmenter().segment(
+        [observation("a", 0.5), observation("b", 0.5), observation("c", 0.5)],
+        vinylID: UUID(), side: .b)
+    #expect(tracks.isEmpty)
+    #expect(FixtureLineSegmenter().segment([], vinylID: UUID(), side: .a).isEmpty)
+}
+
+@Test("D-03-4: on the real fixtures the segmenter emits the trusted counts, large and small")
+func test_givenTwoRealFixtures_whenSegmented_thenSixteenLinesAndThreeLines() throws {
+    func lineCount(_ file: String) throws -> Int {
+        let fixture = try #require(FixtureObservations.all.first { $0.file == file })
+        return FixtureLineSegmenter().segment(fixture.observations,
+                                              vinylID: UUID(), side: .a).count
+    }
+    #expect(try lineCount("IMG_0503.HEIC") == 16)   // the one that read everything
+    #expect(try lineCount("IMG_0507.HEIC") == 3)    // the dubplate that read almost nothing
+}
