@@ -336,7 +336,7 @@ def audit() -> tuple[list[str], dict]:
         return ["Gate A: Artifacts/screenshots/ holds no PNGs at all"], {}
     records = probe([os.path.join(SHOTS, n) for n in names])
     on_disk = set(names)
-    failures = []
+    failures, notes = [], []
 
     # Gate A -------------------------------------------------------------------------------
     coverage = []
@@ -349,6 +349,12 @@ def audit() -> tuple[list[str], dict]:
                 f"(expected any of: {', '.join(expected) or 'none listed'})")
         elif status.startswith("DEFERRED") and "Phase" not in status:
             failures.append(f"Gate A: flow row {step} '{state}' is deferred without a phase number")
+        elif status == "COVERED" and missing:
+            # Not a failure: the gate is "at least one photograph per state", so a row backed by
+            # five frames still holds with four. But silent erosion of evidence is how a set
+            # rots, so it is printed.
+            notes.append(f"note: flow row {step} '{state}' lost "
+                         f"{len(missing)} of {len(expected)} frames — {', '.join(missing)}")
         coverage.append((step, state, status, present, missing, note))
 
     # Gate B -------------------------------------------------------------------------------
@@ -388,7 +394,7 @@ def audit() -> tuple[list[str], dict]:
     return failures, {
         "names": names, "records": records, "coverage": coverage, "pairs": pairs,
         "classes": classes, "stale": stale,
-        "distinct": distinct, "groups": groups,
+        "distinct": distinct, "groups": groups, "notes": notes,
         "walk": walk, "walk_distinct": walk_distinct, "walk_groups": walk_groups,
     }
 
@@ -493,8 +499,10 @@ def main(argv: list[str]) -> int:
               f"{counts['historical']} historical, {counts['orphan']} orphan")
         print(f"gate B: {len(d['pairs'])} pairs compared, "
               f"{sum(1 for p in d['pairs'] if p['near_duplicate'])} under threshold")
-        for s in d["stale"]:
-            print(f"note: stale DECLARED_DUPLICATES entry no longer flagged — {s}")
+        for line in d["notes"]:
+            print(line)
+        for stale in d["stale"]:
+            print(f"note: stale DECLARED_DUPLICATES entry no longer flagged — {stale}")
 
     if failures:
         for f in failures:
