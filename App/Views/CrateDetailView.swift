@@ -10,9 +10,11 @@ struct CrateDetailView: View {
     @State private var detail: CrateDetailModel?
     @State private var editMode: EditMode = .inactive
 
-    /// D2-3: synchronous, deliberately. Off-main-thread sequencing is SEQ-09 and belongs to
-    /// Phase 9; at fixture scale a full re-derivation is microseconds.
-    private let sequencer = BeamSearchSequencer()
+    /// SEQ-09: off the main actor. `AsyncSequencer` wraps the beam search in a
+    /// `Task.detached` — this target defaults `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, so a
+    /// plain `Task` here would inherit this screen's isolation and sequence on the main thread.
+    /// Measured 100 vinyls / 400 candidates: 0.27 s optimised, 4.44 s in a debug test build.
+    private let sequencer = AsyncSequencer()
 
     var body: some View {
         Group {
@@ -47,7 +49,7 @@ struct CrateDetailView: View {
                     .accessibilityIdentifier("add-more-button")
             }
         }
-        .task(id: crateID) { load() }
+        .task(id: crateID) { await load() }
     }
 
     // MARK: Sections
@@ -120,10 +122,15 @@ struct CrateDetailView: View {
     /// Rebuild from the store's truth and re-derive the whole sequence. Called on appear and
     /// after any store mutation. A crate that is gone (it was deleted) closes the screen
     /// rather than rendering an empty one.
-    private func load() {
+    private func load() async {
         guard let crate = model.store.crate(crateID) else { model.store.closeToList(); return }
         var rebuilt = CrateDetailModel(crate: crate)
-        rebuilt.resequence(using: sequencer)
+        let result = await sequencer.sequence(candidates: rebuilt.sequencerInput,
+                                              bpmTolerance: crate.bpmTolerance)
+        // Re-check: the crate can be deleted while the search is off-actor. Applying to a
+        // screen whose crate is gone would render a set for a crate that no longer exists.
+        guard model.store.crate(crateID) != nil else { model.store.closeToList(); return }
+        rebuilt.apply(result)
         detail = rebuilt
     }
 
@@ -138,6 +145,6 @@ struct CrateDetailView: View {
     /// delete cannot shift indices out from under itself; one re-derivation at the end.
     private func removeVinyls(_ vinylIDs: [UUID]) {
         for vinylID in vinylIDs { model.store.removeVinyl(vinylID, from: crateID) }
-        load()
+        Task { await load() }
     }
 }
