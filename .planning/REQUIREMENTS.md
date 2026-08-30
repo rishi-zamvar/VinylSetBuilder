@@ -262,20 +262,42 @@ with `.planning/open-questions/RejoinTests.swift.wip`. This is a real gap betwee
 Phase 1 record implies and what is on disk — do not plan against a file that is not there.
 
 **Carried into Phase 9 — the monotonic-BPM artefacts inventory.** SEQ-03 went bidirectional on
-2026-08-30, but the shipped Act I code and docs still assert the old non-decreasing rule in
-five places. Phase 2 deliberately did **not** touch them (`git diff --stat` on
+2026-08-30, but the shipped Act I code and docs still assert — and in one place still
+*implement* — the old non-decreasing rule in **seventeen places**. Phase 2 and Phase 4 both
+deliberately did **not** touch them (`git diff --stat ce31189 HEAD` on
 `VinylSetBuilderCore/Sources/VinylSetBuilderCore/Sequencing/` is empty, so Phase 9's rewrite
-starts from an unmodified Phase 1 baseline). The full list, so Phase 9 does not have to
-re-derive it:
+starts from an unmodified Phase 1 baseline).
+
+> **Corrected 2026-08-30 by plan 04-02.** This paragraph previously said *"five places"* and the
+> table below listed **six** rows — the prose and the table disagreed with each other. The
+> re-derived count is **seventeen**, and it is neither five nor six. The full two-pass
+> derivation, the row-by-row classification of all 32 sweep hits, and the eleven specific errors
+> in the old table are in **`.planning/phases/04-act-i-signoff/CARRIED-DEBT.md`**, which is the
+> authoritative inventory and is kept honest by gate G8 of `Scripts/hygiene.sh`. The summary
+> below is a pointer, not a second source of truth.
+
+**Line numbers below are pinned at commit `073228f`** and every row is keyed on its matched
+text — the old table's `ROADMAP.md:385` had drifted to `:415`, which is why line numbers are a
+convenience here and not an identity.
 
 | Artefact | What it asserts |
 |---|---|
+| `Sequencing/BPMRules.swift:17` | **THE ENFORCEMENT** — `b >= a && (b - a) <= tolerance + 1e-9`. The `b >= a` clause *is* the retired rule, in executable code. Contains no matching word, so no prose grep can find it |
+| `Sequencing/BPMRules.swift:10` | doc comment: "D2: the sequence's only hard gate. Non-decreasing AND within tolerance" |
+| `Sequencing/BPMRules.swift:11` | doc comment: "Monotonic BPM is an MVP simplification" |
+| `Sequencing/BeamSearchSequencer.swift:51` | comment: "Ascending by folded BPM" — the pre-sort the single-pass algorithm depends on |
 | `Sequencing/BeamSearchSequencer.swift:81` | comment: sorted-ascending order is a topological order of the "non-decreasing" DAG |
 | `Domain/SequenceResult.swift:15` | doc comment: `sequence` is "non-decreasing BPM" |
-| `Tests/…/BeamSearchSequencerTests.swift:30` | test *"BPM is non-decreasing across the whole winning sequence"* — currently green, and wrong |
-| `Tests/…/BPMRulesTests.swift:33` | section comment "D2: non-decreasing AND within tolerance" |
-| `Fixtures/NaiveBPMSortSequencer.swift:2` | stub sorts ascending by design |
-| `ROADMAP.md:385` | Definition of Done says "a sequenced set with ascending BPM" |
+| `Tests/…/BeamSearchSequencerTests.swift:36,37,41` | `test_givenSequence_whenInspected_thenBPMIsNonDecreasing` — green, ⚠️ STALE-marked, and wrong |
+| `Tests/…/BeamSearchSequencerTests.swift:61,65` | `test_givenDescendingCandidates_whenSequenced_thenOrderIsAscending` — green, wrong, and **NOT marked**. A third stale assertion the "two marked assertions" count never included |
+| `Tests/…/BPMRulesTests.swift:48` | `#expect(BPMRules.canFollow(174, 170, tolerance: 4) == false)` — green, ⚠️ STALE-marked; the correct expectation under bidirectional adjacency is `true` |
+| `docs/MVP-SPEC.md:131` | §5 hard gate: "bpm sequence is non-decreasing". **Omitted from the old table.** `.planning/SEQUENCER-SPEC.md` claims to supersede MVP-SPEC §5, but MVP-SPEC carries no marker saying so |
+| `docs/MVP-SPEC.md:223` | §9 Definition of Done: "a sequenced set with ascending BPM". **Omitted from the old table** |
+| `ROADMAP.md:304` | "SEQ-03 (BPM gate, non-decreasing)". **Omitted from the old table** |
+| `ROADMAP.md:310` | plans to *re-assert* "`SEQ-03`'s non-decreasing guarantee" after fixing Q1. **Omitted from the old table** |
+| `ROADMAP.md:415` | Definition of Done says "a sequenced set with ascending BPM" (listed as `:385` before; drifted) |
+| ~~`Fixtures/NaiveBPMSortSequencer.swift:2`~~ | ~~stub sorts ascending by design~~ — **RESOLVED, not carried.** The file was deleted at commit `073228f` (plan 04-02) as unreferenced dead code |
+| ~~`Tests/…/BPMRulesTests.swift:33`~~ | ~~section comment "D2: non-decreasing AND within tolerance"~~ — **reclassified.** Correct when written; commit `ce31189` rewrote it into a ⚠️ STALE supersession marker, which warns about the rule rather than asserting it |
 
 **Open question carried into Phase 9:** `Q1` — `BeamSearchSequencer` may be order-dependent
 because its rank tuple ends in a position-derived `start-index asc`. See
