@@ -27,6 +27,10 @@ final class SmokeUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Crates"].waitForExistence(timeout: 20),
                       "the crate list's navigation bar never appeared")
 
+        ScreenshotRecorder.capture("02-smoke-crate-list",
+                                   settle: ScreenshotRecorder.launchSettle,
+                                   in: self)
+
         XCTAssertTrue(app.staticTexts["Friday Warehouse"].waitForExistence(timeout: 10),
                       "the Friday Warehouse fixture crate is not on screen")
         XCTAssertTrue(app.staticTexts["Sunday Chill"].exists,
