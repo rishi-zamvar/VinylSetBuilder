@@ -69,7 +69,7 @@ add more, it has done its job. Scanning is only the input method.
 | Local SPM package (in-repo, e.g. `VinylSetBuilderCore`) | Houses SwiftData models, resolver, sequencer, segmentation, GRDB wrapper | See "Xcode Project Layout" section — mirrors your existing CrateDigCore/CrateDigMac split |
 | Xcode "Run Script" build phase | Generates gitignored `Secrets.swift` from dotenv at build time | See recipe below — do NOT use an SPM build-tool plugin for this |
 ## 1. Apple Vision Text Recognition: Which API
-- `RecognizeTextRequest` (the new `Sendable` struct with `perform(on:)` async/await) is **iOS 18.0+ / macOS 15.0+ only**. Your deployment target is iOS 17+ (PROJECT.md constraint). It is simply unavailable on iOS 17 devices, so there is no decision to make here — `VNRecognizeTextRequest` is the only API that runs on your floor.
+- `RecognizeTextRequest` (the new `Sendable` struct with `perform(on:)` async/await) is **iOS 18.0+ / macOS 15.0+ only**. The deployment target is **iOS 27**, so it IS available and is the preferred API. `VNRecognizeTextRequest` is not deprecated and remains a valid fallback — it is what the OCR spike used on macOS, and the spike's findings (EXIF orientation must be passed explicitly; coordinates return in the ORIGINAL unrotated buffer space) apply to both APIs.
 - `VNRecognizeTextRequest` itself is **not deprecated**. Its documentation shows continued support through iOS 13.0+ up to current releases; only its older *revisions* (`VNRecognizeTextRequestRevision1`, `Revision2`) are marked deprecated in favor of `VNRecognizeTextRequestRevision3`, which is the current default revision. Do not pin an explicit older revision — let it default.
 - If you ever raise the deployment target to iOS 18+, the two APIs are functionally near-identical for your use case (same `.accurate`/`.fast` recognition levels, same `customWords`, same confidence/bounding-box shape). The only real gain from switching would be async/await ergonomics (no completion handler, no separate `VNImageRequestHandler` object) — not new OCR capability. Not worth doing now; it would only matter if you later drop iOS 17 support.
 - iOS 26 additionally introduced `RecognizeDocumentsRequest` (structured tables/lists/phone-number extraction). Not relevant here — vinyl labels are not structured documents, and it inherits the same 18+ floor.
@@ -95,7 +95,7 @@ add more, it has done its job. Scanning is only the input method.
 ## 7. Generating Gitignored `Secrets.swift` at Build Time
 ## 8. Xcode Project Layout: Single Target vs App + Local SPM Package
 - **App target:** `App` entry point, SwiftUI `View`s, the camera capture UIViewRepresentable/actor, wiring/navigation. Nothing here needs unit testing in isolation — it's thin glue.
-- **`VinylSetBuilderCore` package:** SwiftData `@Model` types, the segmentation heuristics (§4 of MVP-SPEC — this is the part most worth TDD-ing against fixture text), the sequencer (beam search, Camelot distance, BPM gate — ported from CrateDig's Python logic per PROJECT.md context), the metadata resolver (Discogs/MusicBrainz/GetSongBPM clients + bounded-concurrency pipeline from §5), and the GRDB wrapper around bundled `library.db`.
+- **`VinylSetBuilderCore` package:** SwiftData `@Model` types, the segmentation heuristics (§4 of MVP-SPEC — this is the part most worth TDD-ing against fixture text), the sequencer (beam search, Camelot distance, BPM gate — ported from CrateDig's Python logic per PROJECT.md context), the metadata resolver (Discogs/MusicBrainz/SoundCloud clients + the Music Understanding BPM/key tier + bounded-concurrency pipeline from §5), and the GRDB wrapper around the bundled `bpmkey.db`.
 ## Alternatives Considered
 | Recommended | Alternative | When to Use Alternative |
 |-------------|-------------|--------------------------|
@@ -109,7 +109,7 @@ add more, it has done its job. Scanning is only the input method.
 ## What NOT to Use
 | Avoid | Why | Use Instead |
 |-------|-----|--------------|
-| `RecognizeTextRequest` (new Swift Vision API) | Requires iOS 18.0+; deployment target is iOS 17+ | `VNRecognizeTextRequest` |
+| ~~`RecognizeTextRequest`~~ | **No longer avoided** — the iOS 27 target makes it available and preferred | Use `RecognizeTextRequest`; `VNRecognizeTextRequest` is an acceptable fallback |
 | SwiftData for the bundled `library.db` | Can't open a hand-built external SQLite file/schema | GRDB.swift with `configuration.readonly = true` |
 | `@Relationship` to-many arrays as an ordering mechanism | Core Data backs it with `NSSet` — order is not guaranteed to survive a fetch | Plain `[UUID]`/scalar-array attributes, or an explicit `position: Int` field sorted at read time |
 | SPM build-tool plugin for secrets generation | Sandboxed; can't read `~/.config/keys/enrich.env` outside the package | Xcode Run Script build phase with `ENABLE_USER_SCRIPT_SANDBOXING = No` |
