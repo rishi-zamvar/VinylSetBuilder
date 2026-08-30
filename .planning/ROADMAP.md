@@ -179,7 +179,7 @@ across `App/` and `VinylSetBuilderCore/Sources/` returns zero hits.
 **Plans**: 5 planned, 0 delivered
   - [x] 04-01 — the screen-state inventory content-hashed, the committed photometric probe, and one command that regenerates the whole set (S1/S2/S3)
   - [x] 04-02 — `Scripts/hygiene.sh`: eight gates each proven able to fail, plus the carried-debt inventory corrected (S5/S6)
-  - [ ] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
+  - [x] 04-03 — V4 and V5 closed with pixel and uniqueness measurements; one bounded root-cause attempt at V9 (S7)
   - [ ] 04-04 — the defect ledger adjudicated row by row, `Scripts/ledger-check.py` as gate G9, U11 filed (S7)
   - [ ] 04-05 — the clean double re-run, the four-command recount, and the verdict: sign-off or refusal (S1-S7)
 **UI hint**: yes

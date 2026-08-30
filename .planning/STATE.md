@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
-stopped_at: Completed 04-01-PLAN.md — screenshot inventory content-hashed; walk non-determinism found
-last_updated: "2026-08-30T12:31:52.420Z"
+status: V4 and V5 are CLOSED with re-runnable evidence; V9's rule was DISPROVED and carried.
+stopped_at: Completed 04-03-PLAN.md — V4 and V5 closed with measurements; V9's rule disproved and carried to Phase 11
+last_updated: "2026-08-30T13:38:46.188Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 2
   total_plans: 23
-  completed_plans: 18
-  percent: 89
+  completed_plans: 19
+  percent: 83
 ---
 
 # Project State
@@ -42,31 +42,40 @@ Three acts, strictly linear, no interleaving:
 
 Act: I of III
 Phase: 4 of 14 (Act I Sign-off — Every Screen, Photographed) — IN PROGRESS
-Plan: 04-02 complete (2 of 5). Next: **04-03 — close V4 and V5 with measurements.**
-Status: The phase ship criterion is an executable test and it passed. `CaptureWalkUITests`
-        drives all 12 fixture photographs through the capture screen in one session; the flip
-        prompt fires on exactly `[1, 3, 4, 5, 7, 8, 10, 11, 12]` and is suppressed on exactly
-        `[2, 6, 9]`, asserted as named sets in both directions, never as counts; the strip's
-        status tally is exactly `6 Read / 5 Partial / 1 Unread`, asserted as one dictionary; and
-        CAP-03's twenty-item claim is measured by TILE WIDTH (104.0 pt at 1 item and at 21) plus
-        reachability of tile 21, because a count assertion cannot see an `HStack` that shrinks.
-        **6 UI tests green, 0 failures, confirmed from the log AND `build/ui.xcresult`
-        (`passed=6 failed=0`), on three independent full-suite runs.** 168 Core tests green;
-        device-SDK build green; `TODO|FIXME` grep rc=1.
-        **33 screenshots — 9 + 4 + 5 + 15 — all from one purged run, and all looked at.**
-        Photometric probe run three times: `SUSPECT: none`, max per-frame mean drift 0.029
-        against a +/-0.06 bar.
-        Three mutations (I, J, K) reddened the tally, the layout claim and the flip set cleanly
-        and were reverted; J is the one that matters — under it every count and existence
-        assertion still passed and only the width comparison caught it.
-        **V13 closed with numbers. V3 carried forward WITH its second sighting and no fix.**
-        New: V14 (two walk states are one picture), V15 (the correction field truncates at ~22
-        characters), V16 (the over-split draft carries exact duplicate lines). V9 narrowed to a
-        one-line repro: presenting and dismissing a `.sheet` removes the large navigation title
-        for the rest of the session — 33 of 33 frames obey it.
+Plan: 04-03 complete (3 of 5). Next: **04-04 — adjudicate the defect ledger row by row.**
+Status: V4 and V5 are CLOSED with re-runnable evidence; V9's rule was DISPROVED and carried.
+        **V4** — the placeholder badge pair measured **4.01:1** against WCAG 2.2 AA's 4.5:1 for
+        12 pt text and now measures **7.96:1**, with the complete pair still strictly ahead at
+        18.27:1, so SEQ-11's *dimmed, never hidden* holds on both halves. Measured twice before
+        and three times after, and by TWO independent implementations (an in-test Swift histogram
+        and `probe-frames.py --ink 128`) that return the same integers. **The plan's own
+        `contrast >= 60` gate measured 125 on the DEFECTIVE badge — it could never have caught
+        V4. The threshold was kept where it was set and the failure of the gate is reported, not
+        hidden.** Two mutations reddened the two halves at their named lines, xcresult-confirmed.
+        **V5** — `unresolvedVinyl` moved off `position: 2`; label AND position uniqueness now
+        assert across every crate in the new `FixtureCrates.all`, which `demoStore` is built from
+        so the two lists cannot drift. Red before the fix and red under the restored duplicate,
+        naming `["Vinyl 3"]` and `[2]`.
+        **V9 — the rule this row carried for two phases is WRONG.** Reproduced deliberately for
+        the first time: present-and-cancel returns two BYTE-IDENTICAL frames, ink 9677 both. A
+        seven-frame bisection kept every title. A two-session A/B isolated the real rule, four
+        times without variation: **the title is lost for the session iff the FIRST route change
+        is the one driven from inside the sheet's Create** (A=0, B=11746). That also explains the
+        33-frame split — CaptureWalk test 1 enters Create-first and reads 0, test 2 enters via
+        Add More and reads 11746, same class, same build. Three fixes tried and all REJECTED by
+        measurement (H3 forced `.large`, H1 hoisted `.navigationTitle`, H2 removed the sheet's
+        nested `NavigationStack` — 0/11746 every time), all reverted; `RootView` carries no
+        change. **V9 carried to Phase 11** with its repro and its three dead ends written down.
+        171 Core tests green (168 + 3); 7 UI tests green from the log AND `build/ui.xcresult`;
+        device-SDK build green; hygiene 8 pass / 0 fail; audit green — 46 files, 44 distinct
+        states, 0 orphan. 8 frames changed materially and they are exactly the 8 that render a
+        badge pair; 26 changed only in the simulator clock, measured below y=150.
+        **Hazard found: `ui-test.sh` exited 0 having run ZERO tests, twice, on the first
+        invocation after a UI-test file was edited. A green rc from it is not evidence that
+        anything ran — read `passedTests` from the result bundle.**
 Last activity: 2026-08-30
 
-Progress: [█████████░] 89%
+Progress: [████████░░] 83%
 
 16 of the 18 plans on disk have summaries. The two that do not are **not** pending work:
 
@@ -144,6 +153,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 03 P05 | ~95 min | 2 tasks | 40 files |
 | Phase 04 P02 | 25m | 3 tasks | 5 files |
 | Phase 04 P01 | 37m | 3 tasks | 5 files |
+| Phase 04 P03 | 61 | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -225,6 +235,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 04]: 04-02: MetadataResolving kept with zero references — a declared seam Phase 7 (RES-01..08) implements, allowlisted in hygiene.sh G5 with its phase named
 - [Phase 04]: Gate B's whole-frame pixel fraction is a candidate generator, not a decider — declared duplicates carry a kind (IDENTICAL collapses the state count, DISTINCT does not)
 - [Phase 04]: sim-settled-crate-list.png deleted as the one orphan; 01-06-crate-list.png carries the same unfixed '1 records' state and is cited twice
+- [Phase 04]: V4 closed on WCAG 2.2 AA (4.01:1 -> 7.96:1); the plan's own contrast>=60 gate measured 125 on the defective badge and is reported as unable to have caught it — the threshold was NOT moved
+- [Phase 04]: V9's two-phase-old rule ('a sheet removes the title') is FALSE. The measured rule: the title is lost iff the FIRST route change of the session comes from the sheet's Create. Carried to Phase 11 with H1/H2/H3 rejected at 0/11746 each
 
 ### Pending Todos
 
@@ -304,8 +316,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T12:31:52.417Z
-Stopped at: Completed 04-01-PLAN.md — screenshot inventory content-hashed; walk non-determinism found
+Last session: 2026-08-30T13:38:12.439Z
+Stopped at: Completed 04-03-PLAN.md — V4 and V5 closed with measurements; V9's rule disproved and carried to Phase 11
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.
