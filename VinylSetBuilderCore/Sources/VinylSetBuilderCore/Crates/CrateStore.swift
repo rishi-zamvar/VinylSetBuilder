@@ -89,6 +89,24 @@ public struct CrateStore: Sendable, Equatable {
         route = .crateList
     }
 
+    // MARK: CRATE-05
+
+    /// Re-enter capture for an EXISTING crate. Navigation only; mutates nothing else.
+    /// The guard is the whole point: a stale ID must not navigate anywhere.
+    public mutating func addMore(to crateID: UUID) {
+        guard crate(crateID) != nil else { return }
+        route = .capture(crateID: crateID)
+    }
+
+    // MARK: Write-back
+
+    /// The commit path for an edited crate value (a manual reorder). Replaces in place, so the
+    /// newest-first list order is not disturbed by a write-back. Never inserts.
+    public mutating func update(_ crate: Crate) {
+        guard let index = crates.firstIndex(where: { $0.id == crate.id }) else { return }
+        crates[index] = crate
+    }
+
     // MARK: Private
 
     /// Every mutator resolves the crate through here. No-ops on an unknown ID rather than
