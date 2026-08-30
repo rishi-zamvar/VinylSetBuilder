@@ -27,7 +27,13 @@ func test_givenAnyFixture_whenSequenced_thenVinylIDsAreUnique() {
 
 // MARK: - SEQ-03: BPM gate
 
-@Test("BPM is non-decreasing across the whole winning sequence")
+// ⚠️ STALE — ASSERTS A RETIRED SPEC. DO NOT TRUST THIS GREEN.
+// The owner replaced the non-decreasing rule on 2026-08-30 with bidirectional adjacency:
+// |bpm[i+1] − bpm[i]| ≤ tolerance, in EITHER direction. See .planning/SEQUENCER-SPEC.md.
+// This test still passes only because BeamSearchSequencer still enforces the OLD rule —
+// a single forward pass over BPM-sorted candidates. SEQ-03 is REOPENED.
+// Phase 9 must delete this test and replace it with an adjacency-window assertion.
+@Test("[STALE — retired spec, Phase 9 replaces] BPM is non-decreasing across the whole winning sequence")
 func test_givenSequence_whenInspected_thenBPMIsNonDecreasing() {
     let candidates = makeCrateFixture(vinylCount: 40, seed: 7)
     let result = BeamSearchSequencer().sequence(candidates: candidates, bpmTolerance: 4)

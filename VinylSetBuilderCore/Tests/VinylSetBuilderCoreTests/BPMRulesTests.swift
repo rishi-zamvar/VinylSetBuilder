@@ -30,7 +30,8 @@ func test_givenVeryLowBPM_whenFolded_thenFoldsOnlyOnce() {
     #expect(BPMRules.fold(50) == 100)
 }
 
-// MARK: - Gate (D2: non-decreasing AND within tolerance)
+// MARK: - Gate (⚠️ STALE: 'non-decreasing AND within tolerance' is a RETIRED spec.
+//         Now bidirectional: |Δ| ≤ tolerance either direction. SEQ-03 reopened, Phase 9 owns it.)
 
 @Test("A gap exactly at tolerance is allowed")
 func test_givenExactToleranceGap_whenGated_thenAllowed() {
