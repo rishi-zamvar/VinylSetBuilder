@@ -176,7 +176,7 @@ final class CaptureWalkUITests: XCTestCase {
 
         // ------------------------------- states 5 and 6: the sheet, on the two fixtures that
         // actually answer defect V13 (see the plan's SUMMARY for why these two and not one)
-        inspectLongestTrustedLine()
+        inspectLongestLineWraps()
         inspectLongestRawRead()
 
         // ------------------------------------------------------- state 7: CAP-06, and V3 again
@@ -248,37 +248,56 @@ final class CaptureWalkUITests: XCTestCase {
 
     // MARK: The two sheet states
 
-    /// **State 5 — fixture 5 (`IMG_0502`), and the choice is defect V13's.** V13 says a long
-    /// line's behaviour in the correction field is not assessable, because no 03-04 frame
-    /// rendered a line wider than 20 characters. Measured across the whole corpus, the longest
-    /// line that ever reaches a `TextField` is IMG_0502's 44-character
-    /// `EXCLUSIVE NEW MIXES FROM V CLASSIC THE ALBUM` — the corpus's 106-character read is at
-    /// confidence 0.30 and the segmenter drops it, so it never becomes a draft line at all.
-    /// Photographing any other fixture here would leave V13 exactly where 03-04 left it.
-    private func inspectLongestTrustedLine() {
+    /// **State 5 — defect V15, closed by measurement rather than by assertion.**
+    ///
+    /// V15: the correction field truncated the corpus's longest read at about 22 characters in
+    /// a 237.3pt single-line `TextField`. Swap 1 made that WORSE and not better — the premise
+    /// for handing V15 to Phase 6 was that SEG-03's filter would shorten the long lines, and
+    /// the opposite happened: `AngleClusterSegmenter` JOINS a cluster's readings into one track
+    /// line, so the longest draft line in the corpus went from 44 characters to 57 (IMG_0500,
+    /// fixture 3). The fix is `axis: .vertical` on the field.
+    ///
+    /// Measured with a control in the same run, because "it is tall" means nothing on its own:
+    /// fixture 5's single 29-character line is the one-line control and fixture 3's 57-character
+    /// line has to be visibly taller than it.
+    private func inspectLongestLineWraps() {
         openThumb(5)
         XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
                       "tapping tile 5 did not present the inspect sheet")
+        XCTAssertEqual(lineCount(), 1, "IMG_0502 segments to one track line")
+        let control = app.textFields["inspect-line-field-1"]
+        let controlValue = (control.value as? String) ?? ""
+        let controlHeight = control.frame.height
+        print("WALK12 V15 control: \(controlValue.count) chars, field \(control.frame.width)x\(controlHeight)pt, '\(controlValue)'")
+        XCTAssertEqual(controlValue.count, 29,
+                       "the one-line control is \(controlValue.count) characters ('\(controlValue)'), not 29")
+        closeSheet()
 
+        openThumb(3)
+        XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
+                      "tapping tile 3 did not present the inspect sheet")
         let lines = lineCount()
-        XCTAssertEqual(lines, 4, "IMG_0502 has 4 trusted observations; the draft opened with \(lines) lines")
+        XCTAssertEqual(lines, 1, "IMG_0500 segments to one track line; the draft opened with \(lines)")
         XCTAssertFalse(app.otherElements["inspect-line-\(lines + 1)"].exists,
                        "the inspect-line family is not contiguous — line \(lines + 1) resolved")
         XCTAssertFalse(app.otherElements["inspect-line-99"].exists,
                        "a nonsense inspect-line identifier resolved — the line count is not discriminating")
 
-        // V13's measurement: the value the field HOLDS, against the width it is drawn at. The
-        // value proves the data is not being truncated; only the photograph can say whether it
-        // is legible, which is why this state is one of the seven.
-        var widest = ""
-        for n in 1...lines {
-            let field = app.textFields["inspect-line-field-\(n)"]
-            let value = (field.value as? String) ?? ""
-            print("WALK12 V13 line \(n): \(value.count) chars, field \(field.frame.width)pt, '\(value)'")
-            if value.count > widest.count { widest = value }
-        }
-        XCTAssertEqual(widest.count, 44,
-                       "V13: expected the corpus's longest trusted read at 44 characters; the widest field holds \(widest.count) ('\(widest)')")
+        let longest = app.textFields["inspect-line-field-1"]
+        let value = (longest.value as? String) ?? ""
+        print("WALK12 V15 longest: \(value.count) chars, field \(longest.frame.width)x\(longest.frame.height)pt, '\(value)'")
+        // The value is intact — that was never in doubt, V15 was always about legibility.
+        XCTAssertEqual(value.count, 57,
+                       "expected the corpus's longest draft line at 57 characters; the field holds \(value.count) ('\(value)')")
+        // …and it is now DRAWN, not cut off. A single-line field would render both at the same
+        // height, which is exactly what V15 was.
+        // At least one whole rendered line taller than the control. Measured: a line is 22pt,
+        // the 29-character control wraps to two (44pt) and the 57-character line to three
+        // (66pt). `* 1.5` was tried first and is EXACTLY the 2:3 ratio, so it failed on a
+        // floating-point ulp — 66.00000000000003 against 66.00000000000004 — while measuring
+        // the right thing. A whole-line margin says what is meant and has slack.
+        XCTAssertGreaterThan(longest.frame.height, controlHeight + 10,
+                             "V15: the 57-character line renders at \(longest.frame.height)pt against the 29-character control's \(controlHeight)pt — it is still being truncated")
 
         capture("03-walk-05-inspect-sheet")
         closeSheet()
@@ -292,20 +311,25 @@ final class CaptureWalkUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
                       "tapping tile 8 did not present the inspect sheet")
 
+        // **Phase 8, swap 1.** This was 11 — one line per trusted observation. IMG_0505 has two
+        // tracks, `DUBTRACK` and `SUPERSONIC`, and `TECH008` came out as the catalogue number.
         let lines = lineCount()
-        XCTAssertEqual(lines, 11, "IMG_0505 has 11 trusted observations; the draft opened with \(lines) lines")
+        XCTAssertEqual(lines, 2, "IMG_0505 segments to 2 track lines; the draft opened with \(lines) lines")
 
-        // The other half of "does truncation make two lines read identically". It does not need
-        // truncation to: the over-split draft (D-03-4) carries the SAME string twice when the
-        // OCR read it off two surfaces of one sleeve. Recorded rather than asserted, because the
-        // duplicate is a property of the photograph, not of this screen.
+        // **Defect V16, closed here.** The over-split draft carried the SAME string twice when
+        // the OCR read it off two surfaces of one sleeve — IMG_0505 listed `SIMON BASSLINE
+        // SMITH` on lines 2 and 5, and a person correcting the sheet could not tell the two
+        // apart. `AngleClusterSegmenter` removes cross-cluster repeats and collapses near
+        // duplicates inside a cluster, so this is now an ASSERTION and not a print.
         var lineTexts: [String] = []
         for n in 1...lines {
             lineTexts.append((app.textFields["inspect-line-field-\(n)"].value as? String) ?? "")
         }
         let duplicates = Dictionary(grouping: lineTexts, by: { $0 }).filter { $0.value.count > 1 }.keys.sorted()
         print("WALK12 V13 IMG_0505 lines = \(lineTexts)")
-        print("WALK12 V13 IMG_0505 duplicate line texts = \(duplicates)")
+        print("WALK12 V16 IMG_0505 duplicate line texts = \(duplicates)")
+        XCTAssertTrue(duplicates.isEmpty,
+                      "V16: the draft still carries identical lines: \(duplicates)")
 
         XCTAssertFalse(app.staticTexts["inspect-raw-obs-1"].exists,
                        "OCR-04: the raw text is expanded before anyone asked for it")

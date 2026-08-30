@@ -92,6 +92,9 @@ struct CaptureThumbnailStrip: View {
         /// text instead: each of the three is legible on its own and distinct from the others.
         static func statusColour(_ status: CaptureItemStatus) -> Color {
             switch status {
+            // Neutral and unsaturated on purpose: `.reading` is not a verdict, and giving it
+            // one of the three verdict colours would make a record look scored before it is.
+            case .reading: return Color(red: 0.29, green: 0.29, blue: 0.31)
             case .read:    return Color(red: 0.09, green: 0.42, blue: 0.20)
             case .partial: return Color(red: 0.65, green: 0.37, blue: 0.02)
             case .unread:  return Color(red: 0.64, green: 0.10, blue: 0.10)

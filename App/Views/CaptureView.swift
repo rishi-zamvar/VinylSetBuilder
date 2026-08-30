@@ -9,11 +9,10 @@ import VinylSetBuilderCore
 /// `VinylSetBuilderCore`'s `Capture/` in plan 03-01. This screen shows what it is handed and
 /// forwards taps, exactly the way `CrateDetailView` does.
 ///
-/// **The preview is a plain dark rectangle, and that is deliberate (D-03-2).** Act I has no
-/// camera; the simulator has none either. Phase 10 drops a real preview layer into
-/// `previewArea` and swaps `FixturePhotoSource` for an `AVCapturePhotoOutput`-backed
-/// `PhotoCapturing`, and nothing else on this screen moves — that is the whole point of the
-/// seam being `async` from day one.
+/// **The preview is a plain dark rectangle, and that is deliberate (D-03-2).** The simulator
+/// has no camera, so there is nothing to draw there; `SleevePhotoSource` supplies the frames
+/// either way and nothing else on this screen moves — that is the whole point of the seam
+/// being `async` from day one.
 struct CaptureView: View {
     let model: AppModel
     let crateID: UUID
@@ -30,9 +29,6 @@ struct CaptureView: View {
 
     /// The captured item whose inspect/correct sheet is open, if any. OCR-04 / SEG-07.
     @State private var inspecting: CaptureItem?
-
-    /// D-03-4: one track line per trusted observation. Real segmentation is Phase 6.
-    private let segmenter = FixtureLineSegmenter()
 
     init(model: AppModel, crateID: UUID) {
         self.model = model
@@ -159,6 +155,11 @@ struct CaptureView: View {
     private func shoot() async {
         guard let item = await source.capture() else { return }
         session.append(item)
+        // **Swap 1 (Phase 8).** `FixtureLineSegmenter` — one line per trusted observation — is
+        // gone. This is the segmenter Phase 6 measured at 9 of 12 usable track counts and 6 of 6
+        // catalogue numbers, and it is built with the orientation the READER returned rather
+        // than the corpus's, so a photograph taken any other way up still segments (OCR-02).
+        let segmenter = AngleClusterSegmenter(orientation: item.orientation)
         guard let entry = session.vinylEntry(for: item.id, segmenter: segmenter) else { return }
         model.store.addVinyl(entry, to: crateID)
     }

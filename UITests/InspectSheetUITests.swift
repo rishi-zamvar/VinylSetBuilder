@@ -79,9 +79,13 @@ final class InspectSheetUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["inspect-title"].exists, "the sheet carries no title")
 
         // Two-sided, so a family that resolved everything would redden here rather than pass.
+        // **Phase 8, swap 1.** This was 9 — one draft line per trusted observation, the stub's
+        // rule. `AngleClusterSegmenter` returns the record's two actual track lines. Measured,
+        // not guessed: `Abstract` and `The Message - Brown Gtauno Originat Mix!`, with
+        // `0-44904` lifted out as the catalogue number.
         let lines = lineCount()
-        XCTAssertEqual(lines, 9,
-                       "IMG_0498 has 9 trusted observations; the draft opened with \(lines) lines")
+        XCTAssertEqual(lines, 2,
+                       "IMG_0498 segments to 2 track lines; the draft opened with \(lines) lines")
         XCTAssertTrue(app.otherElements["inspect-line-\(lines)"].exists)
         XCTAssertFalse(app.otherElements["inspect-line-\(lines + 1)"].exists,
                        "the inspect-line family is not contiguous — line \(lines + 1) resolved")
@@ -128,9 +132,11 @@ final class InspectSheetUITests: XCTestCase {
         XCTAssertTrue(app.otherElements["inspect-sheet"].waitForExistence(timeout: 10),
                       "the sheet did not present for fixture 6")
 
+        // **Phase 8, swap 1.** This was 16 — IMG_0503's sixteen trusted readings, one line each.
+        // The record has two tracks: `A: HIGH DOWN` and `AAA: STRANGE NAT URE`.
         let opened = lineCount()
-        XCTAssertEqual(opened, 16,
-                       "IMG_0503 has 16 trusted observations; the draft opened with \(opened) lines")
+        XCTAssertEqual(opened, 2,
+                       "IMG_0503 segments to 2 track lines; the draft opened with \(opened) lines")
         XCTAssertTrue(app.otherElements["inspect-line-\(opened)"].exists)
         XCTAssertFalse(app.otherElements["inspect-line-\(opened + 1)"].exists,
                        "the draft opened with a non-contiguous line family")
@@ -192,7 +198,10 @@ final class InspectSheetUITests: XCTestCase {
                        "SEG-07: the hand-typed line reads back as '\(String(describing: field.value))'")
         XCTAssertFalse((field.value as? String ?? "").isEmpty,
                        "SEG-07: the hand-typed line came back empty")
-        app.typeText("\n")   // resign the keyboard so the frame shows the sheet, not the keys
+        // Not Return: V15 made the field `axis: .vertical`, so Return inserts a newline instead
+        // of resigning. Tapping the sheet's own title dismisses the keyboard and touches nothing.
+        app.staticTexts["inspect-title"].tap()
+        _ = app.keyboards.element.waitForNonExistence(timeout: 5)
         capture("03-04-sheet-hand-typed")
 
         // ------------------------------------------------- Apply writes back, Close does not

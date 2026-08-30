@@ -228,8 +228,25 @@ private struct LineRow: View {
                 .foregroundStyle(Color.primary)
                 .frame(minWidth: 18, alignment: .trailing)
 
-            TextField("Track line", text: $text)
-                .textFieldStyle(.roundedBorder)
+            // **V15.** A single-line field truncated the corpus's longest read at about 22
+            // characters — measured at 237.3pt of field against a 44-character value, and the
+            // real segmenter makes it WORSE, not better: joining a cluster's readings into one
+            // line takes the longest draft line from 44 characters to 57 (IMG_0500). `axis:
+            // .vertical` is the whole fix — the field grows to as many lines as the value needs
+            // and the DJ can read what they are correcting without tapping into it first.
+            TextField("Track line", text: $text, axis: .vertical)
+                // **Not `.roundedBorder`, and that is measured.** With the rounded-border style
+                // a vertical-axis field stops growing at two lines: the corpus's 29-character
+                // control and its 57-character longest line both rendered at exactly
+                // 44.00000000000003pt, so the long one was still cut off and V15 was still
+                // open. Plain style plus an explicit range grows to the value; the border is
+                // drawn here instead, which costs four lines and actually closes the defect.
+                .lineLimit(1...10)
+                .textFieldStyle(.plain)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+                .background(RoundedRectangle(cornerRadius: 6)
+                    .strokeBorder(Color.secondary.opacity(0.55), lineWidth: 1))
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .accessibilityIdentifier("inspect-line-field-\(number)")

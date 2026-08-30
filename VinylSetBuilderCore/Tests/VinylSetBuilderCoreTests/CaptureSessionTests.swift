@@ -281,42 +281,51 @@ func test_givenTheFixtureSource_whenItemsAreDealt_thenTheirTextIsTheGeneratedTab
     }
 }
 
-// MARK: - D-03-4: the Act I segmenter
+// MARK: - Phase 8, swap 1: the real segmenter is what the capture screen now uses
+//
+// The Act I `FixtureLineSegmenter` (one line per trusted observation) is DELETED. These are the
+// same two fixtures the old tests used, re-measured against `AngleClusterSegmenter` — the
+// numbers moved a long way, which is the point of the swap.
 
-@Test("D-03-4: the Act I segmenter emits one line per trusted observation, in reading order")
-func test_givenObservations_whenSegmented_thenOneTrackPerTrustedObservationInOrder() {
-    let vinylID = UUID()
-    let tracks = FixtureLineSegmenter().segment(
-        [observation("SIDE A", 1.0), observation("noise", 0.3),
-         observation("TYME 012", 1.0), observation("blur", 0.5)],
-        vinylID: vinylID, side: .a).tracks
-
-    #expect(tracks.map(\.rawOCRText) == ["SIDE A", "TYME 012"])
-    #expect(tracks.map(\.position) == [0, 1])
-    #expect(tracks.allSatisfy { $0.vinylID == vinylID })
-    #expect(tracks.allSatisfy { $0.side == .a })
-    #expect(tracks.allSatisfy { $0.resolutionState == .pending })
-    #expect(tracks.allSatisfy { $0.bpm == nil && $0.camelot == nil })
-}
-
-@Test("D-03-4: untrusted observations produce no lines at all")
-func test_givenOnlyUntrustedObservations_whenSegmented_thenNothingIsEmitted() {
-    // Negative control: a segmenter that ignored confidence would emit three here and the
-    // trusted-count assertions elsewhere would still pass on the fixtures that read cleanly.
-    let tracks = FixtureLineSegmenter().segment(
-        [observation("a", 0.5), observation("b", 0.5), observation("c", 0.5)],
-        vinylID: UUID(), side: .b).tracks
-    #expect(tracks.isEmpty)
-    #expect(FixtureLineSegmenter().segment([], vinylID: UUID(), side: .a).tracks.isEmpty)
-}
-
-@Test("D-03-4: on the real fixtures the segmenter emits the trusted counts, large and small")
-func test_givenTwoRealFixtures_whenSegmented_thenSixteenLinesAndThreeLines() throws {
-    func lineCount(_ file: String) throws -> Int {
+@Test("swap 1: the real segmenter collapses the over-split draft to the record's actual tracks")
+func test_givenTwoRealFixtures_whenSegmentedForReal_thenTheDraftIsTheTrackListNotTheReadings() throws {
+    func segmentation(_ file: String) throws -> LabelSegmentation {
         let fixture = try #require(FixtureObservations.all.first { $0.file == file })
-        return FixtureLineSegmenter().segment(fixture.observations,
-                                              vinylID: UUID(), side: .a).tracks.count
+        return AngleClusterSegmenter().segment(fixture.observations, vinylID: UUID(), side: .a)
     }
-    #expect(try lineCount("IMG_0503.HEIC") == 16)   // the one that read everything
-    #expect(try lineCount("IMG_0507.HEIC") == 3)    // the dubplate that read almost nothing
+
+    // IMG_0503 read SIXTEEN trusted observations off one sleeve. The stub made sixteen draft
+    // lines of them. The record has two tracks, and they are named.
+    let rich = try segmentation("IMG_0503.HEIC")
+    #expect(rich.tracks.map(\.rawOCRText) == ["A: HIGH DOWN", "AAA: STRANGE NAT URE"])
+    #expect(rich.catalogueNumber == "TYME012")
+
+    // IMG_0507 is the dubplate that reads nothing usable. The stub emitted three junk lines;
+    // the real segmenter emits none and the record goes to hand entry, which is honest.
+    #expect(try segmentation("IMG_0507.HEIC").tracks.isEmpty)
+}
+
+@Test("V16: the real segmenter leaves no two identical lines in a draft, on any fixture")
+func test_givenEveryFixture_whenSegmented_thenNoDraftCarriesADuplicateLine() {
+    for fixture in FixtureObservations.all {
+        let lines = AngleClusterSegmenter()
+            .segment(fixture.observations, vinylID: UUID(), side: .a)
+            .tracks.map(\.rawOCRText)
+        #expect(Set(lines).count == lines.count,
+                Comment(rawValue: "\(fixture.file) drafted a duplicate line: \(lines)"))
+    }
+}
+
+@Test("CAP-03: the derived read status reproduces the owner's own hand score on all twelve")
+func test_givenTheTwelveFixtures_whenStatusIsDerived_thenItIsSixReadFivePartialOneUnread() {
+    var tally: [CaptureItemStatus: Int] = [:]
+    for fixture in FixtureObservations.all {
+        let segmentation = AngleClusterSegmenter().segment(fixture.observations,
+                                                           vinylID: UUID(), side: .a)
+        tally[SleeveStatus.status(for: segmentation), default: 0] += 1
+    }
+    // CONTEXT.md §3's hand-scored 6/5/1, reproduced by a rule that never saw it. That agreement
+    // is the evidence the rule is not arbitrary — it was not fitted to this tally, and the one
+    // record it calls unread is the same dubplate the owner called unread.
+    #expect(tally == [.read: 6, .partial: 5, .unread: 1])
 }
