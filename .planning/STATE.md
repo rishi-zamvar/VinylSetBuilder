@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 2 closed. Next is Phase 3 (The Capture & Correction Screens, Stubbed).
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-08-30T09:01:47.079Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-08-30T09:03:02.807Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 14
   completed_phases: 1
   total_plans: 18
-  completed_plans: 12
+  completed_plans: 13
   percent: 85
 ---
 
@@ -106,6 +106,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 02 P04 | ~50 min | 2 tasks | 18 files |
 | Phase 02-crate-screens-stubbed P05 | 35m | 2 tasks | 22 files |
 | Phase 03 P02 | ~50 min | 2 tasks | 4 files |
+| Phase 03 P01 | ~40 min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -169,6 +170,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 03]: SEG-07 splitLine splits at the word midpoint (odd counts favour the first line) — a marked ceiling; a character index is the upgrade path
 - [Phase 03]: SegmentationDraft carries the tracks' Side through, so correcting a B-side read cannot republish it as A
 - [Phase 03]: OCR-04 keeps the untrusted 0.50/0.30 reads — the discarded row is the evidence a bad read needs
+- [Phase 03]: Trusted OCR count is 89 not 88 — 88/101 is the first spike run; Act I fixtures come from the second (104/89). OCR-SPIKE.md and Phase 3 CONTEXT.md corrected.
+- [Phase 03]: FixturePhotoSource is an actor, not a struct — capture() advances a counter behind a Sendable protocol
 
 ### Pending Todos
 
@@ -246,8 +249,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T09:01:47.077Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-08-30T09:02:50.989Z
+Stopped at: Completed 03-01-PLAN.md
 113 unit + 2 UI tests green; all four ship-criterion gates exit 0; 15/15 screenshots committed
 after purging the host glob first; V1 and V2 closed with evidence; six new visual findings
 recorded (V3 Medium, V4-V7 Low, V8 informational); requirement count corrected 15 -> 17.

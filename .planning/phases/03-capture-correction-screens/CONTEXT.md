@@ -24,7 +24,7 @@ All five are measured, not assumed. Sources: `.planning/research/OCR-SPIKE.md`,
    suppressed** when two sides were already read, or it nags on a quarter of the collection.
 3. **Side markers are not `A`/`B`.** Real: `A:`, `AA:`, `SIDE A`, `Side One`, `COLD SIDE:`,
    `STEEL SIDE:`. Jungle 12"s use A/AA.
-4. **Confidence is binary** — 1.00 / 0.50 / 0.30, nothing between. 88 of 104 observations were
+4. **Confidence is binary** — 1.00 / 0.50 / 0.30, nothing between. 89 of 104 observations were
    1.00. → the trusted tier is `conf >= 1.0`, not a fraction.
 5. **Only 6 of 12 read cleanly.** White labels and dubplates are absent from every database.
    → **SEG-07 correction is a first-class path, not an error path. The sheet must be FAST.**

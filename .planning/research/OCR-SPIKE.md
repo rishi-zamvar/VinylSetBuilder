@@ -69,7 +69,14 @@ Getting this half-right is how segmentation breaks silently.
 
 Observed confidences were almost exclusively **1.00, 0.50 or 0.30**. Nothing in between.
 The spec's "filter below ~0.3" threshold is nearly a no-op. **Use `conf >= 1.0` as the
-trusted tier**, treat 0.5/0.3 as junk. Of 104 observations, 88 were 1.00.
+trusted tier**, treat 0.5/0.3 as junk. Of 104 observations, **89** were 1.00.
+
+> **Correction, 2026-08-30 (plan 03-01).** This line read "88" until the fixture
+> generator counted the JSON directly. 88/101 is the FIRST run (`.local/ocr/ocr_out.json`);
+> the second run (`ocr2_out.json`, the one the 104 figure comes from and the one Act I's
+> fixtures are generated from) reads 104 observations, **89** at 1.00, 2 at 0.50, 13 at
+> 0.30. The total was updated to 104 when the spike was re-run; the trusted count was not.
+> `FixtureObservationsTests` now asserts 89, measured, not quoted.
 
 ## Finding 5 — Side markers vary far more than `A1`/`B2`
 
