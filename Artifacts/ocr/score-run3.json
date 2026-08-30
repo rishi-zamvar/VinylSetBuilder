@@ -1,0 +1,253 @@
+[
+  {
+    "actualCatalogue" : "0-44904",
+    "actualTracks" : 2,
+    "actualVerdict" : "clean",
+    "expectedCatalogue" : "0-44904",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0498.HEIC",
+    "milliseconds" : 303,
+    "missing" : [
+
+    ],
+    "observations" : 11,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "Abstract",
+      "The Message - Brown Gtauno Originat Mix!"
+    ],
+    "trusted" : 9
+  },
+  {
+    "actualCatalogue" : "EMF2029",
+    "actualTracks" : 2,
+    "actualVerdict" : "clean",
+    "expectedCatalogue" : "EMF2029",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0499.HEIC",
+    "milliseconds" : 89,
+    "missing" : [
+
+    ],
+    "observations" : 7,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "A: DRAGSTAR",
+      "AA: ELEMENTZ"
+    ],
+    "trusted" : 5
+  },
+  {
+    "actualCatalogue" : "0-44845",
+    "actualTracks" : 1,
+    "actualVerdict" : "partial",
+    "expectedCatalogue" : "0-44845",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "partial",
+    "file" : "IMG_0500.HEIC",
+    "milliseconds" : 120,
+    "missing" : [
+      "(unread)"
+    ],
+    "observations" : 9,
+    "orientation" : 6,
+    "slotsFound" : 2,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "JUvS. Invocación inckatecks* Gide One \/ Oríginal Versionk"
+    ],
+    "trusted" : 7
+  },
+  {
+    "actualTracks" : 3,
+    "actualVerdict" : "partial",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "partial",
+    "file" : "IMG_0501.HEIC",
+    "milliseconds" : 114,
+    "missing" : [
+      "Give It To Me"
+    ],
+    "observations" : 5,
+    "orientation" : 6,
+    "slotsFound" : 2,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "LINU ME",
+      "STAY",
+      "eFOCUSED"
+    ],
+    "trusted" : 5
+  },
+  {
+    "actualTracks" : 1,
+    "actualVerdict" : "partial",
+    "expectedTracks" : 1,
+    "expectedVerdict" : "partial",
+    "file" : "IMG_0502.HEIC",
+    "milliseconds" : 95,
+    "missing" : [
+      "(unread)"
+    ],
+    "observations" : 5,
+    "orientation" : 6,
+    "slotsFound" : 2,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "JA22 •MAIATCIN DAVE ANCEL MIX"
+    ],
+    "trusted" : 4
+  },
+  {
+    "actualCatalogue" : "TYME012",
+    "actualTracks" : 2,
+    "actualVerdict" : "clean",
+    "expectedCatalogue" : "TYME012",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0503.HEIC",
+    "milliseconds" : 100,
+    "missing" : [
+
+    ],
+    "observations" : 16,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "A: HIGH DOWN",
+      "AAA: STRANGE NAT URE"
+    ],
+    "trusted" : 16
+  },
+  {
+    "actualTracks" : 3,
+    "actualVerdict" : "clean",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0504.HEIC",
+    "milliseconds" : 93,
+    "missing" : [
+
+    ],
+    "observations" : 6,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "xtasia",
+      "fellowship",
+      "'sweetness'"
+    ],
+    "trusted" : 4
+  },
+  {
+    "actualCatalogue" : "TECH008",
+    "actualTracks" : 2,
+    "actualVerdict" : "clean",
+    "expectedCatalogue" : "TECH008",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0505.HEIC",
+    "milliseconds" : 119,
+    "missing" : [
+
+    ],
+    "observations" : 12,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "DUBTRACK",
+      "SUPERSONIC"
+    ],
+    "trusted" : 11
+  },
+  {
+    "actualCatalogue" : "CSI006",
+    "actualTracks" : 2,
+    "actualVerdict" : "clean",
+    "expectedCatalogue" : "CSI006",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "clean",
+    "file" : "IMG_0506.HEIC",
+    "milliseconds" : 106,
+    "missing" : [
+
+    ],
+    "observations" : 12,
+    "orientation" : 6,
+    "slotsFound" : 3,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "COLD: WIDE OPBY",
+      "STEEL"
+    ],
+    "trusted" : 9
+  },
+  {
+    "actualTracks" : 0,
+    "actualVerdict" : "fail",
+    "expectedTracks" : 0,
+    "expectedVerdict" : "fail",
+    "file" : "IMG_0507.HEIC",
+    "milliseconds" : 87,
+    "missing" : [
+      "(unread)",
+      "(unread)"
+    ],
+    "observations" : 3,
+    "orientation" : 6,
+    "slotsFound" : 0,
+    "slotsTotal" : 2,
+    "trackLines" : [
+
+    ],
+    "trusted" : 3
+  },
+  {
+    "actualTracks" : 1,
+    "actualVerdict" : "partial",
+    "expectedTracks" : 1,
+    "expectedVerdict" : "partial",
+    "file" : "IMG_0508.HEIC",
+    "milliseconds" : 94,
+    "missing" : [
+      "(unread)"
+    ],
+    "observations" : 11,
+    "orientation" : 6,
+    "slotsFound" : 1,
+    "slotsTotal" : 2,
+    "trackLines" : [
+      "Da Lick"
+    ],
+    "trusted" : 10
+  },
+  {
+    "actualTracks" : 2,
+    "actualVerdict" : "partial",
+    "expectedTracks" : 2,
+    "expectedVerdict" : "partial",
+    "file" : "IMG_0509.HEIC",
+    "milliseconds" : 94,
+    "missing" : [
+      "(unread)"
+    ],
+    "observations" : 7,
+    "orientation" : 6,
+    "slotsFound" : 2,
+    "slotsTotal" : 3,
+    "trackLines" : [
+      "SONIC",
+      "\"SMADON MIND"
+    ],
+    "trusted" : 6
+  }
+]
