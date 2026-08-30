@@ -129,12 +129,24 @@ struct InspectCorrectSheet: View {
 
     /// Typing is the third of SEG-07's operations and it is available on every line at all
     /// times — there is no "edit" mode to enter, because entering one would make hand-entry two
-    /// taps. Writes go straight through `setText`, which owns the rule that clearing a line to
-    /// nothing removes it (that is how a junk read is deleted).
+    /// taps. Writes go through `setText`, which owns the rule that clearing a line to nothing
+    /// **removes** it: that is how a junk read is deleted.
+    ///
+    /// **The equality guard is load-bearing, and it was measured, not anticipated.** A text
+    /// field re-publishes its current value through the binding when it takes focus, so tapping
+    /// into a freshly added — and therefore empty — line sent `""` straight into `setText`,
+    /// deleted the line out from under the cursor, and the keyboard never appeared at all.
+    /// Observed three times: once on this plan's first UI run, and twice more after a mutation
+    /// revert silently took this guard back out. Writing only on a real change makes an echo
+    /// harmless while leaving a deliberate clear-to-delete working exactly as Core tested it.
     private func textBinding(for id: DraftLine.ID) -> Binding<String> {
         Binding(
             get: { draft.lines.first { $0.id == id }?.text ?? "" },
-            set: { draft.setText(id, to: $0) }
+            set: { newText in
+                guard let current = draft.lines.first(where: { $0.id == id })?.text,
+                      current != newText else { return }
+                draft.setText(id, to: newText)
+            }
         )
     }
 
