@@ -8,6 +8,9 @@ import VinylSetBuilderCore
 struct NotIncludedSectionView: View {
     let rows: [NotIncludedRow]
     let header: String
+    /// RES-02. The vinyls whose resolution is running right now — their row says so instead of
+    /// stating a reason that is not settled yet.
+    var resolving: Set<UUID> = []
     @State private var expanded = false      // "collapsed" per SEQ-07 — starts closed
 
     var body: some View {
@@ -25,9 +28,10 @@ struct NotIncludedSectionView: View {
                         BadgePairView(badges: row.badges,
                                       identifier: "badge-pair-notincluded-\(offset + 1)")
                     }
-                    Text(row.reason)
+                    Text(resolving.contains(row.id) ? "Resolving…" : row.reason)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("not-included-reason-\(offset + 1)")
                 }
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("not-included-row-\(offset + 1)")

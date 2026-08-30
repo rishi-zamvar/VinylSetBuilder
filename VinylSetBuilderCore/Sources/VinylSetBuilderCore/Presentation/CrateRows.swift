@@ -38,11 +38,21 @@ public struct CrateRows: Sendable, Hashable {
         let vinylsByID = Dictionary(uniqueKeysWithValues: crate.vinyls.map { ($0.id, $0) })
         let notIncluded = result.notIncluded.compactMap { entry -> NotIncludedRow? in
             guard let vinyl = vinylsByID[entry.vinylID] else { return nil }   // stale ID: skip, don't trap
-            return NotIncludedRow(id: entry.vinylID, label: vinyl.label, reason: entry.reason,
+            return NotIncludedRow(id: entry.vinylID, label: vinyl.label,
+                                  reason: Self.reason(for: vinyl, sequencerSaid: entry.reason),
                                   badges: Self.bestKnownBadges(for: vinyl))
         }
 
         return CrateRows(sequenced: sequenced, notIncluded: notIncluded)
+    }
+
+    /// **BPM-07 on screen.** The sequencer can only say that a record has no tempo. The BPM
+    /// ladder knows WHY — not in the bundled corpus, no SoundCloud upload matched, the audio
+    /// yielded no tempo — and that sentence is what tells the owner whether to type the number
+    /// in by hand or wait. When the ladder recorded one it wins; otherwise the sequencer's own
+    /// words stand, verbatim, exactly as D7 requires.
+    private static func reason(for vinyl: VinylEntry, sequencerSaid: String) -> String {
+        vinyl.orderedCandidates.compactMap(\.failureReason).first ?? sequencerSaid
     }
 
     /// The candidate whose tempo the exclusion is *about*: highest known BPM, falling back

@@ -212,7 +212,7 @@ final class CaptureWalkUITests: XCTestCase {
         inspectLongestRawRead()
 
         // ------------------------------------------------------- state 7: CAP-06, and V3 again
-        doneAndOpenTheBucket()
+        doneAndRunTheRealPipeline()
     }
 
     // MARK: 2 — CAP-03's "past twenty items without layout breaking"
@@ -444,35 +444,34 @@ final class CaptureWalkUITests: XCTestCase {
 
     // MARK: CAP-06, and defect V3's second sighting
 
-    /// Done leaves the capture loop and lands on the crate. Nothing resolves in Act I, so twelve
-    /// records with OCR text and no BPM cannot be sequenced: the running order is genuinely
-    /// empty and all twelve sit in the not-included bucket.
+    /// **Swap 3 and the phase's second acceptance gate: the whole pipeline, end to end, on
+    /// twelve real photographs, photographed.**
     ///
-    /// **The bucket is expanded here on purpose.** It is collapsed by default, which is why plan
-    /// 03-03 could not obtain V3's second sighting and correctly declined to claim it. One tap
-    /// puts the row labels in the frame. **Nothing asserts that the rows read "Vinyl N"** — the
-    /// photograph is the evidence, and an assertion on a defect is a landmine for whichever plan
-    /// fixes it. The labels are printed instead.
-    private func doneAndOpenTheBucket() {
+    /// Done leaves the capture loop and lands on the crate. The crate screen then sends every
+    /// record that has no identity down the real ladders — MusicBrainz and Discogs by catalogue
+    /// number, then by title; the bundled tier-0 corpus; SoundCloud plus the vDSP analyser — and
+    /// re-sequences as each one lands. **This uses the live network.** It is slow on purpose:
+    /// there is no fixture in this path any more.
+    ///
+    /// What is asserted is what the wiring guarantees, not what the internet returns on a given
+    /// afternoon. A record that resolves and a record that fails both have to end up somewhere
+    /// visible — RES-01's "never silently dropped" — and the per-item status has to appear and
+    /// then clear (RES-02). What actually resolved is PRINTED, because that number is the
+    /// internet's and not the app's.
+    private func doneAndRunTheRealPipeline() {
         app.buttons["capture-done-button"].tap()
 
-        XCTAssertTrue(app.staticTexts["empty-running-order"].waitForExistence(timeout: 15),
-                      "CAP-06/V7: the crate shows neither a running order nor the empty-order placeholder")
+        let detailList = app.collectionViews["crate-detail-list"]
+        XCTAssertTrue(detailList.waitForExistence(timeout: 20), "the crate detail list never appeared")
         XCTAssertFalse(app.staticTexts["capture-crate-name"].exists,
                        "CAP-06: Done did not leave the capture loop")
-        XCTAssertFalse(app.staticTexts["sequenced-row-1"].exists,
-                       "twelve records with no BPM were sequenced anyway")
-        XCTAssertFalse(app.staticTexts["sequenced-row-99"].exists,
-                       "a nonsense sequenced-row identifier resolved — the assertion above is not discriminating")
-
-        let detailList = app.collectionViews["crate-detail-list"]
-        XCTAssertTrue(detailList.waitForExistence(timeout: 10), "the crate detail list never appeared")
         XCTAssertTrue(app.buttons["not-included-section"].exists,
-                      "SEQ-07: twelve un-sequenceable captures are missing from the not-included bucket")
+                      "SEQ-07: twelve captures are missing from the not-included bucket")
 
+        // SEQ-07: the bucket is collapsed until asked for. It has to be open for the per-item
+        // status to be in the accessibility tree at all.
         let textsCollapsed = detailList.staticTexts.count
         app.buttons["not-included-section"].tap()
-        // The disclosure animates, so the count is polled rather than read once.
         var textsExpanded = detailList.staticTexts.count
         for _ in 0..<10 where textsExpanded <= textsCollapsed {
             Thread.sleep(forTimeInterval: 0.5)
@@ -481,9 +480,68 @@ final class CaptureWalkUITests: XCTestCase {
         XCTAssertGreaterThan(textsExpanded, textsCollapsed,
                              "SEQ-07: the expanded bucket shows no more text than the collapsed one")
 
-        let labels = detailList.staticTexts.allElementsBoundByIndex.map { $0.label }
-        let vinylN = labels.filter { $0.range(of: "^Vinyl [0-9]+$", options: .regularExpression) != nil }
-        print("WALK12 not-included: \(textsCollapsed) -> \(textsExpanded) texts; V3-shaped labels = \(vinylN)")
+        // ------------------------------------------------------- RES-02: per-item, and visible
+        func resolvingRowCount() -> Int {
+            detailList.staticTexts.allElementsBoundByIndex.filter { $0.label == "Resolving…" }.count
+        }
+        var sawResolving = false
+        var settled = false
+        var zeroReadings = 0
+        let deadline = Date().addingTimeInterval(420)
+        while Date() < deadline {
+            let inFlight = resolvingRowCount()
+            if inFlight > 0 { sawResolving = true; zeroReadings = 0 }
+            else if sawResolving { zeroReadings += 1 }
+            // Two consecutive empty readings, so the gap between one record finishing and the
+            // next starting is not mistaken for the end of the run.
+            if sawResolving, zeroReadings >= 2 { settled = true; break }
+            Thread.sleep(forTimeInterval: 2)
+        }
+        XCTAssertTrue(sawResolving,
+                      "RES-02: no record ever showed a per-item resolution status — either the pipeline never ran or the status is not on screen")
+        XCTAssertTrue(settled,
+                      "RES-02: resolution never finished within 420s — \(resolvingRowCount()) record(s) still in flight")
+
+        // ------------------------------------------- RES-01: nothing is silently dropped
+        //
+        // **Counted from the two section HEADERS, not by walking the row identifiers.** A
+        // SwiftUI `List` only puts drawn rows in the accessibility tree, so walking
+        // `not-included-row-{n}` stops at the bottom of the screen: this test first reported
+        // "7 of 12 records were dropped" on a crate that had all twelve, because five were
+        // below the fold. The headers are derived from the model and cannot be virtualised away.
+        func countInHeader(_ label: String) -> Int? {
+            guard let open = label.lastIndex(of: "("), let close = label.lastIndex(of: ")"),
+                  open < close else { return nil }
+            return Int(label[label.index(after: open)..<close])
+        }
+        let sequencedHeader = app.staticTexts["ordering-mode-label"].label
+        let bucketHeader = app.buttons["not-included-section"].label
+        let sequencedCount = countInHeader(sequencedHeader)
+        let bucketCount = countInHeader(bucketHeader)
+        print("PIPELINE headers: '\(sequencedHeader)' / '\(bucketHeader)'")
+
+        var reasons: [String] = []
+        var n = 1
+        while n <= 40, app.staticTexts["not-included-reason-\(n)"].exists {
+            reasons.append(app.staticTexts["not-included-reason-\(n)"].label); n += 1
+        }
+        print("PIPELINE not-included reasons (drawn rows only) = \(reasons)")
+        var drawnSequenced = 1
+        while drawnSequenced <= 40, app.otherElements["sequenced-row-\(drawnSequenced)"].exists {
+            print("PIPELINE sequenced row \(drawnSequenced): \(app.otherElements["sequenced-row-\(drawnSequenced)"].label)")
+            drawnSequenced += 1
+        }
+
+        XCTAssertNotNil(sequencedCount, "the running-order header '\(sequencedHeader)' carries no count")
+        XCTAssertNotNil(bucketCount, "the bucket header '\(bucketHeader)' carries no count")
+        XCTAssertEqual((sequencedCount ?? -1) + (bucketCount ?? -1), 12,
+                       "RES-01: twelve records were captured but the crate accounts for \((sequencedCount ?? -1) + (bucketCount ?? -1)) — some were dropped between the shutter and the screen")
+        XCTAssertFalse(app.otherElements["sequenced-row-99"].exists,
+                       "a nonsense sequenced-row identifier resolved — the count above is not discriminating")
+        XCTAssertFalse(app.otherElements["not-included-row-99"].exists,
+                       "a nonsense not-included-row identifier resolved — the count above is not discriminating")
+        XCTAssertFalse(reasons.contains("Resolving…"),
+                       "RES-02: a row is still saying Resolving after the run settled")
 
         capture("03-walk-07-done-sequenced")
     }

@@ -16,6 +16,10 @@ struct CrateDetailView: View {
     /// Measured 100 vinyls / 400 candidates: 0.27 s optimised, 4.44 s in a debug test build.
     private let sequencer = AsyncSequencer()
 
+    /// **Swap 3.** The resolution and BPM ladders, shared across the app so the cache and the
+    /// SoundCloud token outlive one visit to one crate.
+    private let pipeline = SleevePipeline.shared
+
     var body: some View {
         Group {
             if let detail {
@@ -49,7 +53,10 @@ struct CrateDetailView: View {
                     .accessibilityIdentifier("add-more-button")
             }
         }
-        .task(id: crateID) { await load() }
+        .task(id: crateID) {
+            await load()
+            await resolvePending()
+        }
     }
 
     // MARK: Sections
@@ -60,7 +67,8 @@ struct CrateDetailView: View {
             if detail.rows.showsNotIncludedSection {      // SEQ-07: one bucket, and the
                 Section {                                 // caller owns its visibility.
                     NotIncludedSectionView(rows: detail.rows.notIncluded,
-                                           header: detail.rows.notIncludedHeader)
+                                           header: detail.rows.notIncludedHeader,
+                                           resolving: model.resolving)
                 }
             }
         }
@@ -102,7 +110,12 @@ struct CrateDetailView: View {
             }
         } header: {
             HStack {
-                Text(detail.orderingMode == .manual ? "Custom order" : "Running order")
+                // The count is in the header for the same reason the bucket's is: a `List`
+                // only puts the rows it has drawn into the accessibility tree, so on a crate of
+                // twelve there is no way — for a person scrolling or for a test — to know how
+                // many are in the set without adding them up by eye.
+                Text("\(detail.orderingMode == .manual ? "Custom order" : "Running order") "
+                     + "(\(detail.rows.sequenced.count))")
                     .accessibilityIdentifier("ordering-mode-label")
                 Spacer()
                 if detail.orderingMode == .manual {
@@ -132,6 +145,35 @@ struct CrateDetailView: View {
         guard model.store.crate(crateID) != nil else { model.store.closeToList(); return }
         rebuilt.apply(result)
         detail = rebuilt
+    }
+
+    /// **RES-02 and swap 4's missing edge, in one function.**
+    ///
+    /// Every record that nothing has yet put a name to goes down the two ladders, one record at
+    /// a time. Sequential on purpose: `TrackResolver` already holds RES-02's three-in-flight
+    /// bound WITHIN a sleeve, and running sleeves concurrently on top of that would multiply it
+    /// and make the throttles fight each other for no gain — the whole crate is twelve records.
+    ///
+    /// **The crate re-sequences as each record lands**, rather than once at the end. That is
+    /// the edge swap 4 was missing: the running order was derived once, on appear, before
+    /// anything had a tempo, so a resolved crate sat in the not-included bucket looking broken.
+    private func resolvePending() async {
+        guard let crate = model.store.crate(crateID) else { return }
+        let pending = crate.vinyls.filter(\.needsResolution)
+        guard !pending.isEmpty else { return }
+
+        model.resolving.formUnion(pending.map(\.id))
+        defer { model.resolving.subtract(pending.map(\.id)) }
+
+        for vinyl in pending {
+            // The crate can be deleted, or left, while the network is busy.
+            guard !Task.isCancelled, model.store.crate(crateID) != nil else { return }
+            let resolved = await pipeline.process(vinyl)
+            guard model.store.crate(crateID) != nil else { return }
+            model.apply(resolved, toVinyl: vinyl.id, in: crateID)
+            model.resolving.remove(vinyl.id)
+            await load()
+        }
     }
 
     /// Write an edited crate value back. One place, so a manual reorder cannot silently fail
