@@ -152,20 +152,35 @@ public struct TrackResolver: MetadataResolving {
         var resolved = track
         let text = Self.queryText(for: track)
         let title = Self.titlePart(of: release, matching: text)
-        resolved.artist = release.artist.isEmpty ? nil : release.artist
-        resolved.title = title
+        // **MAN-04.** A hand-typed value is never overwritten; a gap the person left may still
+        // be filled. Written as `??` rather than an early return so a manual track with only an
+        // artist still gets a title out of this pass — the guard protects the typing, it does
+        // not stop the record being useful.
+        resolved.artist = track.isManual
+            ? (track.artist ?? (release.artist.isEmpty ? nil : release.artist))
+            : (release.artist.isEmpty ? nil : release.artist)
+        resolved.title = track.isManual ? (track.title ?? title) : title
         resolved.matchConfidence = MatchScoring.similarity(text, title)
         // RES-04: only the accepted band resolves outright. The confirmation band stays
         // `.pending` carrying its confidence, which is what a confirmation queue IS — the UI
         // bands `matchConfidence` with the same thresholds rather than a second enum case
         // drifting out of step with the first.
-        resolved.resolutionState = MatchScoring.band(resolved.matchConfidence) == .accepted
-            ? .resolved : .pending
+        // MAN-04: the mark is permanent. Letting it decay to `.resolved` here would make the
+        // protection last exactly one automatic pass, which is worse than none — it would look
+        // like it worked right up until the second run.
+        resolved.resolutionState = track.isManual ? .manual
+            : (MatchScoring.band(resolved.matchConfidence) == .accepted ? .resolved : .pending)
         resolved.failureReason = nil
         return resolved
     }
 
+    /// **MAN-04 applies to the failure path too, and this is the subtler half.** A record the
+    /// databases cannot answer is exactly the record somebody types in by hand — white labels
+    /// and dubplates are in no database at all — so the failure path is the one a manual track
+    /// is MOST likely to travel. Letting it stamp `.failed` here would silently drop the mark,
+    /// and the next automatic pass would then overwrite everything this one respected.
     private func failed(_ track: Track, _ reason: String) -> Track {
+        guard !track.isManual else { return track }
         var failedTrack = track
         failedTrack.resolutionState = .failed
         failedTrack.failureReason = reason

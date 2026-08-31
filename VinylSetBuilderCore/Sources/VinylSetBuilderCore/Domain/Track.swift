@@ -32,6 +32,17 @@ public struct Track: Identifiable, Sendable, Hashable, Codable {
         self.failureReason = failureReason
     }
 
+    /// **MAN-04.** A person put at least one of these fields here by hand. The automatic path
+    /// may still FILL a gap on such a track — that is useful and nobody loses anything — but it
+    /// may never overwrite a value that is already there, and the mark itself is permanent, so
+    /// the next automatic pass respects the same fields this one did.
+    ///
+    /// The whole protection is two `??` in two functions (`TrackResolver.assign`,
+    /// `BPMLadder.applied`) keyed on this one predicate. It is deliberately not a set of
+    /// per-field flags: a person who opens the sheet at all is asserting authority over what
+    /// they left in it, and a `nil` field is not something they typed.
+    public var isManual: Bool { resolutionState == .manual }
+
     /// BPM-07. No route could establish a tempo, so a person has to. The track keeps its
     /// place in the crate and its identity; it simply cannot be sequenced until this is false.
     public var needsManualBPM: Bool { bpm == nil }

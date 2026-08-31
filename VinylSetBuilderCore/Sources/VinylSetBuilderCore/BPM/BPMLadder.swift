@@ -83,10 +83,16 @@ public struct BPMLadder: Sendable {
     }
 
     /// BPM-06, applied here and only here: below 100 is a half-time read, doubled ONCE.
+    ///
+    /// **MAN-04 on the key.** A hand-typed tempo was already safe — `fill` returns at its first
+    /// line when `bpm != nil` — but the key was not: this function used to assign `camelot`
+    /// unconditionally, so a DJ who knew a white label was in 6A by ear and left the tempo for
+    /// the app to find lost the key the moment the analyser answered. `??` closes that, and the
+    /// mark survives so the next pass behaves the same way.
     private func applied(_ track: Track, bpm: Double, camelot: String?) -> Track {
         var filled = track
         filled.bpm = BPMRules.fold(bpm)
-        filled.camelot = camelot
+        filled.camelot = track.isManual ? (track.camelot ?? camelot) : camelot
         filled.failureReason = nil
         return filled
     }
