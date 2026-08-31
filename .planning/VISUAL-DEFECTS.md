@@ -800,3 +800,35 @@ V16 | Low | CLOSED | Closed | CLOSED by Phase 8's swap 1: App/Views/CaptureView.
 V17 | Low | CARRIED | Phase 12 | RE-CARRIED with one new observation and no fix. The state-reproducibility problem is in the CRATE walk's edit-mode frames, which Phase 8 did not touch. What Phase 8 did find, in its own walk, is a second and different reproducibility hazard worth recording next to this one: XCUITest reads elements one at a time, so a screen still settling can be read across two renders — a header saying two sequenced next to three drawn rows, one of them 36 BPM outside the gate. That one WAS fixed at source (CrateDetailView clears a record's per-item status only after the re-sequence that follows it, commit 929ec1c), which is the shape a fix for this row will also need: make the app settle, do not make the test wait longer
 V18 | — | CLOSED | Closed | THE DEFECT THAT REFUSED ACT I, fixed and closed by plan 04-06. moveRows now compares the order a move produces against the order already displayed and returns early when they are equal, so an identity drag commits nothing: commit a20a43d. Leaving manualOrder untouched rather than clearing it is what makes it correct in both directions, and ManualOrderTests.swift asserts each separately — test_givenAnOutOfRangeMove_whenApplied_thenNothingTraps for the sequenced list and test_givenAManualOrder_whenARowIsMovedOntoItsOwnIndex_thenTheExistingOrderIsPreserved for the hand-arranged one, commit d658e3e. The presence check is gone: reorderTookEffect now polls the ROW ORDER for a genuine permutation, commit fbcf12c, and the walk runs three controls on that comparator in band. Photograph 02-walk-09-detail-manual-order.png, regenerated from a purged host on three clean runs, reads 1 Photek then 2 Source Direct under Custom order — the swap. Gate S3 rc=0 on 3 of 3 runs where 04-05 measured rc=0 rc=1 rc=1, and the 08 vs 09 pair is back at 31273 px 0.009890 against the 9131 px 0.002888 the defect produced. Route back to the defect: delete the guard line and 4 expectations redden, measured.
 ```
+
+---
+
+| # | Defect | Evidence | Severity | Owner |
+|---|--------|----------|----------|-------|
+| **V19** | **The not-included bucket reports the wrong exclusion reason.** A row showing a resolved BPM *and* key still reads `"no SoundCloud upload matched"` — but it plainly matched, or those badges could not exist. The row is excluded because its tempo is outside the set's window; the reason names the last ladder rung touched instead of the actual cause. | `Artifacts/screenshots/03-walk-07-done-sequenced.png` — `The Accidental Heroes — Dragstar   136  4B` with `no SoundCloud upload matched`, and `Cause 4 Concern  160` below it, against a set running 169.9–175 | **Medium** | Phase 9 |
+
+## Why V19 matters more than it looks
+
+The per-row reason is the entire justification for the one-bucket design (SEQ-07). Two sections
+were collapsed into one *specifically* because the reason string was said to carry the
+distinction. If the reason is wrong, the bucket is just an undifferentiated pile and the design
+decision loses its basis.
+
+Concretely, the DJ cannot tell these apart:
+- **"I could not identify this record"** → go and enter it by hand
+- **"I identified it fine, it just does not fit this set"** → nothing to do, or widen the tolerance
+
+Those demand opposite responses.
+
+## The fix
+
+Exclusion reason must be derived from the **terminal** state, not the last rung visited.
+Precedence, most specific first:
+
+1. no BPM at all → `"No BPM yet — resolve it or enter it by hand"`
+2. BPM present but outside the window → `"No track within {N} BPM of the set"`
+3. identity never resolved → `"No identity to look up"`
+4. identity resolved, no audio found → `"No SoundCloud upload matched"`
+
+A row that has a BPM can never legitimately show reason 3 or 4. **Assert that invariant** —
+`bpm != nil` implies the reason is 2 — so this cannot regress silently.
