@@ -193,11 +193,10 @@ public struct BeamSearchSequencer: Sequencing {
             .filter { !winningVinyls.contains($0) }
             .map { vinyl in
                 if !vinylsWithBPM.contains(vinyl) {
-                    return NotIncluded(vinylID: vinyl,
-                                        reason: "No BPM yet — resolve it or enter it by hand")
+                    return NotIncluded(vinylID: vinyl, reason: ExclusionReason.noBPM)
                 }
                 return NotIncluded(vinylID: vinyl,
-                                    reason: "No track within \(formattedTolerance(tolerance)) BPM of the set")
+                                    reason: ExclusionReason.outsideWindow(tolerance: tolerance))
             }
 
         return SequenceResult(sequence: winningSequence, notIncluded: notIncluded,
@@ -379,9 +378,4 @@ public struct BeamSearchSequencer: Sequencing {
         for (a, b) in zip(path, mirrored) where a != b { return a < b ? path : mirrored }
         return path
     }
-}
-
-/// Renders 4.0 as "4" and 4.5 as "4.5" — the exclusion reason reads like a human wrote it.
-private func formattedTolerance(_ value: Double) -> String {
-    value.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(value)) : String(value)
 }

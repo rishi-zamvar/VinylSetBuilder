@@ -52,14 +52,24 @@ func test_givenATrackTheLadderCouldNotAnswer_whenTheRowIsBuilt_thenItSaysWhy() t
     #expect(vinyl.orderedCandidates.first?.artist == "Abstract")
 }
 
-@Test("D7: with no ladder reason the sequencer's own words still stand, verbatim")
-func test_givenNoLadderReason_whenTheRowIsBuilt_thenTheSequencerSpeaks() throws {
+@Test("V19 supersedes D7's pass-through once a tempo is known")
+func test_givenAKnownTempo_whenTheRowIsBuilt_thenTheWindowSentenceOverridesWhateverArrived() throws {
+    // **This assertion was inverted by V19, deliberately, and the reason is worth keeping.**
+    //
+    // D7 said the row prints the sequencer's words verbatim. That was right while the row's
+    // reason had exactly one upstream author. It is wrong now, because the app has three that
+    // can speak about the same record — the sequencer, the BPM ladder, and the resolver — and
+    // verbatim pass-through is precisely what let a stale sentence from one of them describe a
+    // state established by another. A record with a tempo can only ever be excluded for the
+    // tempo not fitting, so `CrateRows` derives that sentence from the crate's own tolerance
+    // rather than trusting whatever arrived. D7's pass-through survives untouched for every
+    // case where the terminal cause is genuinely unknown — see reason 1 in ExclusionReasonTests.
     let vinyl = VinylEntry(candidates: [track(0, artist: "A", title: "B", bpm: 178)])
-    let crate = Crate(name: "One", vinyls: [vinyl])
+    let crate = Crate(name: "One", vinyls: [vinyl], bpmTolerance: 4)
     let result = SequenceResult(sequence: [],
                                 notIncluded: [NotIncluded(vinylID: vinyl.id,
                                                           reason: "178 BPM is outside the window")],
                                 totalCamelotDistance: 0)
     let row = try #require(CrateRows.make(result: result, crate: crate).notIncluded.first)
-    #expect(row.reason == "178 BPM is outside the window")
+    #expect(row.reason == "No track within 4 BPM of the set")
 }

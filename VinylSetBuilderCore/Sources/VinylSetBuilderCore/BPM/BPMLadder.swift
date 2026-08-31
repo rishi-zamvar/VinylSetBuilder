@@ -53,7 +53,7 @@ public struct BPMLadder: Sendable {
         guard track.bpm == nil else { return track }
         guard let artist = track.artist, let title = track.title,
               !artist.isEmpty, !title.isEmpty else {
-            return marked(track, "no identity to look a tempo up by")
+            return marked(track, ExclusionReason.noIdentity)
         }
 
         if let hit = corpus?.lookup(artist: artist, title: title) {
@@ -61,12 +61,12 @@ public struct BPMLadder: Sendable {
         }
 
         guard let soundCloud, let decoder else {
-            return marked(track, "not in the bundled corpus, and no audio route configured")
+            return marked(track, "Not in the bundled corpus, and no audio route configured")
         }
         do {
             let candidates = try await soundCloud.search("\(artist) \(title)")
             guard let chosen = SoundCloudMatcher.best(among: candidates, artist: artist, title: title) else {
-                return marked(track, "no SoundCloud upload matched")
+                return marked(track, ExclusionReason.noSoundCloudMatch)
             }
             // `data` and `decoded` are locals in this scope and nothing outside it ever holds
             // them: BPM-04's "the audio is not retained" is a property of never owning it.
@@ -74,11 +74,11 @@ public struct BPMLadder: Sendable {
             let decoded = try await decoder.decodeMono(data)
             let analysis = await analyser.analyse(monoSamples: decoded.samples,
                                                   sampleRate: decoded.sampleRate)
-            guard let bpm = analysis.bpm else { return marked(track, "the audio yielded no tempo") }
+            guard let bpm = analysis.bpm else { return marked(track, "The audio yielded no tempo") }
             return applied(track, bpm: bpm,
                            camelot: analysis.keyConfidence >= keyConfidenceFloor ? analysis.camelot : nil)
         } catch {
-            return marked(track, "audio route failed: \(error)")
+            return marked(track, "Audio route failed: \(error)")
         }
     }
 
