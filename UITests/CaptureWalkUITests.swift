@@ -514,10 +514,23 @@ final class CaptureWalkUITests: XCTestCase {
                   open < close else { return nil }
             return Int(label[label.index(after: open)..<close])
         }
-        let sequencedHeader = app.staticTexts["ordering-mode-label"].label
-        let bucketHeader = app.buttons["not-included-section"].label
-        let sequencedCount = countInHeader(sequencedHeader)
-        let bucketCount = countInHeader(bucketHeader)
+        // The two headers are read together, in a loop, until they agree on twelve. This is a
+        // settle, not a retry-until-green: the last record's re-sequence lands a few hundred
+        // milliseconds after its status clears, so a single read can catch the running order
+        // updated and the bucket not yet — measured, on the swap-4 run, as a header saying
+        // three next to four drawn rows. The loop is bounded and the assertion below is what
+        // decides the verdict.
+        var sequencedHeader = "", bucketHeader = ""
+        var sequencedCount: Int?, bucketCount: Int?
+        let settleBy = Date().addingTimeInterval(30)
+        repeat {
+            sequencedHeader = app.staticTexts["ordering-mode-label"].label
+            bucketHeader = app.buttons["not-included-section"].label
+            sequencedCount = countInHeader(sequencedHeader)
+            bucketCount = countInHeader(bucketHeader)
+            if (sequencedCount ?? -1) + (bucketCount ?? -1) == 12 { break }
+            Thread.sleep(forTimeInterval: 1)
+        } while Date() < settleBy
         print("PIPELINE headers: '\(sequencedHeader)' / '\(bucketHeader)'")
 
         var reasons: [String] = []
@@ -526,10 +539,38 @@ final class CaptureWalkUITests: XCTestCase {
             reasons.append(app.staticTexts["not-included-reason-\(n)"].label); n += 1
         }
         print("PIPELINE not-included reasons (drawn rows only) = \(reasons)")
+        // `staticTexts`, not `otherElements` — `.accessibilityElement(children: .combine)`
+        // publishes the row as one static text, which is how `CrateWalkUITests` has always
+        // queried it. The swap-3 run printed nothing here because it asked the wrong family.
+        var sequencedLabels: [String] = []
         var drawnSequenced = 1
-        while drawnSequenced <= 40, app.otherElements["sequenced-row-\(drawnSequenced)"].exists {
-            print("PIPELINE sequenced row \(drawnSequenced): \(app.otherElements["sequenced-row-\(drawnSequenced)"].label)")
+        while drawnSequenced <= 40, app.staticTexts["sequenced-row-\(drawnSequenced)"].exists {
+            sequencedLabels.append(app.staticTexts["sequenced-row-\(drawnSequenced)"].label)
+            print("PIPELINE sequenced row \(drawnSequenced): \(sequencedLabels.last ?? "")")
             drawnSequenced += 1
+        }
+
+        // ---------------------------------------------- SWAP 4: the sequencer's own contract
+        //
+        // The running order is only worth anything if consecutive records can actually be mixed.
+        // SEQ-03's rule after Phase 5 is symmetric — `abs(b - a) <= tolerance` — at the default
+        // 4.0, so every adjacent pair in the set has to satisfy it. Asserted on LIVE tempos that
+        // came off SoundCloud and through the vDSP analyser minutes earlier, not on a fixture.
+        let tempos = sequencedLabels.compactMap { label -> Double? in
+            label.split(whereSeparator: { ",".contains($0) })
+                .compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
+                .first { $0 > 40 && $0 < 220 }
+        }
+        print("PIPELINE sequenced tempos = \(tempos)")
+        if tempos.count >= 2 {
+            for (a, b) in zip(tempos, tempos.dropFirst()) {
+                XCTAssertLessThanOrEqual(abs(b - a), 4.0 + 0.001,
+                                         "SEQ-03: the set puts \(a) next to \(b), which is more than 4 BPM apart — the sequencer's gate is not holding on live data")
+            }
+        } else {
+            // Not silently skipped: an empty or one-record set is a legitimate outcome on a
+            // crate of white labels, and saying so is better than a vacuous green.
+            print("PIPELINE only \(tempos.count) sequenced tempo(s) — the adjacency check had nothing to compare")
         }
 
         XCTAssertNotNil(sequencedCount, "the running-order header '\(sequencedHeader)' carries no count")

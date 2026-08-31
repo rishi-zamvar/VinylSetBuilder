@@ -171,8 +171,15 @@ struct CrateDetailView: View {
             let resolved = await pipeline.process(vinyl)
             guard model.store.crate(crateID) != nil else { return }
             model.apply(resolved, toVinyl: vinyl.id, in: crateID)
-            model.resolving.remove(vinyl.id)
+            // **`load()` first, THEN clear the status.** Clearing it beforehand made
+            // "nothing says Resolving" mean "the network is quiet", when what a person — and
+            // the walk — reads it as is "the set on screen is the answer". The re-sequence
+            // takes a few hundred milliseconds after the record lands, and in that window the
+            // crate showed a running order it was about to replace. Measured: a walk read a
+            // header saying two next to three drawn rows, one of them 36 BPM outside the gate,
+            // because the two came from different renders.
             await load()
+            model.resolving.remove(vinyl.id)
         }
     }
 

@@ -1,0 +1,6 @@
+PIPELINE headers: 'Running order (3)' / 'Not in the set (9)'
+PIPELINE not-included reasons (drawn rows only) = [
+PIPELINE sequenced row 1: 1, G Squad — Monitor, 172, 1B
+PIPELINE sequenced row 2: 2, Drumsound & Simon 'Bassline' Smith — Dubtrack, 174.8, —
+PIPELINE sequenced row 3: 3, Phunckateck's Juju — Invocación, 175, —
+PIPELINE sequenced tempos = [172.0, 174.8, 175.0]
