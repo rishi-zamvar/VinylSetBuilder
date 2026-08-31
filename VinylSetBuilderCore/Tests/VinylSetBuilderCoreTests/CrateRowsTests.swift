@@ -174,3 +174,83 @@ func test_givenAnEmptyResult_whenRowsBuilt_thenBothCollectionsAreEmptyAndNothing
     #expect(rows.notIncluded.isEmpty)
     #expect(rows == CrateRows.empty)
 }
+
+// MARK: - V21: a record with no track lines is a record, and RES-01 says it is never dropped
+
+/// **Found by `vinylctl` on the owner's own photographs, 2026-08-30.** `IMG_0507.HEIC` reads
+/// three fragments — `cemenic`, `DrumBass`, `$ 10.003` — none of which the SEG-03 noise filter
+/// keeps, so the record segments to ZERO track lines. The run then printed a set of 2 and a
+/// bucket of 9 for TWELVE photographs, and the twelfth was nowhere.
+///
+/// Root cause, read from source rather than guessed: `BeamSearchSequencer.sequence` takes
+/// `[Track]` and derives its `firstAppearance` list from the tracks it was given. A vinyl with
+/// no tracks contributes nothing to that list, so it is structurally incapable of appearing in
+/// `notIncluded` — the sequencer cannot fix this, because it never learns the record exists.
+///
+/// The fix belongs in `CrateRows.make`, which is the ONE place a `SequenceResult` is projected
+/// against the crate it came from and therefore the only place that can see the discrepancy.
+/// Both front ends route through it, so one guard covers the app and the CLI.
+///
+/// **RES-01: "a record is never silently dropped."** This is that requirement, executable.
+
+@Test("A vinyl with no candidate lines still appears in the not-included bucket")
+func test_givenAVinylWithNoCandidates_whenRowsBuilt_thenItIsStillInTheBucket() {
+    let sequenced = makeTrack(vinyl: 1, bpm: 170, camelot: "8A")
+    let crate = makeCrate(vinyls: [
+        makeVinylEntry(1, candidates: [sequenced]),
+        makeVinylEntry(2, candidates: []),          // read, but nothing survived segmentation
+    ])
+    // What the sequencer actually returns: it never saw vinyl 2 at all.
+    let result = SequenceResult(sequence: [sequenced], notIncluded: [], totalCamelotDistance: 0)
+
+    let rows = CrateRows.make(result: result, crate: crate)
+
+    #expect(rows.sequenced.count == 1)
+    #expect(rows.notIncluded.count == 1, "RES-01: the trackless record was dropped")
+    #expect(rows.notIncluded.first?.id == vinylID(2))
+    // There was never anything to look up, which is exactly what the reason should say.
+    #expect(rows.notIncluded.first?.reason == ExclusionReason.noIdentity)
+    // Nothing to badge and nothing to open a sheet on.
+    #expect(rows.notIncluded.first?.badges.bpm == TrackBadges.placeholder)
+    #expect(rows.notIncluded.first?.trackID == nil)
+}
+
+@Test("Every vinyl in the crate is accounted for exactly once, on a mixed crate")
+func test_givenAMixedCrate_whenRowsBuilt_thenEveryVinylIsAccountedForExactlyOnce() {
+    let good = makeTrack(vinyl: 1, bpm: 170, camelot: "8A")
+    let outOfWindow = makeTrack(vinyl: 2, bpm: 190, camelot: "8A")
+    let crate = makeCrate(vinyls: [
+        makeVinylEntry(1, candidates: [good]),
+        makeVinylEntry(2, candidates: [outOfWindow]),
+        makeVinylEntry(3, candidates: []),
+        makeVinylEntry(4, candidates: []),
+    ])
+    let result = SequenceResult(
+        sequence: [good],
+        notIncluded: [NotIncluded(vinylID: vinylID(2), reason: ExclusionReason.outsideWindow(tolerance: 4))],
+        totalCamelotDistance: 0)
+
+    let rows = CrateRows.make(result: result, crate: crate)
+
+    let accounted = Set(rows.sequenced.map(\.vinylID)).union(rows.notIncluded.map(\.id))
+    #expect(accounted == Set(crate.vinyls.map(\.id)),
+            "RES-01: \(crate.vinyls.count) records went in and \(accounted.count) came out")
+    #expect(rows.sequenced.count + rows.notIncluded.count == crate.vinyls.count,
+            "a record was counted twice")
+    // Appended in the crate's own vinyl order, after the sequencer's own bucket — so the two
+    // trackless records read 3 then 4, not in dictionary order.
+    #expect(rows.notIncluded.map(\.id) == [vinylID(2), vinylID(3), vinylID(4)])
+}
+
+@Test("A vinyl the sequencer named but the crate no longer holds is still skipped, not resurrected")
+func test_givenAStaleVinylIDInTheResult_whenRowsBuilt_thenItIsSkipped() {
+    let crate = makeCrate(vinyls: [makeVinylEntry(1, candidates: [])])
+    let result = SequenceResult(
+        sequence: [],
+        notIncluded: [NotIncluded(vinylID: vinylID(99), reason: "gone")],
+        totalCamelotDistance: 0)
+
+    let rows = CrateRows.make(result: result, crate: crate)
+
+    #expect(rows.notIncluded.map(\.id) == [vinylID(1)], "the deleted vinyl came back")
+}

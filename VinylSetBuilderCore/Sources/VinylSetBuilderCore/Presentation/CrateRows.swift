@@ -63,7 +63,34 @@ public struct CrateRows: Sendable, Hashable {
                 trackID: representative?.id)
         }
 
-        let rows = CrateRows(sequenced: sequenced, notIncluded: notIncluded)
+        // **V21 — RES-01, executable.** A record whose sleeve yielded no track line at all is
+        // invisible to the sequencer: `BeamSearchSequencer` takes `[Track]` and derives its
+        // vinyl list from the tracks it was handed, so a trackless vinyl contributes nothing and
+        // can never appear in `notIncluded`. It therefore appeared in NEITHER list and simply
+        // vanished — found by `vinylctl` on IMG_0507, which reads three price-sticker fragments
+        // and nothing else, and which turned twelve photographs into a set of 2 plus a bucket
+        // of 9.
+        //
+        // This is the only place that can see it. The sequencer cannot: it never learns the
+        // record exists. Appended in the crate's own vinyl order, AFTER the sequencer's own
+        // bucket, so the ordering the sequencer chose for the records it did see is untouched.
+        let accounted = Set(sequenced.map(\.vinylID)).union(notIncluded.map(\.id))
+        let unaccounted = crate.vinyls
+            .filter { !accounted.contains($0.id) }
+            .map { vinyl in
+                let representative = Self.representative(of: vinyl)
+                return NotIncludedRow(
+                    id: vinyl.id,
+                    label: vinyl.label,
+                    reason: Self.reason(for: vinyl, representative: representative,
+                                        tolerance: crate.bpmTolerance,
+                                        sequencerSaid: ExclusionReason.noIdentity),
+                    badges: representative.map(TrackBadges.init(track:))
+                        ?? TrackBadges(bpm: nil, camelot: nil),
+                    trackID: representative?.id)
+            }
+
+        let rows = CrateRows(sequenced: sequenced, notIncluded: notIncluded + unaccounted)
         assert(rows.invariantHolds(tolerance: crate.bpmTolerance),
                "V19 INVARIANT BROKEN: a not-included row shows a BPM badge but does not name the "
                + "tempo window — " + rows.invariantViolations(tolerance: crate.bpmTolerance)
