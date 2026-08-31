@@ -35,7 +35,7 @@ final class InspectSheetUITests: XCTestCase {
 
     func test_givenSixCapturedSleeves_whenTheInspectSheetIsDriven_thenRawTextIsReadableAndEveryCorrectionIsOneTap() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         openCaptureScreen()
         shoot(times: 6)

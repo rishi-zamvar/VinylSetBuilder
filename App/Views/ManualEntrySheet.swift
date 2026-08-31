@@ -37,15 +37,29 @@ struct ManualEntrySheet: View {
             header
             Divider()
             ScrollView {
+                // **Tempo and key first, identity second, and that order is measured rather
+                // than aesthetic.** On the records this sheet actually gets opened for, the
+                // artist and title are unknowable — white labels and dubplates are in no
+                // database — and what the DJ supplies is the tempo and the key, because that is
+                // all the sequencer needs to place the record. Putting them at the top also
+                // keeps the 24-code grid above the fold, so MAN-02's one tap stays one tap
+                // instead of one scroll and one tap.
                 VStack(alignment: .leading, spacing: 20) {
-                    identityFields
                     tempoField
                     keyGrid
+                    identityFields
                 }
                 .padding(16)
             }
-            Divider()
-            saveButton
+            // Scroll-to-dismiss rather than a keyboard accessory bar, and that is MEASURED,
+            // not a preference. A `ToolbarItemGroup(placement: .keyboard)` renders an accessory
+            // bar directly above the keyboard — which on this sheet sat exactly over the field
+            // BELOW the focused one, so the title field and its clear button were covered and
+            // every tap on them went to the toolbar instead. XCUITest reported it as "neither
+            // element nor any descendant has keyboard focus", which is the accessory bar
+            // eating the tap. Save lives in the header and is never under the keyboard, so
+            // there is nothing an accessory bar was needed for.
+            .scrollDismissesKeyboard(.interactively)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("manual-entry-sheet")
@@ -66,22 +80,20 @@ struct ManualEntrySheet: View {
                 .lineLimit(1)
                 .accessibilityIdentifier("manual-entry-title")
             Spacer(minLength: 12)
-            Button("Close") { }.opacity(0).disabled(true).accessibilityHidden(true)
+            // **Save lives in the header, not on a bottom bar, and that is not a style choice.**
+            // A bottom bar sits under the software keyboard: with the tempo field focused it is
+            // either covered or pushed off, so committing an edit would cost an extra tap to
+            // dismiss the keyboard first. Up here it is reachable at every moment the sheet is
+            // open, which is one interaction off MAN-01's budget for free.
+            Button("Save") {
+                onSave(draft.applied(to: track))
+                dismiss()
+            }
+            .fontWeight(.semibold)
+            .accessibilityIdentifier("manual-save-button")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-    }
-
-    private var saveButton: some View {
-        Button {
-            onSave(draft.applied(to: track))
-            dismiss()
-        } label: {
-            Text("Save").frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .padding(16)
-        .accessibilityIdentifier("manual-save-button")
     }
 
     // MARK: MAN-01 — artist and title
@@ -98,15 +110,32 @@ struct ManualEntrySheet: View {
             Text(label)
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Color.primary)
-            TextField(label, text: text)
-                .textFieldStyle(.plain)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .background(RoundedRectangle(cornerRadius: 6)
-                    .strokeBorder(Color.secondary.opacity(0.55), lineWidth: 1))
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.words)
-                .accessibilityIdentifier(identifier)
+            HStack(spacing: 8) {
+                TextField(label, text: text)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                    .background(RoundedRectangle(cornerRadius: 6)
+                        .strokeBorder(Color.secondary.opacity(0.55), lineWidth: 1))
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.words)
+                    .accessibilityIdentifier(identifier)
+                // **MAN-01 arithmetic, not decoration.** The field arrives holding whatever the
+                // resolver guessed, and a confident wrong guess is the common case on a record
+                // with no catalogue number. Deleting it costs one keystroke per character — the
+                // measured worst case went from 8 taps + 40 keystrokes (18.5 s under this
+                // phase's cost model) to 8 taps + 16 (13.3 s) on this control alone. It is the
+                // single cheapest thing in the sheet.
+                Button {
+                    text.wrappedValue = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill").font(.body)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("Clear \(label)")
+                .accessibilityIdentifier("\(identifier)-clear")
+            }
         }
     }
 

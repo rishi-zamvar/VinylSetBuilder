@@ -42,7 +42,7 @@ final class CrateWalkUITests: XCTestCase {
 
     func test_givenTheStubbedApp_whenTheWholeCrateFlowIsWalked_thenEveryStateRendersAndIsPhotographed() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         // ---------------------------------------------------------------- 1. the crate list
         XCTAssertTrue(app.navigationBars["Crates"].waitForExistence(timeout: 20),

@@ -56,7 +56,7 @@ final class BadgeContrastUITests: XCTestCase {
 
     func test_givenTheNotIncludedBucket_whenBothBadgePairsAreMeasured_thenThePlaceholderIsLegibleAndStillQuieter() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         XCTAssertTrue(app.buttons["crate-row-Friday Warehouse"].waitForExistence(timeout: 20),
                       "the Friday Warehouse fixture crate row never appeared")

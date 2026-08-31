@@ -23,7 +23,7 @@ final class CaptureScreenUITests: XCTestCase {
 
     func test_givenTheCaptureScreen_whenTwoSleevesAreShot_thenTheStripFillsAndTheFlipPromptFiresOnlyWhereOneSideWasRead() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         // CRATE-05's Add More is the shortest way onto the capture screen, and it reuses a
         // fixture crate rather than typing a new name — fewer moving parts than the walk needs.

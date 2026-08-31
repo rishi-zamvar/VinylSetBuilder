@@ -20,7 +20,7 @@ final class SmokeUITests: XCTestCase {
 
     func test_givenTheApp_whenLaunched_thenTheCrateListRendersTheFixtureCrates() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         // 20s, not 5s: the first install-and-launch on a cold simulator is slow, and a tight
         // timeout produces a flake that reads exactly like a product bug.

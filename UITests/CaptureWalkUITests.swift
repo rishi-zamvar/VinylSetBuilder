@@ -58,7 +58,7 @@ final class CaptureWalkUITests: XCTestCase {
 
     func test_givenTwelveFixturePhotographs_whenShotInOneSession_thenTheFlipPromptFiresOnExactlyNine() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         // CRATE-02 routes straight from Create into capture, which is the entry a person
         // actually uses to start a crate — Add More is the other entry and test 2 takes it.
@@ -219,7 +219,7 @@ final class CaptureWalkUITests: XCTestCase {
 
     func test_givenTwentyOneScans_whenTheStripIsScrolled_thenTheLastTileIsReachable() {
         app = XCUIApplication()
-        app.launch()
+        app.launchFresh()
 
         // CRATE-05's Add More: a second, shorter route onto the same screen, and it needs no
         // keyboard.

@@ -58,3 +58,18 @@ enum ScreenshotRecorder {
         }
     }
 }
+
+/// **Phase 9 made launches sticky.** Until PERS-01 the app loaded `FixtureCrates.demoStore`
+/// fresh on every launch, so a walk could delete every crate at the end for free. It cannot any
+/// more: the deletion now survives, and the next run would start on an empty app and fail on its
+/// first assertion.
+///
+/// Every UI test launches through here. `vsb-reset` is a bare token rather than `-vsb-reset`
+/// because iOS parses any argument beginning with `-` into `UserDefaults`, which would both
+/// pollute the domain and swallow whatever followed it.
+extension XCUIApplication {
+    func launchFresh() {
+        launchArguments += ["vsb-reset"]
+        launch()
+    }
+}
