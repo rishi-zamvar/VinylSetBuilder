@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in-progress
-stopped_at: Completed 09-PLAN.md — MAN-01..05, PERS-01..04, BPM-07 and V19; 65 of 67 requirements
-last_updated: "2026-08-31T01:15:00.000Z"
+status: complete
+stopped_at: "Completed 10-PLAN.md — vinylctl, SEQ-05, V21, MVP-SPEC section 9 walked; 66 of 67"
+last_updated: "2026-08-31T02:20:00.000Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 10
-  completed_phases: 9
-  total_plans: 29
-  completed_plans: 29
-  percent: 90
+  completed_phases: 10
+  total_plans: 30
+  completed_plans: 28
+  percent: 100
 ---
 
 # Project State
@@ -44,35 +44,55 @@ Three acts, strictly linear, no interleaving:
 
 ## Current Position
 
-Act: III of III
-Phase: 9 (Manual Entry & Persistence) — **DELIVERED 2026-08-30.** Covers the roadmap's Phase 12
-(Manual Entry) and Phase 13 (Persistence).
-Plan: 09, complete. See `.planning/phases/09-manual-entry-persistence/09-SUMMARY.md`.
-Status: **The app remembers. And when it gets a record wrong, you can fix it in four taps.**
+Act: III of III — **COMPLETE**
+Phase: 10 (`vinylctl` & Definition of Done) — **DELIVERED 2026-08-30. The last phase.**
+Plan: 10, complete. See `.planning/phases/10-vinylctl-dod/10-SUMMARY.md` and
+`.planning/phases/10-vinylctl-dod/DEFINITION-OF-DONE.md`.
+Status: **`vinylctl sequence` runs the whole pipeline over the owner's twelve real photographs
+from a terminal and produces the same set the app does — measured, not asserted.**
 
-        `./Scripts/test.sh` 353 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
-        `./Scripts/ui-test.sh` 9/9 from totalTestCount · `./Scripts/build-app.sh` SUCCEEDED ·
-        `./Scripts/persistence-check.sh` 0 fail · **65 of 67 requirements.**
+        `./Scripts/test.sh` **365** green · `./Scripts/hygiene.sh` **9 pass 0 fail** ·
+        `./Scripts/ui-test.sh` **10 of 10** from totalTestCount · `./Scripts/build-app.sh`
+        SUCCEEDED · `./Scripts/persistence-check.sh` 0 fail ·
+        `python3 Scripts/screenshot-audit.py` AUDIT PASSED · **66 of 67 requirements.**
 
-        **Every acceptance number, measured:** MAN-01 at 8 taps + 16 keystrokes + 1 sheet =
-        13.3 s (wall clock 16.3 s in the harness, which pays a snapshot per query a person does
-        not); MAN-02 one tap out of 24; MAN-03 prefill `170` from the crate's folded median;
-        MAN-04 proved by running the REAL `TrackResolver` and the REAL `BPMLadder` over a
-        hand-entered track against stubs contradicting every field; MAN-05 reachable from BOTH
-        lists, and a hand-typed tempo made a record **rejoin** the set (2 → 3); PERS-01 at
-        730/730 lines and 0 differing through `simctl terminate`, with a second independent
-        observation through the XCUITest harness.
+        **Plan counting, stated rather than left to look like a shortfall.** 28 SUMMARYs against
+        30 PLANs. The two without one are `01-05-PLAN.md` and `01-08-PLAN.md`, both written under
+        the pre-compression roadmap and **never executed**. `01-05`'s content (AsyncSequencer,
+        BeamDivergenceCheck) was carried forward and delivered by Phase 5, and hygiene gate G4
+        now fails the build if either disappears. All **ten** phases of the compressed roadmap
+        are complete.
 
-        **V19's closing evidence is the frame it was filed against**, regenerated from the same
-        live twelve-record run: `03-walk-07-done-sequenced.png` now distinguishes three of the
-        four terminal causes in one screen — `The Accidental Heroes — Dragstar 136 4B` reads
-        *No track within 4 BPM of the set*, `Vinyl 1` reads *No SoundCloud upload matched*, and
-        `Vinyl 5` reads *No identity to look up*.
+        **Gate 2, the one this phase existed for:** `./Scripts/vinylctl-vs-app.sh` runs the same
+        twelve photographs through both front ends and reports **IDENTICAL** — same two rows,
+        same tempos, same keys, same order — with a structural check beside it that both reach
+        the set through `AsyncSequencer.sequence(candidates:…sequencerInput)` then
+        `CrateRows.make`, and that the CLI declares no engine of its own.
 
-        **The Core boundary was drawn explicitly and is enforced by the build.** Core keeps pure
-        `Codable` values and scalar order arrays and may not NAME the persistence framework —
-        `CorePurityTests` scans substrings, comments included — so the `@Model` records live in
-        the app target and one file maps between them.
+        **What building it found: V21.** The first run printed a set of 2 above a bucket of 9 for
+        TWELVE photographs. `IMG_0507` segments to zero track lines, and `BeamSearchSequencer`
+        takes `[Track]` — a trackless vinyl is structurally incapable of appearing in
+        `notIncluded`, so the record simply vanished, contradicting RES-01. Fixed in
+        `CrateRows.make`, the one place a `SequenceResult` meets its crate. Post-fix: 2 + 10 = 12
+        in the CLI, and `Running order (2)` / `Not in the set (10)` in the app's own walk.
+
+        **MVP-SPEC §9, walked honestly: 3 MET, 1 PARTIALLY MET, 1 NOT MET.** Item 2's
+        "auto-resolves for most" is **NOT MET** — the app auto-*names* 10 of 12 records and
+        auto-*resolves* **5 of 12** to a tempo, which is what the sequencer gates on; tier-0
+        measured **0** on this collection; and the artist+title rung produces confident wrong
+        answers that are in the committed baseline (`fellowship` → *Lizz Wright — Fellowship*).
+        Item 3 is **PARTIALLY MET**: the tolerance clause holds live, the harmonic clause is not
+        assessable because **1 of 21** track lines came back with a key.
+
+        **And the finding no gate catches:** the two records in the live set are at 136 and
+        138.8 BPM on a crate of jungle twelves. The set obeys every rule it is gated on and is
+        still probably not one the owner would play — UAT U4/U6, the project's real success
+        criterion, which no assertion here could ever have answered.
+
+        **The one outstanding requirement is CAP-04**, whose memory and thermal halves need a
+        physical iPhone: `SleeveCamera.makeIfAvailable()` returns nil on every simulator, so not
+        one line of the capture-device path has ever executed. Recorded as UAT **U13** and NOT
+        claimed.
 
 ## What already exists — 113 tests green, committed
 
@@ -125,6 +145,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 04-act-i-signoff P05 | ~90m | 3 tasks | 4 files |
 | Phase 04-act-i-signoff P06 | ~140 min | 6 tasks | 7 files |
 | Phase 09 P09 | 2h40m | 8 tasks | 19 files |
+| Phase 10 P10 | 2h20m | 6 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -236,112 +257,88 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 09]: Core holds no @Model and never names the persistence framework; the record classes live in the app target
 - [Phase 09]: Persistence save is a full rewrite, guarded on the crate array actually changing
 - [Phase 09]: PERS-01 is measured by simctl terminate plus a canonical field-by-field dump diff, not by an XCUITest terminate alone
+- [Phase 10]: SleevePipeline gained ONE parameter (the corpus URL, defaulting to the app's Bundle.main lookup) rather than the CLI rebuilding the ladders — that parameter is the entire difference between the two front ends
+- [Phase 10]: V21: a record with no track lines was invisible to the sequencer — fixed in CrateRows.make, the one place a SequenceResult meets its crate, because the sequencer takes [Track] and cannot learn a trackless vinyl exists
+- [Phase 10]: vinylctl sequences through CrateDetailModel.sequencerInput, not crate.allCandidates — CRATE-07's pinning lives there and the two paths give different answers
+- [Phase 10]: Carried defects were re-pointed off Phases 11, 12 and 14, which the roadmap compression deleted — a carry to a phase that will never run is a carry to nowhere
 
 ### Pending Todos
 
-- Re-file the interrupted WIP test `.planning/open-questions/RejoinTests.swift.wip` as a
-  proper seeded-shuffle determinism test when Phase 9 opens.
+**None. v1.0 is closed.** The one item that stood here — re-filing
+`.planning/open-questions/RejoinTests.swift.wip` as a proper seeded-shuffle determinism test —
+was discharged by Phase 5: `SequencerDeterminismTests` and `RejoinTests` are both on disk and
+green, and Q1 was answered by measurement (identical vinyl order across 10 seeded shuffles,
+measured three times).
 
 ### Blockers/Concerns
 
-- **THE REFUSAL — S3 is red and Act I is not signed off.** `./Scripts/screenshots.sh` exited 1 on
-  2 of 3 clean runs (04-05). `02-walk-09-detail-manual-order.png` regenerates as the SEQUENCED
-  order under a *Custom order* header, 22,142 content pixels off the committed frame, the same
-  wrong state twice. Root cause **V18**. **Plan 04-06 closes it**: an identity guard on
-  `CrateDetailModel.moveRows`, and a row-order assertion replacing `reorderTookEffect()`'s
-  presence check, then three clean regenerations at rc=0. **Act II does not open before that.**
+**v1.0 is closed. Nothing below blocks anything — these are the open items, each with a named
+owner, and every one of them is the owner's rather than a phase's, because there is no phase
+left to hand them to. The stale Phase 2–6 concerns that stood here have been superseded by the
+phases that closed them and are recorded in those phases' SUMMARYs.**
 
-- **CRATE-04 is ticked complete, and its UI evidence is weaker than the tick implies.** The frame
-  that photographs it is the frame that came back wrong twice tonight. The model is demonstrably
-  correct (run 1, the committed frame, and `ManualOrderTests`), so the tick was NOT removed —
-  plan 04-05 may not tick or untick any requirement — but 04-06 must re-establish the evidence
-  rather than assume it.
+- **CAP-04 — the last unticked requirement, and it needs the phone.** Memory and thermals across
+  20 records cannot be observed on a simulator that shares the Mac's envelope and runs no camera
+  pipeline. What IS measured is the loop not degrading: 21 consecutive captures, read latency
+  1046 ms → 960 ms first-five against last-five mean. UAT **U13**. **66 of 67.**
 
-- **A green UI suite is not evidence that the right screen was photographed.** 7 passed / 0 failed
-  from the log AND from `build/ui.xcresult`, three runs, two of which photographed a wrong state.
-  Verifying from the result bundle closed the *zero-tests* hazard; it does not close this one.
-  Only a measurement of the content can.
+- **V3 / U8 — unanswered since Phase 2, and now the common case rather than the edge case.** The
+  bucket names a record `Vinyl N` where the app can name it from its own OCR text. With tier-0 at
+  0% on this collection, **8 of the 10** not-included rows in the committed baseline read
+  `Vinyl N`. Four phases have carried it rather than pick for the owner. Both fixes are still
+  defensible and they are not equivalent in side effects — fix B moves a committed baseline.
 
-- **V3 — the not-included bucket cannot tell you which record it excluded.** It labels the row
-  `Vinyl 2` while showing that record's real `178` / `6A` badges and the reason "No track within
-  4 BPM of the set". The app can name that track `Dillinja — Angels Fell`. Root cause read from
-  source: `VinylEntry.label` requires `resolutionState == .resolved` while `SequencedRow.title`
-  uses `Track.displayName` which does not, and **no fixture `Track` ever sets `.resolved`**.
-  Medium. Evidence `Artifacts/screenshots/02-walk-07-not-included-expanded.png`. Phase 4 owns
-  the fix; the owner owns the call (U8 in `UAT-PENDING.md`) because it is defensibly either a
-  code defect or a fixture defect.
+- **U4 / U6 — is this a set you would actually play.** The project's real success criterion, and
+  the one thing no phase of this milestone could ever have answered. The live set came out at 136
+  and 138.8 BPM on a crate of jungle twelves; both tempos are almost certainly wrong matches
+  against the wrong SoundCloud uploads.
 
-- **SEQ-08 / SEQ-09 / SEQ-10 are wholly outstanding, and the Phase 1 record implies otherwise.**
-  Plan 01-05 was never executed; `AsyncSequencer` and `BeamDivergenceCheck` do not exist on
-  disk. Phase 9 inherits `01-05-PLAN.md` and `RejoinTests.swift.wip`. **This is Phase 9 debt,
-  not Phase 2 debt.**
+- **Tier-0 is measured now, and the number is 0.** The bundled 6,608-row corpus is the owner's
+  house/techno library and only 12% of it sits in the 160–184 band. This was predicted, not
+  discovered, and it is why manual entry is a routine path rather than an error path.
 
-- **Six Act I artefacts still assert the removed non-decreasing BPM rule** (SEQ-03 went
-  bidirectional 2026-08-30), including a currently-green test named *"BPM is non-decreasing
-  across the whole winning sequence"*. Deliberately NOT fixed in Phase 2 — `Sequencing/` is
-  provably untouched since `59e2f3c feat(01-04)`, so Phase 9 rewrites from a clean baseline.
-  Full inventory in `REQUIREMENTS.md`.
+- **V6, V9, V17, V20 — four Low/Informational defects carried past v1.0 with no phase left to own
+  them.** Adjudicated, none blocking, all handed to the owner as UAT **U12**. Listed rather than
+  quietly closed, because a defect that stops being mentioned reads, a release later, like one
+  that was fixed.
 
-- **Q1 — the sequencer may be order-dependent.** The beam's rank tuple ends in
-  `start-index asc`, derived from array position, so a shuffle can change which equal-ranked
-  states survive pruning. Because the sequencer re-runs on every vinyl added, this would
-  produce *different sets from the same records*. **Phase 9 must answer this**, and if
-  confirmed, fix it by making the rank tuple a total order with a position-independent
-  tiebreaker (the track UUID). See `.planning/open-questions/Q1-sequencer-determinism.md`.
+- **V11 / U11 — session count or crate total on the capture strip.** Behaving as designed per
+  CAP-03's own wording; whether 0 is the right number to show a DJ standing over a four-record
+  crate is a taste call.
 
-- **V1 / V2 — CLOSED 2026-08-30 by plan 02-05.** V1 fixed and verified in
-  `02-walk-01-crate-list.png` with a two-sided assertion; V2 was never a defect (launch fade)
-  and its closure was re-confirmed on the four screens Phase 2 added, probed twice with
-  `SUSPECT: `, plus a functional disproof — the walk taps six controls and they all
-  respond, and disabled content is not tappable. **Phase 4 instead inherits V3 (Medium — the
-  not-included bucket names a fully-known record "Vinyl 2") and V4–V7 (Low).** V3 needs the
-  owner's call, logged as U8. Original wording, kept for the record:
+- **V10 / U10, U2b, U2d, U1 — everything that needs a real camera or a real phone.** No
+  `AVCaptureVideoPreviewLayer` was ever added, deliberately: it would be unverifiable code drawn
+  on an empty buffer.
 
-- ~~**V1 / V2 — visual defects, open.**~~ "1 records" pluralisation, and the whole UI washed out
-  to near-invisible grey. **V2 must first rule out a launch-fade screenshot artefact** by
-  re-screenshotting after a settle delay, before any restyling; then check `.disabled(true)`
-  on an enclosing view, because that would make it a functional bug wearing a cosmetic
-  disguise. Both close in Phase 4. See `.planning/VISUAL-DEFECTS.md`.
+- **Two pre-compression plans were never executed, and that is not hidden debt.** `01-05-PLAN.md`
+  and `01-08-PLAN.md` have no SUMMARY. `01-05`'s content — `AsyncSequencer` and
+  `BeamDivergenceCheck` — was delivered by Phase 5, and hygiene gate G4 fails the build if either
+  disappears. They are counted in the denominator above rather than quietly excluded from it.
 
-- **Measured baselines that must not regress** (Act II gates are scored against these):
-  - OCR: **6 clean / 5 partial / 1 fail** across the 12 fixtures — **MET in Phase 6, three live runs.** `./Scripts/ocr-score.sh` re-measures it in one command and exits 1 below baseline.
-  - Catalogue-number EXTRACTION: **6 of 6, 0 invented** — done in Phase 6. Catalogue-number RESOLUTION (extraction → a real release) is still Phase 7's **5 of 6**.
-  - SoundCloud match rate: **72%** — Phase 8.
-
-- **Phase 8 carries the largest remaining unknown.** The in-house Accelerate/vDSP analyser's
-  tempo and key accuracy on bass-heavy jungle/DnB is unmeasured, and SoundCloud only ever
-  returns a 30-second preview — ample for tempo, weaker for key. Gate B scores it against the
-  29 cached ground-truth tracks in `.local/`. Documented fallback: key degrades to a
-  soft/manual field while BPM stays automatic; the sequencer tolerates this because Camelot
-  distance only orders survivors and never excludes.
-
-- **Tier-0 hit rate is unmeasured.** The bundled 6,608-row corpus skews house/techno — only
-  12% sits in the 160–184 BPM band. A low hit rate is an expected outcome, not a failure; it
-  reallocates weight onto Phase 12 (manual entry).
-
-- **Toolchain, non-negotiable.** iOS 26 is the installed SDK. `MusicUnderstanding.framework`
-  does **not** exist on this machine — never import it. BPM/key come from the in-house
-  Accelerate/vDSP analyser behind `AudioAnalyzing`. Simulator UDID
-  `4B4E1C1F-BED6-4812-9238-C151337265DA` is installed and bootable.
-
-- **Still needs the owner:** U1 (install on the physical iPhone 14 Pro — Xcode signed into the
-  Apple ID, phone connected and trusted), U2 (live capture feel across 20 real records),
-  U4/U6 (whether the produced set is one you would actually play — the project's real
-  success criterion).
-
-- V9: 13 of the walk's 15 frames render no large navigation title. Not settle (identical at 3.0s and 4.0s), not .disabled (every control taps), not caused by plan 03-03 — implicates RootView's Route-swap navigation. Filed for Phase 4.
+- **Toolchain, non-negotiable.** iOS 26 is the installed SDK. `MusicUnderstanding.framework` does
+  **not** exist on this machine — never import it; gate G3 enforces it. BPM and key come from the
+  in-house Accelerate/vDSP analyser behind `AudioAnalyzing`. Simulator UDID
+  `4B4E1C1F-BED6-4812-9238-C151337265DA`.
 
 ## Session Continuity
 
-Last session: 2026-08-31T01:11:21.840Z
-Stopped at: Completed 09-PLAN.md — MAN-01..05, PERS-01..04, BPM-07 and V19; 65 of 67 requirements
-14 commits. 236 Core tests green; hygiene 9/9; device-SDK build SUCCEEDED; `ocr-score.sh`
-BASELINE HELD three times with byte-identical per-fixture JSON; screenshots regenerated in one
-run at rc=0 with the audit's gates A/B/C green and `SUSPECT: none (46 frames)`; UI suite 7/7 from
-the result bundle; ledger 18 rows, 10 closed, 8 carried, 1 Medium-or-above open.
-Phase 6 closed ONE of the three defect rows it was given — V12 — and re-carried V15 and V16 to
-Phase 8 with corrected reasons rather than closing them on a technicality.
-Next: **Phase 7 — Resolution & BPM Ladder.** It inherits `VinylEntry.catalogueNumber` (6 of 6
-extracted) as the strongest resolution key, and inherits the three segmentation misses, all of
-which want a discography rather than more geometry.
+Last session: 2026-08-31T02:20:00Z
+Stopped at: Completed 10-PLAN.md — **the last phase of v1.0.**
+
+`./Scripts/test.sh` **365** · `./Scripts/hygiene.sh` **9 pass 0 fail** · `./Scripts/ui-test.sh`
+**10 of 10** · `./Scripts/build-app.sh` **SUCCEEDED** · `./Scripts/persistence-check.sh` 0 fail ·
+`Scripts/screenshot-audit.py` **AUDIT PASSED** · ledger **21 rows, 14 closed, 7 carried, 1
+Medium-or-above open** · **66 of 67 requirements**.
+
+Nine commits this phase. `vinylctl` is a real front end over the same Core package and the same
+app adapters; its answer on the owner's twelve photographs is committed at
+`Artifacts/vinylctl/sequence-baseline.txt`; and `Scripts/vinylctl-vs-app.sh` reports **IDENTICAL**
+against the app on the same input, with a structural check beside the empirical one.
+
+Building it found **V21** — a record whose sleeve yields no track line was in neither the set nor
+the bucket, contradicting RES-01 — fixed at the one place both front ends route through.
+
+**Next: nothing. v1.0 is done.** What remains is the owner's: the phone (CAP-04/U13), the two
+product calls (U8, U11), the four carried defects (U12), and the only question that ever
+mattered — whether the set is one you would play (U4/U6).
 Resume file: None

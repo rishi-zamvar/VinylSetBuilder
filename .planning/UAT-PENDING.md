@@ -289,6 +289,38 @@ The two fixes, unchanged, and still not chosen for you:
 prints the raw OCR text, the catalogue number and the resolved identity for every record, beside
 the `Vinyl N` label the bucket gives that same record.
 
+### U8 grew a second dependent while this phase was running — V22
+
+**A defect filed mid-run turned out to be a second thing waiting on your U8 answer, and it is
+worth knowing before you answer.**
+
+`Artifacts/vinylctl/sequence-baseline.txt` prints the bucket row
+`Cause 4 Concern — High Down   160   —` while the record block above it lists *High Down* at
+**116.1** and *Strange Nature* at **160**. The name comes from one candidate and the tempo from
+another — V19's exact shape, in a field Phase 9's fix did not cover. Phase 9 bound the reason,
+the badges and the edit target to one representative candidate; it left the **label** bound to
+`VinylEntry.label`, which picks the first `.resolved` candidate instead. Two selectors, one row.
+
+It affects the app and `vinylctl` identically — they call the same `CrateRows.make`.
+
+**Why it was not fixed:** the obvious fix is to bind the label to the representative as well,
+and on a record with candidates but none marked `.resolved` that replaces `Vinyl N` with the
+candidate's own name — **which is U8's fix A.** Fixing V22 answers U8 by side effect, so it
+waits on the same answer rather than preempting it.
+
+### V23 — the sequencer picks a set it can justify and you would not play
+
+Also filed mid-run, also carried, and it is the mechanism behind the §9 walk's blunt item-3
+note. On the live twelve the sequencer chose **136 → 138.8** and excluded **174.8** and **175**,
+which are **0.2 BPM apart** and the best transition in the crate. Both are valid two-record sets,
+so maximise-count ties; neither pair has two known keys, so the Camelot tie-break cannot separate
+them. **The objective has no way to prefer the tighter cluster.**
+
+The proposed fix is one line — tie-break on mean adjacent BPM delta before Camelot, no new UI, no
+genre model. **It was not applied.** Changing the sequencer's objective at the close of the
+milestone, with no way to evaluate the result except by your own ear, is a redesign wearing
+polish's clothes. It is recorded so you can take it in ten minutes if you agree. This is U4.
+
 ### What Phase 10 needs from you
 
 **U13 (CAP-04) is the only thing standing between 66 of 67 and 67 of 67**, and it needs the

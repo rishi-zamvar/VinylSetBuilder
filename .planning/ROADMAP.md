@@ -489,11 +489,11 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 7. The Identity Resolver | 0/TBD | Not started | - |
 | 8. The BPM & Key Ladder | 0/TBD | Not started | - |
 | 9. The Sequencer, Finished and Proven Deterministic | 0/1 | Planned    |  |
-| 10. The Camera, Live | 0/TBD | Not started | - |
+| 10. The Camera, Live | 1/1 | Complete (delivered as compressed Phase 8) | 2026-08-30 |
 | 11. The Swap | 0/TBD | Not started | - |
 | 12. Manual Entry | 0/TBD | Not started | - |
 | 13. Persistence | 0/TBD | Not started | - |
-| 14. `vinylctl` & Definition of Done | 0/TBD | Not started | - |
+| 14. `vinylctl` & Definition of Done | 1/1 | **Complete — delivered as compressed Phase 10** | 2026-08-30 |
 
 ## Requirement Coverage
 
@@ -617,7 +617,7 @@ against the wrong sequencer and retrofitting later is the expensive order.
 | **7** | **Resolution & BPM Ladder** | was 7 + 8 | One ladder, one phase. Catalogue-number resolution **≥ 5 of 6** with the artist cross-check; SoundCloud match **≥ 72%**; tier-0 hit rate **measured**; vDSP analyser scored against the 29 cached ground-truth tracks — tempo octave-aware, key by Camelot distance |
 | **8** | **Wiring & Camera** | was 10 + 11 | Each stub swapped for its real implementation, walk green after each swap; live `AVCaptureSession` capture (device behaviour → UAT) |
 | **9** | **Manual Entry & Persistence** | was 12 + 13 | Hand-entry under 15 s measured as tap/keystroke count; a 20-vinyl crate survives terminate-and-reload with a field-by-field diff of 0 |
-| **10** | **`vinylctl` & Definition of Done** | was 14 | `vinylctl` prints a real sequenced set from the owner's 12 photographs; MVP-SPEC §9 walked |
+| **10** | **`vinylctl` & Definition of Done** ✅ **DELIVERED 2026-08-30** | was 14 | **MET.** `vinylctl sequence` runs the whole pipeline over the owner's twelve photographs from a terminal, output committed at `Artifacts/vinylctl/sequence-baseline.{txt,json}`, and `Scripts/vinylctl-vs-app.sh` reports **IDENTICAL** against the app on the same live input — plus a structural check that both front ends reach the set through the same two calls and the CLI declares no engine of its own. **SEQ-05** built and photographed in both directions (2 records at 4 → 3 at 6, the excluded record rejoining → 2 at 3). MVP-SPEC §9 walked: **3 MET, 1 PARTIALLY MET, 1 NOT MET** — see `.planning/phases/10-vinylctl-dod/DEFINITION-OF-DONE.md`. Building it found and fixed **V21**, a record with no track lines appearing in neither list. **66 of 67 requirements; CAP-04's device half is UAT U13.** |
 
 ## Carried into this compression, unchanged
 
