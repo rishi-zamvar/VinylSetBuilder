@@ -16,14 +16,17 @@ pass() { printf 'PASS %s  %s\n' "$1" "$2"; PASSES=$((PASSES + 1)); }
 fail() { printf 'FAIL %s  %s\n' "$1" "$2"; FAILS=$((FAILS + 1)); [ $# -ge 3 ] && printf '%s\n' "$3" | sed 's/^/         /'; }
 skip() { printf 'SKIP %s  %s\n' "$1" "$2"; FAILS=$((FAILS + 1)); }   # a skipped gate is NOT a passed gate
 
-CODE_TREES=(App VinylSetBuilderCore/Sources VinylSetBuilderCore/Tests UITests)
+# Tools/ joined the swept tree in Phase 10. The roadmap's own §14 criterion names it —
+# "grep for work markers across App/, VinylSetBuilderCore/Sources/ and Tools/ returns zero" —
+# and vinylctl is a shipped front end, not a scratch script.
+CODE_TREES=(App VinylSetBuilderCore/Sources VinylSetBuilderCore/Tests UITests Tools)
 # Where a REFERENCE to a declaration may legitimately live. Tools/ is included from Phase 7:
 # the acceptance-gate harnesses compile the SHIPPING transport, decoder and clients into a
 # macOS binary and run them, which is exactly what ocr-score.sh has always done with the
 # shipping recogniser. A caller that runs the code every gate run is not a dead reference.
 # Declarations are still only SCANNED FOR under Core Sources and App — Tools declares nothing
 # the app depends on.
-REF_TREES=("${CODE_TREES[@]}" Tools)
+REF_TREES=("${CODE_TREES[@]}")
 # .build is gitignored SPM output; it retains dependency manifests naming files that were
 # deleted from Sources, so an unscoped grep reports references that do not exist in source.
 EXCL=(--exclude-dir=.build --exclude-dir=__pycache__ --exclude-dir=.git)

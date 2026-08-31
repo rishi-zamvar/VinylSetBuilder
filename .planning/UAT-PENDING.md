@@ -252,3 +252,48 @@ passes on a dangling reference:
   **U4 and U6**, and that is legitimate and is named rather than assumed: *"is this a set you
   would actually play"* is not a visual defect, has no screenshot that could evidence it, and
   therefore correctly has no V-row. **3 of 5 cited, 2 named as deliberately uncited.**
+
+---
+
+## Added at Phase 10 close — the project's last phase (2026-08-30)
+
+**This is the last phase. Nothing after it will pick these up, so each one is handed to you
+rather than to a phase number that will never run.**
+
+| # | Check | Why it can't be automated | Phase |
+|---|-------|---------------------------|-------|
+| U12 | **Four defects carried past v1.0 with no phase left to own them: V6, V9, V17, V20.** All Low or Informational, all adjudicated, none blocking. **V6** — the running-order index column at ten rows or more has still never been photographed, because the live twelve-record set comes out at 2–3 rows and no fixture crate reaches ten; assessing it needs either a bigger crate of your records or a fixture built to answer it, and manufacturing the latter for an alignment question remains the wrong trade. **V9** — thirteen crate-walk frames render no navigation title; root-caused (the title is lost iff the first route change of the session comes from the sheet's Create) with three candidate fixes measured and rejected at 0/11746 each. **V17** — the crate walk did not reproduce the same screen states on 1 of 7 runs; one observation is not a rate and is not reported as one. **V20** — the hand-entry sheet is full height with its content at the top; both alternatives measured worse. | Each is a "is this worth a v1.1" judgement about your own tolerance for it, and none has a correctness answer a test could settle. They are listed rather than quietly closed, because a defect that stops being mentioned reads, a release later, like one that was fixed. | 10 |
+| U13 | **CAP-04's other half — 20 records on the device without memory growth or thermal throttling.** This is the ONE requirement of 67 still outstanding and it is outstanding for a reason that cannot be engineered away here. `SleeveCamera.makeIfAvailable()` returns nil on every simulator, so not one line of the capture-device path has ever run. **What IS measured, and is not the same thing:** 21 consecutive captures through the identical two-phase call site, each a full HEIC decode plus a Vision pass, with recognition latency going 1165 ms to 962 ms across first-five against last-five means — i.e. the loop does not degrade. **What is NOT measured and is NOT claimed:** memory and thermals. A simulator shares the Mac's memory and thermal envelope and runs no camera pipeline, so a leak in `AVCapturePhotoOutput` or a hot ISP cannot show up in it. **What to do:** scan 20 records on the iPhone with Instruments' Allocations attached, watch for a rising baseline between captures, and note whether the device gets hot or the preview frame rate drops. | The simulator has no camera. This supersedes U2c, which said the same thing one phase earlier; it is restated here because CAP-04 is the last unticked requirement and burying it in an earlier section would let 66 of 67 read as 67. | 10 |
+
+### U8 is still open, and Phase 10 did not touch it
+
+**V3 remains unanswered and was not guessed at.** The not-included bucket still names a record
+`Vinyl 1` where the app can name it from its own OCR text. Three phases have now carried it
+forward unfixed rather than pick for you, and the reason has not changed: both fixes are
+defensible and which is right is a product judgement about your workflow.
+
+**It matters more at v1.0 than it did when it was filed, and the number is new.** With tier-0
+measuring **0 hits on this collection** and only 6 of 12 records carrying a readable catalogue
+number, an unresolved record is the *common* case, not the edge case. `vinylctl`'s committed
+baseline over your twelve photographs shows it plainly: of the ten records not in the set,
+**seven read `Vinyl N`** and only three carry a name.
+
+The two fixes, unchanged, and still not chosen for you:
+
+- **A — code side.** Give `VinylEntry.label` the first-candidate `Track.displayName` fallback
+  that `SequencedRow.title` already has. Nothing measured moves.
+- **B — fixture side.** Mark the fixture tracks `.resolved`. This moves Phase 3's committed
+  `6 Read / 5 Partial / 1 Unread` strip tally, which has a negative control behind it.
+
+`Artifacts/vinylctl/sequence-baseline.txt` is the newest evidence and the easiest to read: it
+prints the raw OCR text, the catalogue number and the resolved identity for every record, beside
+the `Vinyl N` label the bucket gives that same record.
+
+### What Phase 10 needs from you
+
+**U13 (CAP-04) is the only thing standing between 66 of 67 and 67 of 67**, and it needs the
+phone. **U8 (V3)** and **U11 (V11)** are product calls that have been waiting since Phases 2
+and 4. **U12** is four small carried defects you may reasonably never want fixed. **U1, U4, U6,
+U9 and U10** remain open from earlier phases and Phase 10 changed none of them — U4 and U6 in
+particular ("is this a set you would actually play") are the project's real success criterion
+and no phase of this milestone could ever have answered them.

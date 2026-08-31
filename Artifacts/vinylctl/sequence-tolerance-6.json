@@ -1,0 +1,327 @@
+{
+  "notIncluded" : [
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 1",
+      "reason" : "No SoundCloud upload matched"
+    },
+    {
+      "bpm" : "136",
+      "key" : "4B",
+      "label" : "The Accidental Heroes — Dragstar",
+      "reason" : "No track within 6 BPM of the set"
+    },
+    {
+      "bpm" : "175",
+      "key" : "—",
+      "label" : "Vinyl 3",
+      "reason" : "No track within 6 BPM of the set"
+    },
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 4",
+      "reason" : "No SoundCloud upload matched"
+    },
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 5",
+      "reason" : "No identity to look up"
+    },
+    {
+      "bpm" : "148.9",
+      "key" : "—",
+      "label" : "Lizz Wright — Fellowship",
+      "reason" : "No track within 6 BPM of the set"
+    },
+    {
+      "bpm" : "175.1",
+      "key" : "—",
+      "label" : "Drumsound & Simon 'Bassline' Smith — Dubtrack",
+      "reason" : "No track within 6 BPM of the set"
+    },
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 9",
+      "reason" : "No SoundCloud upload matched"
+    },
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 11",
+      "reason" : "No SoundCloud upload matched"
+    },
+    {
+      "bpm" : "—",
+      "key" : "—",
+      "label" : "Vinyl 10",
+      "reason" : "No identity to look up"
+    }
+  ],
+  "records" : [
+    {
+      "catalogue" : "0-44904",
+      "observations" : 11,
+      "photo" : "IMG_0498.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "Abstract",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "Abstract",
+          "state" : "pending",
+          "title" : "The Message – Fuck Willie Brown"
+        },
+        {
+          "artist" : "Abstract",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "The Message - Brown Gtauno Originat Mix!",
+          "state" : "pending",
+          "title" : "The Message – Fuck Willie Brown"
+        }
+      ],
+      "trusted" : 9
+    },
+    {
+      "catalogue" : "EMF2029",
+      "observations" : 7,
+      "photo" : "IMG_0499.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "The Accidental Heroes",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "A: DRAGSTAR",
+          "state" : "resolved",
+          "title" : "Dragstar"
+        },
+        {
+          "artist" : "The Accidental Heroes",
+          "bpm" : 136.01087235995098,
+          "camelot" : "4B",
+          "raw" : "AA: ELEMENTZ",
+          "state" : "resolved",
+          "title" : "Elements"
+        }
+      ],
+      "trusted" : 5
+    },
+    {
+      "catalogue" : "0-44845",
+      "observations" : 9,
+      "photo" : "IMG_0500.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "Phunckateck's Juju",
+          "bpm" : 175.02495870758653,
+          "raw" : "JUvS. Invocación inckatecks* Gide One \/ Oríginal Versionk",
+          "state" : "pending",
+          "title" : "Invocación"
+        }
+      ],
+      "trusted" : 7
+    },
+    {
+      "observations" : 5,
+      "photo" : "IMG_0501.HEIC",
+      "status" : "partial",
+      "tracks" : [
+        {
+          "artist" : "Gregaress",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "LINU ME",
+          "state" : "pending",
+          "title" : "Linus Rides With Me Everyday"
+        },
+        {
+          "artist" : "Hiroshi Takano (高野寛)",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "STAY",
+          "state" : "pending",
+          "title" : "Stay, Stay, Stay"
+        },
+        {
+          "failure" : "No identity to look up",
+          "raw" : "eFOCUSED",
+          "state" : "failed"
+        }
+      ],
+      "trusted" : 5
+    },
+    {
+      "observations" : 5,
+      "photo" : "IMG_0502.HEIC",
+      "status" : "partial",
+      "tracks" : [
+        {
+          "failure" : "No identity to look up",
+          "raw" : "JA22 •MAIATCIN DAVE ANCEL MIX",
+          "state" : "failed"
+        }
+      ],
+      "trusted" : 4
+    },
+    {
+      "catalogue" : "TYME012",
+      "observations" : 16,
+      "photo" : "IMG_0503.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "Cause 4 Concern",
+          "bpm" : 116.05220703933058,
+          "raw" : "A: HIGH DOWN",
+          "state" : "resolved",
+          "title" : "High Down"
+        },
+        {
+          "artist" : "Cause 4 Concern",
+          "bpm" : 159.95667432667196,
+          "raw" : "AAA: STRANGE NAT URE",
+          "state" : "resolved",
+          "title" : "Strange Nature"
+        }
+      ],
+      "trusted" : 16
+    },
+    {
+      "observations" : 6,
+      "photo" : "IMG_0504.HEIC",
+      "status" : "partial",
+      "tracks" : [
+        {
+          "failure" : "No identity to look up",
+          "raw" : "xtasia",
+          "state" : "failed"
+        },
+        {
+          "artist" : "Lizz Wright",
+          "bpm" : 148.94328118096485,
+          "raw" : "fellowship",
+          "state" : "resolved",
+          "title" : "Fellowship"
+        },
+        {
+          "artist" : "Xstasia",
+          "bpm" : 138.7534153924151,
+          "raw" : "'sweetness'",
+          "state" : "resolved",
+          "title" : "Sweetness"
+        }
+      ],
+      "trusted" : 4
+    },
+    {
+      "catalogue" : "TECH008",
+      "observations" : 12,
+      "photo" : "IMG_0505.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "Drumsound & Simon 'Bassline' Smith",
+          "bpm" : 174.82057961077436,
+          "raw" : "DUBTRACK",
+          "state" : "resolved",
+          "title" : "Dubtrack"
+        },
+        {
+          "artist" : "Drumsound & Simon 'Bassline' Smith",
+          "bpm" : 175.0820150309656,
+          "raw" : "SUPERSONIC",
+          "state" : "resolved",
+          "title" : "Supersonic"
+        }
+      ],
+      "trusted" : 11
+    },
+    {
+      "catalogue" : "CSI006",
+      "observations" : 12,
+      "photo" : "IMG_0506.HEIC",
+      "status" : "read",
+      "tracks" : [
+        {
+          "artist" : "G Squad",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "COLD: WIDE OPBY",
+          "state" : "pending",
+          "title" : "Wide Open Spaces"
+        },
+        {
+          "artist" : "G Squad",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "STEEL",
+          "state" : "pending",
+          "title" : "Wide Open Spaces"
+        }
+      ],
+      "trusted" : 9
+    },
+    {
+      "observations" : 3,
+      "photo" : "IMG_0507.HEIC",
+      "status" : "unread",
+      "tracks" : [
+
+      ],
+      "trusted" : 3
+    },
+    {
+      "observations" : 11,
+      "photo" : "IMG_0508.HEIC",
+      "status" : "partial",
+      "tracks" : [
+        {
+          "artist" : "Dirty Game Records",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "Da Lick",
+          "state" : "pending",
+          "title" : "What da Lick Read?"
+        }
+      ],
+      "trusted" : 10
+    },
+    {
+      "observations" : 7,
+      "photo" : "IMG_0509.HEIC",
+      "status" : "partial",
+      "tracks" : [
+        {
+          "artist" : "Xanno Gallois",
+          "failure" : "No SoundCloud upload matched",
+          "raw" : "SONIC",
+          "state" : "pending",
+          "title" : "Sonic Sonic"
+        },
+        {
+          "artist" : "Navene K",
+          "bpm" : 121.54082275512884,
+          "raw" : "\"SMADON MIND",
+          "state" : "pending",
+          "title" : "Mind"
+        }
+      ],
+      "trusted" : 6
+    }
+  ],
+  "sequence" : [
+    {
+      "bpm" : "116.1",
+      "index" : "1",
+      "key" : "—",
+      "title" : "Cause 4 Concern — High Down"
+    },
+    {
+      "bpm" : "121.5",
+      "index" : "2",
+      "key" : "—",
+      "title" : "Navene K — Mind"
+    }
+  ],
+  "tolerance" : 6,
+  "totalCamelotDistance" : 0
+}
