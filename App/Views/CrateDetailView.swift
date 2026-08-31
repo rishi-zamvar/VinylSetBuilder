@@ -10,6 +10,11 @@ struct CrateDetailView: View {
     @State private var detail: CrateDetailModel?
     @State private var editMode: EditMode = .inactive
 
+    /// **MAN-05.** The track the hand-entry sheet is open on. One piece of state for BOTH
+    /// entry points — the sequenced list and the not-included bucket present the same sheet, so
+    /// there is no second presentation to keep in step, and no failure dialog is involved.
+    @State private var editing: Track?
+
     /// SEQ-09: off the main actor. `AsyncSequencer` wraps the beam search in a
     /// `Task.detached` — this target defaults `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, so a
     /// plain `Task` here would inherit this screen's isolation and sequence on the main thread.
@@ -53,6 +58,14 @@ struct CrateDetailView: View {
                     .accessibilityIdentifier("add-more-button")
             }
         }
+        .sheet(item: $editing) { track in
+            ManualEntrySheet(track: track,
+                             // The rest of the crate, so MAN-03 can offer this crate's own median
+                             // rather than a global guess. The track itself is excluded or it
+                             // would interpolate from the value being replaced.
+                             neighbours: (detail?.crate.allCandidates ?? []).filter { $0.id != track.id },
+                             onSave: commitEdit)
+        }
         .task(id: crateID) {
             await load()
             await resolvePending()
@@ -66,9 +79,13 @@ struct CrateDetailView: View {
             runningOrder(detail)
             if detail.rows.showsNotIncludedSection {      // SEQ-07: one bucket, and the
                 Section {                                 // caller owns its visibility.
+                    // MAN-05, half two — and this is the half that matters, because after the
+                    // last live run 9 of 12 records were in this bucket and none of them was
+                    // reachable for correction at all.
                     NotIncludedSectionView(rows: detail.rows.notIncluded,
                                            header: detail.rows.notIncludedHeader,
-                                           resolving: model.resolving)
+                                           resolving: model.resolving,
+                                           onEdit: { editing = track($0) })
                 }
             }
         }
@@ -90,6 +107,11 @@ struct CrateDetailView: View {
                     // assumed. One element per row is also the only thing a drag can grab.
                     .accessibilityElement(children: .combine)
                     .accessibilityIdentifier("sequenced-row-\(row.indexLabel)")
+                    // MAN-05, half one. The ROW is the button: no mode to enter, no menu, no
+                    // long press. `.contentShape` is load-bearing — without it only the text
+                    // glyphs are hit-testable and the gaps between them do nothing.
+                    .contentShape(Rectangle())
+                    .onTapGesture { editing = track(row.id) }
             }
             .onMove { offsets, offset in                             // CRATE-04
                 var edited = detail
@@ -181,6 +203,22 @@ struct CrateDetailView: View {
             await load()
             model.resolving.remove(vinyl.id)
         }
+    }
+
+    /// MAN-05. Both lists identify their edit target by TRACK id — the sequenced row IS a track,
+    /// and V19 gave the not-included row a `trackID` naming the same candidate its badges
+    /// describe — so one lookup serves both.
+    private func track(_ id: UUID?) -> Track? {
+        guard let id else { return nil }
+        return detail?.crate.allCandidates.first { $0.id == id }
+    }
+
+    /// MAN-01/MAN-04. Commit a hand-entered track through the store's one candidate mutator and
+    /// re-derive the set: a record that has just been given a tempo may now belong in it, and
+    /// SEQ-08's rejoin is a property of a full re-derivation, never of a merge.
+    private func commitEdit(_ edited: Track) {
+        model.store.updateTrack(edited, in: crateID)
+        Task { await load() }
     }
 
     /// Write an edited crate value back. One place, so a manual reorder cannot silently fail

@@ -1,8 +1,12 @@
 import Foundation
 
-/// The Phase-1 stub library every screen binds to until Phase 6 supplies real on-device
-/// persistence — this file gets deleted then. Built from fixed UUIDs and a fixed date so a
+/// The stub library every screen binds to. Built from fixed UUIDs and a fixed date so a
 /// screenshot or bug report is reproducible across launches.
+///
+/// **Phase 9 changed what this is for and it is worth saying so.** Phase 1 called this "the stub
+/// library until persistence exists — this file gets deleted then". It is not deleted, because
+/// persistence needs a first-launch seed and a UI walk needs a known starting state it can reset
+/// to. It is now the seed, not a stand-in.
 public enum FixtureCrates {
 
     private static let fixedDate = Date(timeIntervalSince1970: 1_750_000_000)
@@ -76,5 +80,65 @@ public enum FixtureCrates {
 
     public static var demoStore: CrateStore {
         CrateStore(crates: all)
+    }
+
+    // MARK: - PERS-01's probe material
+
+    /// A deterministic crate of `vinylCount` records, built to be the hardest thing the store
+    /// has to carry rather than the easiest. Every property that has ever been a persistence
+    /// gotcha is present in it on purpose:
+    ///
+    /// - **several candidates per vinyl, only ONE of them selected** — PERS-03: an unselected
+    ///   candidate must survive, because the sequencer re-derives membership from all of them on
+    ///   every run and a store that kept only the selected one would look right until a record
+    ///   was added
+    /// - **explicit non-trivial `position` on both vinyls and tracks** — PERS-02
+    /// - **a `manualOrder`**, which is an ordered array of references and the exact shape that
+    ///   an object relationship would scramble
+    /// - **a `.manual` track**, so MAN-04's mark is proved to survive a relaunch. If it did not,
+    ///   hand entry would be protected only until the app was closed — and the automatic pass
+    ///   runs on the next launch
+    /// - **multi-line OCR text, a catalogue number, and both sides scanned**
+    public static func probeCrate(vinylCount: Int) -> Crate {
+        var vinyls: [VinylEntry] = []
+        var selection: [UUID: UUID] = [:]
+        var manualOrder: [UUID] = []
+
+        for index in 0..<max(0, vinylCount) {
+            let vinylUUID = id(5000 + index)
+            // Two or three candidates, deterministically alternating, so both the "extra
+            // unselected candidate" case and the "one spare" case are present.
+            let candidateCount = index % 3 == 0 ? 3 : 2
+            var candidates: [Track] = []
+            for slot in 0..<candidateCount {
+                let bpm = 168.0 + Double((index * 2 + slot) % 12)
+                candidates.append(Track(
+                    id: id(6000 + index * 10 + slot),
+                    vinylID: vinylUUID,
+                    side: slot == 0 ? .a : .b,
+                    position: slot,
+                    rawOCRText: "SIDE \(slot == 0 ? "A" : "B")\nTRACK \(index + 1)-\(slot + 1)",
+                    artist: "Probe Artist \(index + 1)",
+                    title: "Probe Title \(index + 1)-\(slot + 1)",
+                    bpm: slot == 0 ? bpm : nil,
+                    camelot: slot == 0 ? "\((index % 12) + 1)A" : nil,
+                    matchConfidence: 0.8,
+                    // Every fourth record is hand-entered, so MAN-04's mark is carried across
+                    // the kill on a meaningful fraction of the crate rather than on one row.
+                    resolutionState: index % 4 == 0 ? .manual : .resolved))
+            }
+            vinyls.append(VinylEntry(id: vinylUUID, capturedAt: fixedDate.addingTimeInterval(Double(index)),
+                                     photoRefs: ["probe-\(index).heic"],
+                                     sidesScanned: candidateCount > 2 ? [.a, .b] : [.a],
+                                     candidates: candidates, position: index,
+                                     catalogueNumber: index % 2 == 0 ? "PRB\(index)" : nil))
+            selection[vinylUUID] = candidates[0].id
+            manualOrder.append(candidates[0].id)
+        }
+
+        return Crate(id: id(5999), name: "Persistence Probe", createdAt: fixedDate,
+                     vinyls: vinyls, bpmTolerance: BPMRules.defaultTolerance,
+                     manualOrder: manualOrder.reversed(),   // deliberately NOT the stored order
+                     selectedTrackByVinyl: selection)
     }
 }

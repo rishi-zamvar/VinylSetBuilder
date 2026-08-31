@@ -11,6 +11,10 @@ struct NotIncludedSectionView: View {
     /// RES-02. The vinyls whose resolution is running right now — their row says so instead of
     /// stating a reason that is not settled yet.
     var resolving: Set<UUID> = []
+    /// MAN-05. Called with the row's representative candidate — the same track its badges
+    /// describe, which is what V19's `NotIncludedRow.trackID` exists to guarantee. `nil` for a
+    /// record carrying no candidate lines at all: there is nothing to open a sheet on.
+    var onEdit: (UUID?) -> Void = { _ in }
     @State private var expanded = false      // "collapsed" per SEQ-07 — starts closed
 
     var body: some View {
@@ -35,6 +39,11 @@ struct NotIncludedSectionView: View {
                 }
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("not-included-row-\(offset + 1)")
+                // The row is the button, exactly as in the sequenced list above — one tap, no
+                // mode, no dialog. `.contentShape` makes the whole row hit-testable and not
+                // only the glyphs.
+                .contentShape(Rectangle())
+                .onTapGesture { onEdit(row.trackID) }
             }
         } label: {
             Text(header)
