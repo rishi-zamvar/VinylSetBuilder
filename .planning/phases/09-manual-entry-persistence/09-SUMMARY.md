@@ -326,3 +326,8 @@ and `build/` plus DerivedData were purged before every UI run.
 | `e50315d` | the sheet on both lists + SwiftData persistence |
 | `2db3a80` | the UI walk and the `simctl` persistence gate |
 | *(this commit)* | sheet title fix, V19 closed in the ledger, V20 filed, requirements, roadmap, this summary |
+
+## Self-Check: PASSED
+
+Every file this summary claims exists on disk (14 of 14) and every commit hash it cites resolves
+in `git log` (11 of 11). Working tree clean. Verified 2026-08-30 after the closing commit.
