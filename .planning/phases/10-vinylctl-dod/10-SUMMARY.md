@@ -295,9 +295,44 @@ and then there is no answer to take.
 python3 Scripts/screenshot-audit.py   AUDIT PASSED — gates A, B and C green
 ./Scripts/vinylctl.sh sequence …      2 sequenced + 10 not included = 12
 ./Scripts/vinylctl-vs-app.sh          structural: same calls · empirical: identical
+python3 Scripts/ledger-check.py       23 rows, 14 closed, 9 carried, 3 Medium-or-above open
 ```
 
 **66 of 67 requirements. The one that remains needs the phone.**
+
+## Filed by another process during this run — V22 and V23
+
+**Four commits landed in this repository between `430d30b` and `a3cbc7d` that this executor did
+not author** — `315150a`, `87f9846`, `1cec0f1`, `44d4694`. They carry no phase scope and were
+not part of this plan. They file two new defects. They are reported rather than absorbed
+silently, and they were **verified before being accepted**:
+
+**V22 — REAL, and its diagnosis was WRONG.** The row claimed *"V19's root cause survives in
+vinylctl, which is a separate front end and never received Phase 9's `NotIncludedRow` fix."*
+The defect is real: `sequence-baseline.txt` prints `Cause 4 Concern — High Down  160  —` while
+the `IMG_0503` block lists *High Down* at 116.1 and *Strange Nature* at 160. **The diagnosis is
+false.** `vinylctl` is not a separate renderer — `main.swift:431-432` call
+`model.apply(result)` then read `model.rows`, which is `CrateDetailModel` → `CrateRows.make`, the
+identical path `CrateDetailView.load` takes, and `vinylctl-vs-app.sh` already gates structurally
+on exactly that. The root cause is **in Core and hits both front ends**: Phase 9 bound `reason`,
+`badges` and `trackID` to one representative candidate and left `label` bound to
+`VinylEntry.label`, which selects the first `.resolved` candidate. Two selectors, one row.
+Diagnosis corrected in the ledger by command, not by reading.
+
+**Neither was fixed, and both refusals are Rule 4, not fatigue.** V22's obvious fix — bind the
+label to the representative — **is U8's fix A**: on a record with candidates but none `.resolved`
+it replaces `Vinyl N` with the candidate's own name, which is the exact product call the owner
+has been asked to make since Phase 2. Fixing V22 answers U8 by side effect. V23 proposes changing
+the **sequencer's objective** (tie-break on mean adjacent BPM delta before Camelot) at the close
+of the milestone, with no way to evaluate the result except the owner's own ear. Both are carried
+with the proposed fixes recorded verbatim so the owner can take either in minutes.
+
+**Both were carried to "Phase 11", which does not exist** — the same defect this phase had
+already fixed for seven other rows. Re-pointed to Phase 10 and a UAT item.
+
+The ledger is consequently **23 rows, 14 closed, 9 carried, 3 Medium-or-above open**, not the
+21/14/7/1 this summary's gate table was written against. Gate G9 is green either way; the count
+is stated correctly here rather than left at the number that was true an hour earlier.
 
 ## Self-Check: PASSED
 
