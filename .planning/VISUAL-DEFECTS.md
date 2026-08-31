@@ -868,3 +868,27 @@ V19 | Medium | CLOSED | Closed | defect photographed in the PREVIOUS 03-walk-07-
 V20 | Informational | CARRIED | Phase 10 / U12 | Filed on first sight of the screen it is about and carried unfixed, with the reasoning written down rather than deferred silently: a full-height sheet whose content sits at the top is ordinary iOS, and both alternatives are worse - .presentationDetents at .medium hides the identity fields, and a content-fitted height is fiddly for no measured gain. MAN-01 is measured as an interaction count and the whitespace costs no interactions, so nothing this phase claims depends on it. Phase 14 owns the final hygiene sweep and is where a cosmetic call like this belongs. See 09-manual-04-sheet-from-bucket.png **RE-POINTED 2026-08-30 (Phase 10, the final phase).** The phase this row was carried to does not exist: the roadmap was compressed 14 phases into 10 and there is no Phase 11, 12 or 14 left to run. A carry to a phase that will never happen is a carry to nowhere, so the owner is now the project's owner, through the UAT item named beside it.
 V21 | Medium | CLOSED | Closed | defect measured in Artifacts/vinylctl/sequence-baseline.txt, the pre-fix run: twelve photographs produced 'The set - 2 records' above 'Not in the set (9)', so one record was in neither list. Root cause read from source, not guessed: BeamSearchSequencer takes [Track] and builds its firstAppearance vinyl list from the tracks it was handed, so a vinyl with zero candidates contributes nothing and is structurally incapable of appearing in notIncluded - the sequencer never learns the record exists and cannot be the place this is fixed. Fixed in CrateRows.make, the one place a SequenceResult is projected against its crate and therefore the only place that can see the discrepancy; both front ends route through it, so one guard covers the app and the CLI. Fix commit e13633d. Defect route back: delete the unaccounted block and three expectations redden - test_givenAVinylWithNoCandidates_whenRowsBuilt_thenItIsStillInTheBucket, test_givenAMixedCrate_whenRowsBuilt_thenEveryVinylIsAccountedForExactlyOnce and test_givenAStaleVinylIDInTheResult_whenRowsBuilt_thenItIsSkipped, which pins that the guard did not resurrect deleted vinyls on the way. Post-fix on real data: 2 sequenced plus 10 not included = 12, in the CLI (sequence-baseline.txt) and in the app (1 plus 'Not in the set (11)')
 ```
+
+| **V22** | **V19's root cause survives in `vinylctl`.** The excluded row prints `Cause 4 Concern — High Down  160`, but High Down measured **116.1** — 160 is *Strange Nature*. Name from one candidate, tempo from another. Phase 9 fixed exactly this in the app by binding badges/reason/edit to one candidate via `NotIncludedRow.trackID`; `vinylctl` is a separate front end and never received it. | `Artifacts/vinylctl/sequence-baseline.txt` — the record block lists `High Down [116.1]` and `Strange Nature [160]`; the excluded table merges them | **Medium** | next milestone |
+| **V23** | **The sequencer's objective has no notion of which cluster a DJ wants.** On the live twelve it chose `136 → 138.8` and excluded `174.8` and `175` — which are **0.2 BPM apart**, the best transition available in the whole crate. Both are valid two-record sets, so maximise-count ties and the Camelot tie-break cannot separate them (neither pair has two known keys). The tie is broken arbitrarily. | `Artifacts/vinylctl/sequence-baseline.txt` — set is 136/138.8; `Drumsound 174.8` and `Vinyl 3 175` both excluded | **Medium — a product gap, not a code defect** | owner decision |
+
+## V23 — why this is a specification gap, not a bug
+
+The code does exactly what the spec says: maximise vinyl count, tie-break on total Camelot
+distance. Both candidate sets hold two records, and neither has two known keys, so the
+tie-break has nothing to work with. It picks one.
+
+But a DJ looking at this crate would pick `174.8 → 175` without hesitation — that is a jungle
+set, and 0.2 BPM is a seamless transition. `136 → 138.8` is a different genre entirely.
+
+**Nothing in the objective knows the crate has a target tempo band.** Options, none of which
+should be chosen without the owner:
+
+1. **Prefer the tighter cluster** — tie-break on mean adjacent BPM delta before Camelot. Here:
+   0.2 versus 2.8. Cheap, general, needs no genre knowledge, and matches what a DJ optimises.
+2. **A target tempo band per crate** — the owner sets "this is a 170–180 set" and records
+   outside it are deprioritised. More control, more UI.
+3. **Leave it.** With more records the ties get rarer, and at 20+ vinyls this may never fire.
+
+Recommendation: **option 1.** It is a one-line change to the rank tuple, needs no new UI and no
+genre model, and it is what "which of these two sets is better?" actually means to a DJ.
