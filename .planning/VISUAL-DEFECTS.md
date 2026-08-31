@@ -870,7 +870,7 @@ V21 | Medium | CLOSED | Closed | defect measured in Artifacts/vinylctl/sequence-
 ```
 
 | **V22** | **V19's root cause survives in `vinylctl`.** The excluded row prints `Cause 4 Concern — High Down  160`, but High Down measured **116.1** — 160 is *Strange Nature*. Name from one candidate, tempo from another. Phase 9 fixed exactly this in the app by binding badges/reason/edit to one candidate via `NotIncludedRow.trackID`; `vinylctl` is a separate front end and never received it. | `Artifacts/vinylctl/sequence-baseline.txt` — the record block lists `High Down [116.1]` and `Strange Nature [160]`; the excluded table merges them | **Medium** | next milestone |
-| **V23** | **The sequencer's objective has no notion of which cluster a DJ wants.** On the live twelve it chose `136 → 138.8` and excluded `174.8` and `175` — which are **0.2 BPM apart**, the best transition available in the whole crate. Both are valid two-record sets, so maximise-count ties and the Camelot tie-break cannot separate them (neither pair has two known keys). The tie is broken arbitrarily. | `Artifacts/vinylctl/sequence-baseline.txt` — set is 136/138.8; `Drumsound 174.8` and `Vinyl 3 175` both excluded | **Medium — a product gap, not a code defect** | owner decision |
+| **V23** | **The sequencer's objective has no notion of which cluster a DJ wants.** On the live twelve it chose `136 → 138.8` and excluded `174.8` and `175` — which are **0.2 BPM apart**, the best transition available in the whole crate. Both are valid two-record sets, so maximise-count ties and the Camelot tie-break cannot separate them (neither pair has two known keys). The tie is broken arbitrarily. | `Artifacts/vinylctl/sequence-baseline.txt` — set is 136/138.8; `Drumsound 174.8` and `Vinyl 3 175` both excluded | **Medium** | owner decision |
 
 ## V23 — why this is a specification gap, not a bug
 
@@ -892,3 +892,10 @@ should be chosen without the owner:
 
 Recommendation: **option 1.** It is a one-line change to the rank tuple, needs no new UI and no
 genre model, and it is what "which of these two sets is better?" actually means to a DJ.
+
+> **Note on severity formatting (learned 2026-08-30):** `ledger-check.py` matches the severity
+> cell exactly. A qualifier inside it — `**Medium — a product gap, not a code defect**` —
+> makes the row invisible to the Medium-or-above count while still *looking* filed. Keep the
+> severity cell to the bare word and put the qualification in the description or a note below.
+> This is the second time this ledger has silently under-counted: V19 was originally filed
+> below the machine-readable section, where the gate structurally could not see it.
