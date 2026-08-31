@@ -178,6 +178,14 @@ again, with the bucket's own sentence following the slider to `No track within 3
 Expectations derived in `ToleranceTests` through `CrateDetailModel.sequencerInput`, the same path
 the screen uses.
 
+### Photographed
+
+| Frame | What it shows |
+|---|---|
+| `Artifacts/screenshots/10-seq05-tolerance-widened.png` | `BPM tolerance ±6`, `Running order (3)`, and **`Dillinja — Angels Fell  178  6A` sitting at position 3** — the record that was in the bucket a moment earlier. `Not in the set (1)`. |
+| `Artifacts/screenshots/10-seq05-tolerance-tightened.png` | The same crate dragged back to `±3`: `Running order (2)`, `Not in the set (2)`, and the bucket's own sentence now reading **`No track within 3 BPM of the set`** — the reason follows the slider rather than quoting a window the owner has already passed. |
+| `Artifacts/screenshots/09-manual-05-rejoined.png` | The other route to the same outcome: a record given a tempo by hand, back in the running order. |
+
 **One honest note on the wording.** The spec says "add **5** more vinyls". Nothing in the system
 is sensitive to the number five: re-optimisation is a full re-derivation on every mutation, so
 one added record exercises the same path as five. The mechanism is proven; the specific count is
@@ -199,6 +207,15 @@ PASS  MAN-04   12 hand-entered track(s) kept the .manual mark across the kill
 PASS  PERS-02  the scalar manualOrder array survived as one line
 persistence-check: 0 fail
 ```
+
+### Photographed
+
+`Artifacts/screenshots/09-manual-01-after-sequenced-edit.png` and
+`09-manual-02-after-relaunch.png` are the before and after, and **they are the same picture** —
+which is the entire claim of this item and is declared as an `IDENTICAL` pair in
+`Scripts/screenshot-audit.py` rather than left as an unexplained near-duplicate. Zero differing
+pixels, clock band included. The 730-line dump above is the same statement made in a form a
+`diff` can check.
 
 The 27 **unselected** candidates are the load-bearing number: a store that quietly kept only the
 selected track per vinyl would look correct on screen and be wrong the moment a record was added,

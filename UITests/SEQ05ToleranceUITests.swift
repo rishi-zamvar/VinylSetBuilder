@@ -106,7 +106,11 @@ final class SEQ05ToleranceUITests: XCTestCase {
         XCTAssertFalse(app.sliders["bpm-tolerance-slider-99"].exists,
                        "a nonsense slider identifier resolved — the assertions above prove nothing")
 
-        ScreenshotRecorder.capture("10-seq05-tolerance-widened", in: self)
+        // TWO frames, two names. An earlier revision of this file wrote both states to the same
+        // filename and the second silently overwrote the first, so the committed frame was the
+        // TIGHTENED set under a name that said widened. A screenshot whose name disagrees with
+        // its content is worse than no screenshot: it is evidence pointing the wrong way.
+        ScreenshotRecorder.capture("10-seq05-tolerance-tightened", in: self)
     }
 
     // MARK: Helpers

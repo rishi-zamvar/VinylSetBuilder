@@ -179,6 +179,13 @@ FLOW_MAP = [
 IDENTICAL, DISTINCT = "IDENTICAL", "DISTINCT"
 
 DECLARED_DUPLICATES = [
+    ("09-manual-01-after-sequenced-edit.png", "09-manual-02-after-relaunch.png", IDENTICAL,
+     "PERS-01's whole claim, photographed: the crate screen before the app is killed and after "
+     "it is relaunched. The frames being the SAME picture is the evidence, not a redundancy — "
+     "0 differing pixels of 3,162,132, clock band included. Declared here in Phase 10 because "
+     "Phase 9 left it as an unexplained near-duplicate, which reads like an accident rather "
+     "than like the point."),
+
     ("02-walk-08-detail-edit-mode.png", "02-walk-10-detail-restored.png", IDENTICAL,
      "V14: Restore's job IS to return to state 8, so the identity is semantically correct. "
      "Restore's effect is legible only by comparing 02-walk-09 to 02-walk-10."),
