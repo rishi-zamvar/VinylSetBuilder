@@ -15,6 +15,12 @@ import SwiftUI
 /// The layer attaches to the SAME `AVCaptureSession` the shutter uses. A second session would
 /// contend with the first for the capture device.
 struct CameraPreview: UIViewRepresentable {
+    /// Stated explicitly rather than inferred. `UIViewRepresentable` would infer this from
+    /// `makeUIView`'s return type, but an inferred associated type is invisible to the
+    /// unreferenced-declaration sweep in `hygiene.sh`, which then reports `PreviewView` as dead
+    /// code. It is not dead — it is this representable's entire reason to exist.
+    typealias UIViewType = PreviewView
+
     let session: AVCaptureSession
 
     func makeUIView(context: Context) -> PreviewView {
