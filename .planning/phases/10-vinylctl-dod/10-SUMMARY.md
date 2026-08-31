@@ -334,6 +334,20 @@ The ledger is consequently **23 rows, 14 closed, 9 carried, 3 Medium-or-above op
 21/14/7/1 this summary's gate table was written against. Gate G9 is green either way; the count
 is stated correctly here rather than left at the number that was true an hour earlier.
 
+### And it kept going after this plan closed
+
+After the final commit, the same process began an in-flight change to the live camera preview —
+`App/Capture/CameraPreview.swift` (new, untracked) plus edits to `SleeveCamera.swift`,
+`SleevePhotoSource.swift` and `CaptureView.swift`. That is V10 / U2d work and it is **not
+reverted and not adopted**; it is someone else's, mid-edit.
+
+**It does make `hygiene.sh` red in the working tree** — G5 reports `PreviewView` as an
+unreferenced declaration, which is what a half-wired new type looks like. **That red is not this
+plan's, and the claim is verified rather than asserted:** an isolated `git worktree` checked out
+at this plan's final commit `01215e7` runs **9 pass, 0 fail**. The four gates are green at the
+commit this phase delivered; the working tree is red because work that came after it is
+unfinished.
+
 ## Self-Check: PASSED
 
 12 of 12 claimed files present on disk; 10 of 10 cited commit hashes resolve (the eight of this
