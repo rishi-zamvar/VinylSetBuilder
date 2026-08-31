@@ -98,6 +98,24 @@ public struct CrateStore: Sendable, Equatable {
         route = .capture(crateID: crateID)
     }
 
+    // MARK: MAN-01 — the one write path for a hand-edited candidate
+
+    /// Replace one candidate wherever it lives. Resolved by `track.vinylID` and then by
+    /// `track.id`, so the caller never has to know which vinyl in which position holds it —
+    /// and so a not-included row, which only ever knew a vinyl, can commit an edit through the
+    /// same call the sequenced list uses. Unknown crate, unknown vinyl or unknown track are all
+    /// no-ops; `position` is copied from the incoming value's original slot and never recomputed
+    /// (PERS-02: the ordering field is data, not a side effect of writing).
+    public mutating func updateTrack(_ track: Track, in crateID: UUID) {
+        withCrate(crateID) { crate in
+            guard let vinylIndex = crate.vinyls.firstIndex(where: { $0.id == track.vinylID }),
+                  let trackIndex = crate.vinyls[vinylIndex].candidates
+                      .firstIndex(where: { $0.id == track.id })
+            else { return }
+            crate.vinyls[vinylIndex].candidates[trackIndex] = track
+        }
+    }
+
     // MARK: Write-back
 
     /// The commit path for an edited crate value (a manual reorder). Replaces in place, so the

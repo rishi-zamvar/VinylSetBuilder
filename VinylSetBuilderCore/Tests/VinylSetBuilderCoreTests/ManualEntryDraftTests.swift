@@ -26,11 +26,14 @@ func test_givenATrackThatAlreadyHasATempo_whenTheDraftOpens_thenItsOwnValueIsOff
 
 @Test("MAN-03: with no tempo of its own the crate's MEDIAN neighbour is offered")
 func test_givenNoTempoOfItsOwn_whenTheDraftOpens_thenTheMedianNeighbourIsOffered() {
-    // Median, not mean, and this fixture is why: one half-time read at the bottom drags a mean
-    // clean out of the genre. Mean here is 165.75; median is 174.
+    // Median, not mean, and this fixture is why: one out-of-genre read at the bottom drags a
+    // mean somewhere the crate never goes. Mean here is 165.75 — a tempo no record in this
+    // collection has. Sorted the four are [141, 172, 174, 176]; the lower of the two middles
+    // is 172, which is a tempo the crate actually contains.
     let neighbours = [track(bpm: 172), track(bpm: 174), track(bpm: 176), track(bpm: 141)]
     let draft = ManualEntryDraft(track: track(), neighbours: neighbours)
-    #expect(draft.bpmText == "174")
+    #expect(draft.bpmText == "172")
+    #expect(draft.bpmText != "165.75", "the prefill is a mean, and a mean is not in the crate")
 }
 
 @Test("MAN-03: an even number of neighbours takes the lower of the two middles, deterministically")
