@@ -20,7 +20,12 @@ actor SleevePipeline {
     private let resolver: TrackResolver
     private let bpm: BPMLadder
 
-    private init() {
+    /// **One pipeline, two front ends (Phase 10).** The corpus URL is a parameter with the
+    /// app's own `Bundle.main` lookup as its default, so `shared` behaves exactly as it did and
+    /// `vinylctl` — which has no bundle to look in — passes `App/Generated/bpmkey.tsv` on disk.
+    /// That one parameter is the entire difference between the CLI's pipeline and the app's;
+    /// everything below is the same constructor call for both.
+    init(corpusURL: URL? = Bundle.main.url(forResource: "bpmkey", withExtension: "tsv")) {
         let raw = URLSessionTransport()
         resolver = TrackResolver(
             musicBrainz: MusicBrainzClient(transport: ThrottledTransport(
@@ -34,8 +39,7 @@ actor SleevePipeline {
         // gitignored the same way. Phase 7 measured its hit rate on THIS collection at zero —
         // it is the owner's house library and this is a crate of jungle twelves — so it is
         // consulted first because it is free, not because it is expected to answer.
-        let corpus = Bundle.main.url(forResource: "bpmkey", withExtension: "tsv")
-            .flatMap(TierZeroCorpus.init(contentsOf:))
+        let corpus = corpusURL.flatMap(TierZeroCorpus.init(contentsOf:))
         bpm = BPMLadder(corpus: corpus,
                         soundCloud: SoundCloudClient(
                             transport: ThrottledTransport(wrapping: raw, minimumInterval: 1.0),

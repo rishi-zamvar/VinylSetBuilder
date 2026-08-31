@@ -1,0 +1,87 @@
+
+Records — what each photograph became
+=====================================
+
+IMG_0498.HEIC   [Read]   catalogue: 0-44904
+  read      9 trusted of 11 observations  — HIGHER / EDUCATION / Abstract / The Message -
+  track 1   Abstract                        -> Abstract — The Message – Fuck Willie Brown   [— / —]
+  track 2   The Message - Brown Gtauno Orig…-> Abstract — The Message – Fuck Willie Brown   [— / —]
+
+IMG_0499.HEIC   [Read]   catalogue: EMF2029
+  read      5 trusted of 7 observations  — Emotif/Xstatic EMF2029 / The Accidental Heroes / A "Dragstar" / AA "Elementz"
+  track 1   A: DRAGSTAR                     -> The Accidental Heroes — Dragstar   [— / —]
+  track 2   AA: ELEMENTZ                    -> The Accidental Heroes — Elements   [136 / 4B]
+
+IMG_0500.HEIC   [Read]   catalogue: 0-44845
+  read      7 trusted of 9 observations  — inckatecks* / JUvS. / Invocación / Gide One /
+  track 1   JUvS. Invocación inckatecks* Gi…-> Phunckateck's Juju — Invocación   [175 / —]
+
+IMG_0501.HEIC   [Partial]   catalogue: none found
+  read      5 trusted of 5 observations  — LINU ME / 6.00€ / DISTORTED MINDS - MC SKIBADEE / STAY
+  track 1   LINU ME                         -> Gregaress — Linus Rides With Me Everyday   [— / —]
+  track 2   STAY                            -> Hiroshi Takano (高野寛) — Stay, Stay, Stay   [— / —]
+  track 3   eFOCUSED                        -> (unresolved: No identity to look up)   [— / —]
+
+IMG_0502.HEIC   [Partial]   catalogue: none found
+  read      4 trusted of 5 observations  — JA22 / DJ KRUST / •MAIATCIN DAVE ANCEL MIX / EXCLUSIVE NEW MIXES FROM V CLASSIC THE ALBUM
+  track 1   JA22 •MAIATCIN DAVE ANCEL MIX   -> (unresolved: No identity to look up)   [— / —]
+
+IMG_0503.HEIC   [Read]   catalogue: TYME012
+  read      16 trusted of 16 observations  — Zzz. / Cause 4 Concern- / Hide Down / JUNGLE, dib
+  track 1   A: HIGH DOWN                    -> Cause 4 Concern — High Down   [116.1 / —]
+  track 2   AAA: STRANGE NAT URE            -> Cause 4 Concern — Strange Nature   [160 / —]
+
+IMG_0504.HEIC   [Partial]   catalogue: none found
+  read      4 trusted of 6 observations  — xtasia / fellowship / 'sweetness' / drum n bass dub version
+  track 1   xtasia                          -> (unresolved: No identity to look up)   [— / —]
+  track 2   fellowship                      -> Lizz Wright — Fellowship   [148.9 / —]
+  track 3   'sweetness'                     -> Xstasia — Sweetness   [138.8 / —]
+
+IMG_0505.HEIC   [Read]   catalogue: TECH008
+  read      11 trusted of 12 observations  — DRUMSOUND & / SIMON BASSLINE SMITH / WWW.TECHNIQUERECORDINGS.CO.UK / RUMSOUND &
+  track 1   DUBTRACK                        -> Drumsound And Simon Bassline Smith — Dubtrack   [174.8 / —]
+  track 2   SUPERSONIC                      -> Drumsound And Simon Bassline Smith — Supersonic   [— / —]
+
+IMG_0506.HEIC   [Read]   catalogue: CSI006
+  read      9 trusted of 12 observations  — COLD / STEET / CSI 006 / STEELSIDE
+  track 1   COLD: WIDE OPBY                 -> G Squad — Wide Open Spaces   [— / —]
+  track 2   STEEL                           -> G Squad — Wide Open Spaces   [— / —]
+
+IMG_0507.HEIC   [Unread]   catalogue: none found
+  read      3 trusted of 3 observations  — cemenic / DrumBass / $ 10.003
+  tracks    none — nothing on this sleeve segmented into a track line
+
+IMG_0508.HEIC   [Partial]   catalogue: none found
+  read      10 trusted of 11 observations  — $10.007 / ·9.99) / MADE IN / ENGLAND
+  track 1   Da Lick                         -> Dirty Game Records — What da Lick Read?   [— / —]
+
+IMG_0509.HEIC   [Partial]   catalogue: none found
+  read      6 trusted of 7 observations  — DI KANE / Di RANE / SONIC / ART
+  track 1   SONIC                           -> Xanno Gallois — Sonic Sonic   [— / —]
+  track 2   "SMADON MIND                    -> (unresolved: No identity to look up)   [— / —]
+
+The set — 2 records, tolerance ±4
+=================================
+#   track                                                   bpm     key
+----------------------------------------------------------------------------
+1   The Accidental Heroes — Elements                        136     4B
+2   Xstasia — Sweetness                                     138.8   —
+
+total Camelot distance across the set: 0
+
+Not in the set (10)
+===================
+record                            bpm     key  why not
+--------------------------------------------------------------------------------------------
+Vinyl 1                           —       —    No SoundCloud upload matched
+Vinyl 3                           175     —    No track within 4 BPM of the set
+Vinyl 4                           —       —    No SoundCloud upload matched
+Vinyl 5                           —       —    No identity to look up
+Cause 4 Concern — High Down       160     —    No track within 4 BPM of the set
+Drumsound And Simon Bassline Smit…174.8   —    No track within 4 BPM of the set
+Vinyl 9                           —       —    No SoundCloud upload matched
+Vinyl 11                          —       —    No SoundCloud upload matched
+Vinyl 12                          —       —    No SoundCloud upload matched
+Vinyl 10                          —       —    No identity to look up
+
+wrote Artifacts/vinylctl/sequence-baseline.json
