@@ -16,7 +16,8 @@ import VinylSetBuilderCore
 ///
 /// An `actor`: it holds the shot counter and the photographs not yet read.
 actor SleevePhotoSource {
-    private let camera: SleeveCamera?
+    /// Non-private so `CaptureView` can attach a preview layer to the live session.
+    let camera: SleeveCamera?
     private let recognizer = SleeveTextRecognizer()
     private let fixtures: [URL]
     private var shotsTaken = 0

@@ -26,7 +26,11 @@ final class SleeveCamera: NSObject, @unchecked Sendable {
         case noPhotoData
     }
 
-    private let session = AVCaptureSession()
+    /// Exposed read-only so the preview layer can attach to the SAME session the shutter uses.
+    /// Without this the screen shows a black rectangle while the session runs unseen — which is
+    /// exactly the bug the owner hit on the device: permissions granted, capture working, and
+    /// nothing to aim at.
+    let session = AVCaptureSession()
     private let output = AVCapturePhotoOutput()
     /// Guards `pending` as well as serialising session work: every touch of it happens here.
     private let queue = DispatchQueue(label: "com.rishizamvar.VinylSetBuilder.camera")

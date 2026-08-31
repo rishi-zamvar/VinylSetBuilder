@@ -9,7 +9,9 @@ import VinylSetBuilderCore
 /// `VinylSetBuilderCore`'s `Capture/` in plan 03-01. This screen shows what it is handed and
 /// forwards taps, exactly the way `CrateDetailView` does.
 ///
-/// **The preview is a plain dark rectangle, and that is deliberate (D-03-2).** The simulator
+/// **The preview is live on a device, and a dark rectangle only where no camera exists.**
+/// It was a rectangle everywhere until 2026-08-30, which on a real phone meant a framing guide
+/// drawn over nothing at all. The simulator
 /// has no camera, so there is nothing to draw there; `SleevePhotoSource` supplies the frames
 /// either way and nothing else on this screen moves — that is the whole point of the seam
 /// being `async` from day one.
@@ -89,7 +91,15 @@ struct CaptureView: View {
             let width = height * guide.aspectRatio
 
             ZStack {
-                Rectangle().fill(Color.black)
+                // The live camera where there is one; a dark rectangle only where there is
+                // genuinely nothing to show (every simulator). Drawing black on a real device
+                // was the bug: a framing guide over nothing.
+                if let camera = source.camera {
+                    CameraPreview(session: camera.session)
+                        .accessibilityHidden(true)
+                } else {
+                    Rectangle().fill(Color.black)
+                }
                 Rectangle()
                     .strokeBorder(Color.white, lineWidth: 3)
                     .frame(width: width, height: height)
