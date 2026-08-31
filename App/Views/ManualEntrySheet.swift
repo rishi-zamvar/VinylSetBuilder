@@ -73,9 +73,17 @@ struct ManualEntrySheet: View {
                 .accessibilityIdentifier("manual-close-button")
             Spacer(minLength: 12)
             // The raw read, so the typist can see what the camera actually saw while correcting
-            // it. Never `VinylEntry.label` (D-03-6) — it demands a resolved candidate, and an
-            // unresolved record is the whole reason this sheet is open.
-            Text(track.rawOCRText.isEmpty ? "New track" : track.rawOCRText)
+            // it. Never the vinyl entry's own display-name property (D-03-6, and gate G6 scans
+            // for the qualified name, so it is not written here either) — that property demands
+            // a resolved candidate, and an unresolved record is the whole reason this sheet is
+            // open: every sheet would be titled "Vinyl N".
+            // The raw read when there is one, the resolved name when there is not. "New track"
+            // was wrong for an existing record and it was on screen in
+            // Artifacts/screenshots/09-manual-04-sheet-from-bucket.png before this line: a
+            // resolved fixture record carries no OCR text, so the sheet titled itself as if the
+            // record did not exist. `displayName` has its own "Unknown track" floor, so this
+            // never renders empty.
+            Text(track.rawOCRText.isEmpty ? track.displayName : track.rawOCRText)
                 .font(.headline)
                 .lineLimit(1)
                 .accessibilityIdentifier("manual-entry-title")

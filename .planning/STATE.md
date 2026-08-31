@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 08-PLAN.md — all four stubs swapped, ui-test 7/7 after each; the app runs the real pipeline end to end
-last_updated: "2026-08-31T00:20:00.000Z"
+stopped_at: Completed 09-PLAN.md — MAN-01..05, PERS-01..04, BPM-07 and V19; 65 of 67 requirements
+last_updated: "2026-08-31T01:15:00.000Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 10
-  completed_phases: 8
-  total_plans: 28
-  completed_plans: 28
-  percent: 80
+  completed_phases: 9
+  total_plans: 29
+  completed_plans: 29
+  percent: 90
 ---
 
 # Project State
@@ -23,12 +23,14 @@ See: .planning/PROJECT.md (updated 2026-08-29) and .planning/ROADMAP.md (rebuilt
 **Core value:** The sequenced set — an ordered, mixable run of records with sane tempo and
 key transitions, that re-optimises when you add more.
 
-**Current focus:** Act II, Phase 6 — **OCR & Segmentation. DELIVERED 2026-08-30.**
-Real recognition behind a `TextRecognizing` seam, EXIF orientation passed and corrected exactly
-once, and pure baseline-angle segmentation in Core. **Both headline gates MET, measured three
-times on live runs over the twelve photographs:** 6 clean / 5 partial / 1 fail, 9 of 12 usable
-track counts, and 6 of 6 catalogue numbers kept with 0 invented. **V12 CLOSED** — a price-sticker
-fragment no longer titles a record. Suite 200 → 236; hygiene 9/9; requirements 27 → 38 of 67.
+**Current focus:** Act III, Phase 9 — **Manual Entry & Persistence. DELIVERED 2026-08-30.**
+Covers the roadmap's Phase 12 (Manual Entry) and Phase 13 (Persistence). Hand entry is now the
+load-bearing path it was already being used as: **8 taps + 16 keystrokes + 1 sheet = 13.3 s** for
+a full four-field correction under a stated cost model, measured twice. Crates survive being
+killed with `simctl terminate`: **730/730 dump lines, 0 differing, 20 vinyls, 27 unselected
+candidates and 12 `.manual` marks intact.** **V19 CLOSED** — the not-included bucket names the
+terminal cause, with the invariant asserted in `CrateRows.make`. Suite 315 → 353; UI walk 7 → 9;
+hygiene 9/9; requirements 55 → **65 of 67**.
 
 ## The shape of the work
 
@@ -43,54 +45,34 @@ Three acts, strictly linear, no interleaving:
 ## Current Position
 
 Act: III of III
-Phase: 8 (Wiring & Camera) — **DELIVERED 2026-08-30.** Covers the roadmap's Phase 10 (The
-Camera, Live) and Phase 11 (The Swap).
-Plan: 08, complete. See `.planning/phases/08-wiring-camera/08-SUMMARY.md`.
-Status: **The app is no longer a shell. It photographs, reads, resolves and sequences.**
+Phase: 9 (Manual Entry & Persistence) — **DELIVERED 2026-08-30.** Covers the roadmap's Phase 12
+(Manual Entry) and Phase 13 (Persistence).
+Plan: 09, complete. See `.planning/phases/09-manual-entry-persistence/09-SUMMARY.md`.
+Status: **The app remembers. And when it gets a record wrong, you can fix it in four taps.**
 
-        `./Scripts/test.sh` 315 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
-        `./Scripts/ui-test.sh` 7/7 from totalTestCount · `./Scripts/build-app.sh` SUCCEEDED ·
-        55 of 67 requirements.
+        `./Scripts/test.sh` 353 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
+        `./Scripts/ui-test.sh` 9/9 from totalTestCount · `./Scripts/build-app.sh` SUCCEEDED ·
+        `./Scripts/persistence-check.sh` 0 fail · **65 of 67 requirements.**
 
-        **Four stubs out, one at a time, with the UI walk green at `totalTestCount=7` after
-        each.** `FixtureLineSegmenter` → `AngleClusterSegmenter`; `FixturePhotoSource` →
-        `SleeveCamera` + live Vision; no resolver → `TrackResolver` + `BPMLadder`; and the
-        sequencer path verified (`AsyncSequencer` was already the only one — the missing piece
-        was re-sequencing as each record resolves). `PhotoCapturing`, `FixtureLineSegmenter` and
-        `FixturePhotoSource` were DELETED, not left beside their replacements.
+        **Every acceptance number, measured:** MAN-01 at 8 taps + 16 keystrokes + 1 sheet =
+        13.3 s (wall clock 16.3 s in the harness, which pays a snapshot per query a person does
+        not); MAN-02 one tap out of 24; MAN-03 prefill `170` from the crate's folded median;
+        MAN-04 proved by running the REAL `TrackResolver` and the REAL `BPMLadder` over a
+        hand-entered track against stubs contradicting every field; MAN-05 reachable from BOTH
+        lists, and a hand-typed tempo made a record **rejoin** the set (2 → 3); PERS-01 at
+        730/730 lines and 0 differing through `simctl terminate`, with a second independent
+        observation through the XCUITest harness.
 
-        **The end-to-end run, twice, on the twelve real photographs:** 3 sequenced
-        (172 / 174.8 / 175, adjacent gaps 2.8 and 0.2, inside the 4 BPM gate) + 9 not in the set
-        = 12 accounted for. Photographed at `Artifacts/screenshots/03-walk-07-done-sequenced.png`.
-        The nine excluded records print the ladder's own reason — `no SoundCloud upload matched`,
-        `no identity to look a tempo up by` — which is BPM-07's screen half.
+        **V19's closing evidence is the frame it was filed against**, regenerated from the same
+        live twelve-record run: `03-walk-07-done-sequenced.png` now distinguishes three of the
+        four terminal causes in one screen — `The Accidental Heroes — Dragstar 136 4B` reads
+        *No track within 4 BPM of the set*, `Vinyl 1` reads *No SoundCloud upload matched*, and
+        `Vinyl 5` reads *No identity to look up*.
 
-        **CAP-01 measured directly:** shutter → tile 10-26 ms across twelve presses, and all
-        twelve tiles were observed still carrying `Reading` while Vision ran. The first
-        measurement of this was WRONG — `waitForExistence` polls once a second and reported
-        1.4 s for every press. A 20 ms poll on the identical code showed the truth.
-
-        **CAP-04 is half done and says so.** 21 consecutive captures with recognition latency
-        going 1165 ms → 962 ms (no degradation). Memory and thermals are not measurable on a
-        simulator that shares the Mac's envelope and runs no camera pipeline — UAT U2c. Not one
-        line of the capture-DEVICE path has executed — UAT U2b. No preview layer was added —
-        UAT U2d, which is defect V10's closure condition.
-
-        **V15 and V16 CLOSED.** V16 by the segmenter swap (IMG_0505 11 draft lines → 2, no
-        duplicates on any fixture). V15 by making the correction field wrap — and its premise
-        was measured FALSE on the way: the real segmenter makes the longest line LONGER, not
-        shorter. The first fix attempt also failed and is recorded: `.roundedBorder` caps a
-        vertical-axis field at two lines, both strings rendering at 44.00000000000003pt.
-
-        **The phase's most dangerous finding: a stale test bundle lies.** `rm -rf build` is not
-        enough. `ui-test.sh` ran, wrote a fresh `.xcresult`, and reported a failure against
-        source that no longer existed on disk. The zero-test guard cannot catch it, because the
-        count is 7. Clear `~/Library/Developer/Xcode/DerivedData/*` between runs.
-
-        **Live Vision on iOS is not byte-identical to the recorded macOS corpus.** 11 of 12
-        verdicts match; IMG_0507 reads Partial rather than Unread, IMG_0505 gives 13 observations
-        not 12, and the long untrusted read comes back at 0.50 not 0.30. Assertions that pinned
-        counts or row indices were rewritten onto what the requirement actually says.
+        **The Core boundary was drawn explicitly and is enforced by the build.** Core keeps pure
+        `Codable` values and scalar order arrays and may not NAME the persistence framework —
+        `CorePurityTests` scans substrings, comments included — so the `@Model` records live in
+        the app target and one file maps between them.
 
 ## What already exists — 113 tests green, committed
 
@@ -142,6 +124,7 @@ in `.planning/phases/01-foundation-domain-model-sequencer/` as the record of wha
 | Phase 04-act-i-signoff P04 | 24m | 3 tasks | 4 files |
 | Phase 04-act-i-signoff P05 | ~90m | 3 tasks | 4 files |
 | Phase 04-act-i-signoff P06 | ~140 min | 6 tasks | 7 files |
+| Phase 09 P09 | 2h40m | 8 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -247,6 +230,12 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 - [Phase 06]: VNRecognizeTextRequest kept over the Swift-native RecognizeTextRequest, against CLAUDE.md's stated preference — the gate is a REGRESSION gate against a baseline the older API produced, and swapping readers would make a changed number unattributable. Re-measuring under the new API is named in the file as the follow-up
 - [Phase 06]: the segmenter is NOT swapped into CaptureView — that is Phase 8's per-swap-verified job, and doing it here would also orphan FixtureLineSegmenter into a G5 failure in the same commit. V15/V16 re-carried for exactly this reason
 - [Phase 06]: V15's premise was half FALSE and is corrected in the ledger rather than quietly inherited — the 106-character line is confidence 0.30 and lives in the raw-text view, which OCR-04 shows unfiltered and segmentation never touches
+- [Phase 09]: Exclusion reason is derived from the terminal state, not passed through from whichever layer spoke last (V19)
+- [Phase 09]: One representative candidate serves a not-included row's badges, reason and edit target — the contradiction becomes unconstructible
+- [Phase 09]: MAN-04 is three field-level guards on Track.isManual, including the failure path, not a blanket skip
+- [Phase 09]: Core holds no @Model and never names the persistence framework; the record classes live in the app target
+- [Phase 09]: Persistence save is a full rewrite, guarded on the crate array actually changing
+- [Phase 09]: PERS-01 is measured by simctl terminate plus a canonical field-by-field dump diff, not by an XCUITest terminate alone
 
 ### Pending Todos
 
@@ -344,8 +333,8 @@ Decisions are logged in PROJECT.md Key Decisions table. Roadmap-level decisions:
 
 ## Session Continuity
 
-Last session: 2026-08-30T23:10:00.000Z
-Stopped at: Completed 06-PLAN.md — both gates MET on live runs, V12 CLOSED
+Last session: 2026-08-31T01:11:21.840Z
+Stopped at: Completed 09-PLAN.md — MAN-01..05, PERS-01..04, BPM-07 and V19; 65 of 67 requirements
 14 commits. 236 Core tests green; hygiene 9/9; device-SDK build SUCCEEDED; `ocr-score.sh`
 BASELINE HELD three times with byte-identical per-fixture JSON; screenshots regenerated in one
 run at rc=0 with the audit's gates A/B/C green and `SUSPECT: none (46 frames)`; UI suite 7/7 from

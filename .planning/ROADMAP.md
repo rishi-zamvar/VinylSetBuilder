@@ -56,8 +56,8 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 - [ ] **Phase 9: The Sequencer, Finished and Proven Deterministic** - Q1 answered, tolerance slider, rejoin-on-add, off-main-thread, beam divergence check — measured as determinism across seeded shuffles
 - [x] **Phase 10: The Camera, Live** - DELIVERED 2026-08-30 in `.planning/phases/08-wiring-camera/`. Real `AVCaptureSession` + `AVCapturePhotoOutput` behind the capture screen; non-blocking shutter MEASURED at 10-26 ms with all 12 tiles seen mid-read. Memory and thermals are device-only and went to UAT U2c, not claimed
 - [x] **Phase 11: The Swap** - DELIVERED 2026-08-30 in `.planning/phases/08-wiring-camera/`. Four swaps, `ui-test.sh` green at `totalTestCount=7` after each. The app runs the real pipeline end to end on the twelve photographs: 3 sequenced (172 / 174.8 / 175) + 9 not in the set = 12, twice
-- [ ] **Phase 12: Manual Entry** - The sub-15-second hand-entry path, reachable from the sequenced list and the not-included bucket, never overwritten by later automatic resolution
-- [ ] **Phase 13: Persistence** - SwiftData on-device, explicit integer ordering, every candidate retained — crates survive a restart intact
+- [x] **Phase 12: Manual Entry** - DELIVERED 2026-08-30 in `.planning/phases/09-manual-entry-persistence/`. MAN-01 measured as **8 taps + 16 keystrokes + 1 sheet = 13.3 s** for a full four-field correction under a stated cost model, twice; MAN-02 one tap out of 24; MAN-03 prefills the crate's folded median (`170` on screen); MAN-04 proved by running the REAL resolver and the REAL ladder over a hand-entered track against stubs that contradict every field; MAN-05 reachable from BOTH lists, and a hand-typed tempo made a record rejoin the set (2 → 3)
+- [x] **Phase 13: Persistence** - DELIVERED 2026-08-30 in `.planning/phases/09-manual-entry-persistence/`. 20-vinyl crate, killed with `simctl terminate`, relaunched: canonical field-by-field dump **730/730 lines, 0 differing**. 47 candidates survived of which **27 unselected** (PERS-03) and 12 `.manual` marks (MAN-04). `@Model` records live in the APP target — Core may not name the framework, its purity guard scans substrings including comments
 - [ ] **Phase 14: `vinylctl` & Definition of Done** - A macOS CLI over the same Core package that runs the whole pipeline on the 12 real photographs, plus the final hygiene sweep
 
 ## Phase Details
@@ -488,7 +488,7 @@ irreducibly a human judgement, and it is the project's actual success criterion.
 | 6. The Segmentation Engine | 0/TBD | Not started | - |
 | 7. The Identity Resolver | 0/TBD | Not started | - |
 | 8. The BPM & Key Ladder | 0/TBD | Not started | - |
-| 9. The Sequencer, Finished and Proven Deterministic | 2/TBD | In progress | - |
+| 9. The Sequencer, Finished and Proven Deterministic | 0/1 | Planned    |  |
 | 10. The Camera, Live | 0/TBD | Not started | - |
 | 11. The Swap | 0/TBD | Not started | - |
 | 12. Manual Entry | 0/TBD | Not started | - |
