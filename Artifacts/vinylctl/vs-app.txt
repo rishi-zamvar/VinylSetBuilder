@@ -1,0 +1,13 @@
+vinylctl vs the app — the same twelve photographs, both front ends
+====================================================================
+
+A  vinylctl        2 sequenced
+     1. The Accidental Heroes — Elements | 136 | 4B
+     2. Xstasia — Sweetness | 138.8 | —
+
+B  the app's walk  2 sequenced
+     1. The Accidental Heroes — Elements | 136 | 4B
+     2. Xstasia — Sweetness | 138.8 | —
+
+VERDICT: IDENTICAL — 2 rows, same titles, same tempos, same keys,
+         in the same order. One pipeline, two front ends, measured.

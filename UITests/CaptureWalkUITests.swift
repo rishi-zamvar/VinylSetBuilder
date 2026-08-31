@@ -481,8 +481,17 @@ final class CaptureWalkUITests: XCTestCase {
                              "SEQ-07: the expanded bucket shows no more text than the collapsed one")
 
         // ------------------------------------------------------- RES-02: per-item, and visible
+        //
+        // **`.matching(_:).count`, NOT `allElementsBoundByIndex.filter`.** Measured 2026-08-30
+        // (Phase 10): the array form binds each element by index in a SEPARATE query, and this
+        // list is re-rendering under it as each record lands — index 45 existed when the count
+        // was taken and did not exist a frame later, and XCTest raised
+        // "Failed to get matching snapshot: No matches found for Element at index 45" and killed
+        // the run 126 s in. One predicate is one snapshot, so the tree cannot move underneath it.
         func resolvingRowCount() -> Int {
-            detailList.staticTexts.allElementsBoundByIndex.filter { $0.label == "Resolving…" }.count
+            detailList.staticTexts
+                .matching(NSPredicate(format: "label == %@", "Resolving…"))
+                .count
         }
         var sawResolving = false
         var settled = false
