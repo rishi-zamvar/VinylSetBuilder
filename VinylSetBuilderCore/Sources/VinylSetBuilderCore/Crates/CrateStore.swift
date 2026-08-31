@@ -116,6 +116,22 @@ public struct CrateStore: Sendable, Equatable {
         }
     }
 
+    // MARK: SEQ-05 — the tolerance slider's one write path
+
+    /// Clamped through `BPMRules.clampTolerance`, so a value from outside the slider's own
+    /// 3...6 — a restored crate written by an older build, a hand-edited store, a future
+    /// caller — cannot put the sequencer somewhere the UI could never have asked for.
+    ///
+    /// Nothing is re-sequenced here and that is deliberate: `CrateStore` is a pure reducer and
+    /// the beam search is off-actor (SEQ-09). The caller re-derives, exactly as it does after
+    /// `updateTrack`. The tolerance IS the input to that derivation, so storing it is the
+    /// whole of this function's job.
+    public mutating func setBPMTolerance(_ tolerance: Double, in crateID: UUID) {
+        withCrate(crateID) { crate in
+            crate.bpmTolerance = BPMRules.clampTolerance(tolerance)
+        }
+    }
+
     // MARK: Write-back
 
     /// The commit path for an edited crate value (a manual reorder). Replaces in place, so the

@@ -88,7 +88,7 @@ key transitions, that re-optimises when you add more.
 - [x] **SEQ-02**: The sequence never contains two tracks from the same physical vinyl
 - [x] **SEQ-03**: Consecutive tracks differ by no more than BPM_TOLERANCE in EITHER direction — `|bpm[i+1] − bpm[i]| ≤ tolerance`. The previous ordering clause is retired (owner decision 2026-08-30, see `.planning/SEQUENCER-SPEC.md`). Closed by Phase 5: `BPMRules.canFollow` is `abs(b - a) <= tolerance + 1e-9`, proved symmetric over a swept grid, and the search expands over the full neighbour set
 - [x] **SEQ-04**: Among valid sequences, the one visiting the most vinyls wins; ties break on lowest total Camelot distance
-- [ ] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
+- [x] **SEQ-05**: User can adjust BPM_TOLERANCE on a slider from 3 to 6, defaulting to 4.0, and the sequence re-optimises
 - [x] **SEQ-06**: A vinyl with no track on the winning path is excluded, and shows a plain-language reason
 - [x] **SEQ-07**: Unresolved and excluded records share one collapsed section, each row carrying its own reason
 - [x] **SEQ-08**: Adding a vinyl re-runs the whole optimisation, and a previously excluded record rejoins if a new addition bridges the gap — `RejoinTests`, vinyl IDs `[1, 3, 2]`, and removing the bridge excludes it again
@@ -201,7 +201,7 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SEQ-02 | Act II — Phase 5 | Complete — re-validated under the bidirectional search |
 | SEQ-03 | Act II — Phase 5 | Complete — 05, bidirectional gate + full-neighbour search |
 | SEQ-04 | Act II — Phase 5 | Complete — re-validated; two-stage search, count then distance |
-| SEQ-05 | Act II — Phase 9 | Pending |
+| SEQ-05 | Act III — Phase 10 | Complete. `CrateStore.setBPMTolerance` clamps through `BPMRules.clampTolerance`; the slider sits in the running-order header, `in: 3...6, step: 0.5`, default 4.0. Measured through the real control: on the fixture crate the set goes 2 records at 3/4/5 to 3 at 6 — the excluded record REJOINS — and back to 2 with the bucket's sentence following the slider to "within 3 BPM". `SEQ05ToleranceUITests`, expectations derived in `ToleranceTests` through `CrateDetailModel.sequencerInput` |
 | SEQ-06 | Act II — Phase 5 | Complete — re-validated under the bidirectional search |
 | SEQ-08 | Act II — Phase 5 | Complete — 05 |
 | SEQ-09 | Act II — Phase 5 | Complete — 05 |

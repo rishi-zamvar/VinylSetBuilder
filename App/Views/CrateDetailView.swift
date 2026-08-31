@@ -15,6 +15,11 @@ struct CrateDetailView: View {
     /// there is no second presentation to keep in step, and no failure dialog is involved.
     @State private var editing: Track?
 
+    /// **SEQ-05.** The tolerance the thumb is currently at, while it is being dragged. `nil`
+    /// means "read the crate" — the store stays the single source of truth and this is only the
+    /// in-flight value, so a re-derivation landing mid-drag cannot yank the thumb backwards.
+    @State private var tolerance: Double?
+
     /// SEQ-09: off the main actor. `AsyncSequencer` wraps the beam search in a
     /// `Task.detached` — this target defaults `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, so a
     /// plain `Task` here would inherit this screen's isolation and sequence on the main thread.
@@ -131,25 +136,73 @@ struct CrateDetailView: View {
                     .accessibilityIdentifier("empty-running-order")
             }
         } header: {
-            HStack {
-                // The count is in the header for the same reason the bucket's is: a `List`
-                // only puts the rows it has drawn into the accessibility tree, so on a crate of
-                // twelve there is no way — for a person scrolling or for a test — to know how
-                // many are in the set without adding them up by eye.
-                Text("\(detail.orderingMode == .manual ? "Custom order" : "Running order") "
-                     + "(\(detail.rows.sequenced.count))")
-                    .accessibilityIdentifier("ordering-mode-label")
-                Spacer()
-                if detail.orderingMode == .manual {
-                    Button("Restore") {
-                        var edited = detail
-                        edited.clearManualOrder()
-                        commit(edited)
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    // The count is in the header for the same reason the bucket's is: a `List`
+                    // only puts the rows it has drawn into the accessibility tree, so on a crate of
+                    // twelve there is no way — for a person scrolling or for a test — to know how
+                    // many are in the set without adding them up by eye.
+                    Text("\(detail.orderingMode == .manual ? "Custom order" : "Running order") "
+                         + "(\(detail.rows.sequenced.count))")
+                        .accessibilityIdentifier("ordering-mode-label")
+                    Spacer()
+                    if detail.orderingMode == .manual {
+                        Button("Restore") {
+                            var edited = detail
+                            edited.clearManualOrder()
+                            commit(edited)
+                        }
+                        .accessibilityIdentifier("restore-sequenced-order-button")
                     }
-                    .accessibilityIdentifier("restore-sequenced-order-button")
                 }
+                toleranceSlider(detail)
             }
         }
+    }
+
+    /// **SEQ-05.** 3 to 6, default 4.0, and the set re-derives as it moves.
+    ///
+    /// In the running-order header rather than in a settings screen: the tolerance is the one
+    /// knob that decides which records are in this list and which are in the bucket below it,
+    /// so it belongs next to the number it changes. Widening it is also the ONLY response to
+    /// "No track within 4 BPM of the set", which is the sentence most of the bucket prints.
+    ///
+    /// `step: 0.5` — the sequencer's gate is `abs(b - a) <= tolerance`, and on real jungle
+    /// tempos a tenth of a BPM never flips an edge. Seven stops a thumb can hit beats a
+    /// continuous slider nobody can land on 4.0 with.
+    ///
+    /// The re-derivation is deferred to `onEditingChanged` ending, not fired per pixel: the
+    /// beam search is ~0.3 s on a real crate (SEQ-09's own measurement) and running it on every
+    /// drag frame would make the slider stutter. The CAPTION tracks the thumb live, so the
+    /// control never feels detached from the number.
+    @ViewBuilder
+    private func toleranceSlider(_ detail: CrateDetailModel) -> some View {
+        HStack(spacing: 10) {
+            Text("BPM tolerance ±\(formatted(tolerance ?? detail.crate.bpmTolerance))")
+                .font(.caption)
+                .monospacedDigit()
+                .accessibilityIdentifier("bpm-tolerance-label")
+            Slider(
+                value: Binding(
+                    get: { tolerance ?? detail.crate.bpmTolerance },
+                    set: { tolerance = $0 }),
+                in: BPMRules.toleranceRange,
+                step: 0.5,
+                onEditingChanged: { editing in
+                    guard !editing, let value = tolerance else { return }
+                    model.store.setBPMTolerance(value, in: crateID)
+                    tolerance = nil                       // the store is the truth again
+                    Task { await load() }
+                })
+                .accessibilityIdentifier("bpm-tolerance-slider")
+        }
+    }
+
+    /// 4.0 reads as "4", 4.5 as "4.5" — the same rule `ExclusionReason.outsideWindow` uses, so
+    /// the caption and the bucket's sentence cannot print the same tolerance two ways.
+    private func formatted(_ value: Double) -> String {
+        value.truncatingRemainder(dividingBy: 1) == 0
+            ? String(Int(value)) : String(format: "%.1f", locale: Locale(identifier: "en_US_POSIX"), value)
     }
 
     // MARK: The only three store interactions this screen makes
