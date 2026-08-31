@@ -54,8 +54,8 @@ package that runs the whole pipeline on the owner's 12 real record photographs e
 - [x] **Phase 7: Resolution & the BPM Ladder** (absorbed Phase 8) - Catalogue-number-first Discogs, MusicBrainz fallback, bounded concurrency, backoff, cache — measured as auto-resolve rate
 - [x] **Phase 8: The BPM & Key Ladder** - DELIVERED INSIDE PHASE 7 on 2026-08-30. Tier-0 hit rate 0%, SoundCloud match 85%, analyser tempo 41% usable / key 34% usable
 - [ ] **Phase 9: The Sequencer, Finished and Proven Deterministic** - Q1 answered, tolerance slider, rejoin-on-add, off-main-thread, beam divergence check — measured as determinism across seeded shuffles
-- [ ] **Phase 10: The Camera, Live** - Real `AVCaptureSession` behind the shell's capture screen, non-blocking shutter, 20-record session measured for memory and thermals
-- [ ] **Phase 11: The Swap** - Each stub replaced by its real implementation one at a time, the walk re-verified and re-screenshotted after every single swap
+- [x] **Phase 10: The Camera, Live** - DELIVERED 2026-08-30 in `.planning/phases/08-wiring-camera/`. Real `AVCaptureSession` + `AVCapturePhotoOutput` behind the capture screen; non-blocking shutter MEASURED at 10-26 ms with all 12 tiles seen mid-read. Memory and thermals are device-only and went to UAT U2c, not claimed
+- [x] **Phase 11: The Swap** - DELIVERED 2026-08-30 in `.planning/phases/08-wiring-camera/`. Four swaps, `ui-test.sh` green at `totalTestCount=7` after each. The app runs the real pipeline end to end on the twelve photographs: 3 sequenced (172 / 174.8 / 175) + 9 not in the set = 12, twice
 - [ ] **Phase 12: Manual Entry** - The sub-15-second hand-entry path, reachable from the sequenced list and the not-included bucket, never overwritten by later automatic resolution
 - [ ] **Phase 13: Persistence** - SwiftData on-device, explicit integer ordering, every candidate retained — crates survive a restart intact
 - [ ] **Phase 14: `vinylctl` & Definition of Done** - A macOS CLI over the same Core package that runs the whole pipeline on the 12 real photographs, plus the final hygiene sweep

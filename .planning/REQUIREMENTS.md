@@ -25,7 +25,7 @@ key transitions, that re-optimises when you add more.
 
 ### Capture
 
-- [ ] **CAP-01**: User can photograph a vinyl label and the shutter returns to the camera immediately, with no blocking spinner
+- [x] **CAP-01**: User can photograph a vinyl label and the shutter returns to the camera immediately, with no blocking spinner
 - [x] **CAP-02**: A framing guide overlay shows where to place the record sleeve, sized for a whole 12" sleeve rather than a label close-up
 - [x] **CAP-03**: A thumbnail strip shows every vinyl scanned so far in this session with its per-item resolution status
 - [ ] **CAP-04**: User can scan 20 vinyls in one session without the app stalling, running out of memory, or thermally throttling
@@ -54,7 +54,7 @@ key transitions, that re-optimises when you add more.
 ### Metadata Resolution
 
 - [x] **RES-01**: Each candidate track resolves to an artist and a title, or is explicitly marked as failed
-- [ ] **RES-02**: Resolution runs in the background per vinyl, with at most 3 requests in flight, and per-item status visible in the UI
+- [x] **RES-02**: Resolution runs in the background per vinyl, with at most 3 requests in flight, and per-item status visible in the UI
 - [x] **RES-03**: Discogs supplies release, artist, label and format; MusicBrainz is the fallback
 - [x] **RES-08**: When a catalogue number is present it is used as the primary Discogs key ahead of artist+title — it read cleanly on 6 of 12 fixtures and is far more discriminating for white labels
 - [x] **RES-04**: A match above 0.75 normalised similarity is accepted, 0.50–0.75 is queued for user confirmation, below 0.50 is rejected
@@ -181,7 +181,7 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SEG-06 | Act II — Phase 6 | Complete — 06 |
 | SEG-08 | Act II — Phase 6 | Complete — 06 |
 | RES-01 | Act II — Phase 7 | Complete |
-| RES-02 | Act II — Phase 7 | Partial — engine done (max 3 in flight, proved by peak-in-flight); the per-item UI status is wired in Phase 11 |
+| RES-02 | Act II — Phase 7 + Phase 8 | **COMPLETE.** Engine in Phase 7 (max 3 in flight, proved by peak-in-flight). Phase 8 wired it: `CrateDetailView` resolves every record with no identity, one at a time, and `AppModel.resolving` drives a per-row "Resolving…" that appears and clears — asserted in the live walk, which fails if no per-item status is ever seen |
 | RES-03 | Act II — Phase 7 | Complete |
 | RES-04 | Act II — Phase 7 | Complete |
 | RES-05 | Act II — Phase 7 | Complete |
@@ -194,7 +194,7 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | BPM-04 | Act II — Phase 7 | Complete |
 | BPM-05 | Act II — Phase 7 | Complete |
 | BPM-06 | Act II — Phase 7 | Complete |
-| BPM-07 | Act II — Phase 7 | Partial — engine done (Track.needsManualBPM, identity kept, reason recorded); the manual-entry screen is Phase 12 |
+| BPM-07 | Act II — Phase 7 + Phase 8 | Partial, and one half further on. Engine in Phase 7 (Track.needsManualBPM, identity kept, reason recorded). Phase 8 put the reason ON SCREEN: the not-included row now prints the ladder's own words ("no SoundCloud upload matched", "no identity to look a tempo up by") instead of the sequencer's "No BPM yet" — photographed in 03-walk-07-done-sequenced.png. The manual-ENTRY path is still Phase 12, so this stays open |
 | BPM-08 | Act II — Phase 7 | Complete |
 | BPM-09 | Act II — Phase 7 | Complete |
 | SEQ-01 | Act II — Phase 9 | Complete — 01-03 |
@@ -206,8 +206,8 @@ one phase; verification/hygiene phases (4, 11, 14) intentionally carry no requir
 | SEQ-08 | Act II — Phase 5 | Complete — 05 |
 | SEQ-09 | Act II — Phase 5 | Complete — 05 |
 | SEQ-10 | Act II — Phase 5 | Complete — 05 |
-| CAP-01 | Act III — Phase 10 | Pending |
-| CAP-04 | Act III — Phase 10 | Pending |
+| CAP-01 | Act III — Phase 8 | **COMPLETE, measured.** The shutter is two-phase: `SleevePhotoSource.capture()` returns a `.reading` item the instant the photograph exists and `read()` follows. Measured in the live walk at 10-26 ms shutter-to-tile over 12 presses and 10-38 ms over 21, with **all twelve tiles observed still carrying `Reading`** while Vision ran. There is no spinner anywhere in the path. The live-camera half of the latency is UAT U2b |
+| CAP-04 | Act III — Phase 8 | Partial, and the missing half is named rather than fudged. Measured: 21 consecutive captures, each a full HEIC decode plus a Vision pass, with recognition latency going 1165 ms to 962 ms (first-five against last-five mean) — no degradation. NOT measured, and not claimed: memory and thermals, which a simulator sharing the Mac's envelope and running no camera pipeline cannot show. UAT U2c |
 | MAN-01 | Act III — Phase 12 | Pending |
 | MAN-02 | Act III — Phase 12 | Pending |
 | MAN-03 | Act III — Phase 12 | Pending |

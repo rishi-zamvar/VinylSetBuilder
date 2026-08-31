@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 06-PLAN.md — both OCR/segmentation gates MET on live runs; V12 CLOSED
-last_updated: "2026-08-30T23:10:00.000Z"
+stopped_at: Completed 08-PLAN.md — all four stubs swapped, ui-test 7/7 after each; the app runs the real pipeline end to end
+last_updated: "2026-08-31T00:20:00.000Z"
 last_activity: 2026-08-30
 progress:
   total_phases: 10
-  completed_phases: 6
-  total_plans: 26
-  completed_plans: 26
-  percent: 60
+  completed_phases: 8
+  total_plans: 28
+  completed_plans: 28
+  percent: 80
 ---
 
 # Project State
@@ -42,45 +42,55 @@ Three acts, strictly linear, no interleaving:
 
 ## Current Position
 
-Act: II of III
-Phase: 6 (OCR & Segmentation) — **DELIVERED 2026-08-30.**
-Plan: 06, complete. See `.planning/phases/06-ocr-segmentation/06-SUMMARY.md`.
-Status: **The engine can now read a sleeve and turn it into track lines.**
+Act: III of III
+Phase: 8 (Wiring & Camera) — **DELIVERED 2026-08-30.** Covers the roadmap's Phase 10 (The
+Camera, Live) and Phase 11 (The Swap).
+Plan: 08, complete. See `.planning/phases/08-wiring-camera/08-SUMMARY.md`.
+Status: **The app is no longer a shell. It photographs, reads, resolves and sequences.**
 
-        `./Scripts/test.sh` 236 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
-        `./Scripts/build-app.sh` SUCCEEDED · `./Scripts/ocr-score.sh` BASELINE HELD ×3 ·
-        `./Scripts/screenshots.sh` rc=0 first run · probe `SUSPECT: none (46 frames)` ·
-        UI suite 7 passed / 0 failed from the result bundle.
+        `./Scripts/test.sh` 315 green · `./Scripts/hygiene.sh` 9 pass 0 fail ·
+        `./Scripts/ui-test.sh` 7/7 from totalTestCount · `./Scripts/build-app.sh` SUCCEEDED ·
+        55 of 67 requirements.
 
-        **Measured, three identical runs.** `Scripts/ocr-score.sh` compiles the SHIPPING
-        recogniser and the SHIPPING segmenter into one macOS binary and runs real recognition
-        over `Tests/Fixtures/Labels/*.HEIC`. It never reads `ocr2_out.json` — a gate that scored
-        a recording would pass with the reader unplugged. Per-fixture scoring is committed to
-        `Artifacts/ocr/score-run{1,2,3}.json`, byte-identical apart from timings, with **zero
-        per-fixture verdict drift** against the spike's table.
+        **Four stubs out, one at a time, with the UI walk green at `totalTestCount=7` after
+        each.** `FixtureLineSegmenter` → `AngleClusterSegmenter`; `FixturePhotoSource` →
+        `SleeveCamera` + live Vision; no resolver → `TrackResolver` + `BPMLadder`; and the
+        sequencer path verified (`AsyncSequencer` was already the only one — the missing piece
+        was re-sequencing as each record resolves). `PhotoCapturing`, `FixtureLineSegmenter` and
+        `FixturePhotoSource` were DELETED, not left beside their replacements.
 
-        **The live run does NOT disagree with the recorded JSON.** Checked directly, both ways:
-        104 observations / 89 trusted with the same per-fixture split, and the shipped segmenter
-        gives the same 9 of 12, the same three misses and the same six catalogue numbers whether
-        fed `FixtureObservations` or live recognition.
+        **The end-to-end run, twice, on the twelve real photographs:** 3 sequenced
+        (172 / 174.8 / 175, adjacent gaps 2.8 and 0.2, inside the 4 BPM gate) + 9 not in the set
+        = 12 accounted for. Photographed at `Artifacts/screenshots/03-walk-07-done-sequenced.png`.
+        The nine excluded records print the ladder's own reason — `no SoundCloud upload matched`,
+        `no identity to look a tempo up by` — which is BPM-07's screen half.
 
-        **Three fixtures miss their track count, and none is a near miss of a good rule.**
-        IMG_0500 states only one side, so the side rule cannot fire and geometry leaves one line.
-        IMG_0501 sets `STAY FOCUSED` as two lines of type. IMG_0504 puts the artist BETWEEN its
-        two titles with only one angle cluster in the frame, so there is no cross-cluster repeat
-        to catch it. All three want a discography, which is Phase 7.
+        **CAP-01 measured directly:** shutter → tile 10-26 ms across twelve presses, and all
+        twelve tiles were observed still carrying `Reading` while Vision ran. The first
+        measurement of this was WRONG — `waitForExistence` polls once a second and reported
+        1.4 s for every press. A 20 ms poll on the identical code showed the truth.
 
-        **The one tuned constant is disclosed as tuned.** `lineGapFactor = 0.5` sits in the
-        middle of a four-wide plateau (0.4/0.5/0.6/0.7 all score 9; 0.3 → 8, 0.8 → 7, 1.5 → 6),
-        and `angleTolerance = 20°` in a four-wide one (10–25° → 9, 30–40° → 8). It was fitted to
-        these twelve fixtures and there is no held-out set. The plan quoted a throwaway
-        prototype's figures; the shipped implementation's are in the source comment and differ
-        on IMG_0500.
+        **CAP-04 is half done and says so.** 21 consecutive captures with recognition latency
+        going 1165 ms → 962 ms (no degradation). Memory and thermals are not measurable on a
+        simulator that shares the Mac's envelope and runs no camera pipeline — UAT U2c. Not one
+        line of the capture-DEVICE path has executed — UAT U2b. No preview layer was added —
+        UAT U2d, which is defect V10's closure condition.
 
-        **The gate was proved able to fail.** Baseline raised to 7 clean → `BASELINE NOT MET:
-        clean 6 < 7`, rc=1. `lineGapFactor` mutated to 1.5 → `usable 6 < 9`, and the Core unit
-        test reddens on the same mutation, so gate and suite are two witnesses rather than one
-        twice. Exit codes read from the process, never from a pipeline tail.
+        **V15 and V16 CLOSED.** V16 by the segmenter swap (IMG_0505 11 draft lines → 2, no
+        duplicates on any fixture). V15 by making the correction field wrap — and its premise
+        was measured FALSE on the way: the real segmenter makes the longest line LONGER, not
+        shorter. The first fix attempt also failed and is recorded: `.roundedBorder` caps a
+        vertical-axis field at two lines, both strings rendering at 44.00000000000003pt.
+
+        **The phase's most dangerous finding: a stale test bundle lies.** `rm -rf build` is not
+        enough. `ui-test.sh` ran, wrote a fresh `.xcresult`, and reported a failure against
+        source that no longer existed on disk. The zero-test guard cannot catch it, because the
+        count is 7. Clear `~/Library/Developer/Xcode/DerivedData/*` between runs.
+
+        **Live Vision on iOS is not byte-identical to the recorded macOS corpus.** 11 of 12
+        verdicts match; IMG_0507 reads Partial rather than Unread, IMG_0505 gives 13 observations
+        not 12, and the long untrusted read comes back at 0.50 not 0.30. Assertions that pinned
+        counts or row indices were rewritten onto what the requirement actually says.
 
 ## What already exists — 113 tests green, committed
 
