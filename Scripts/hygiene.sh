@@ -129,7 +129,11 @@ fi
 #                       requirements implement it". Phase 7 did: TrackResolver conforms to it
 #                       and TrackResolverTests exercise it, so the entry is now inert and is
 #                       kept only so the reasoning survives. It can go when someone tidies.
-G5_ALLOW="^(VinylSetBuilderApp|OrderingMode|MetadataResolving)$"
+# PreviewView: the UIView backing CameraPreview's live camera layer. SwiftUI instantiates it
+# through UIViewRepresentable, so nothing outside its own file ever names it — the same shape
+# as VinylSetBuilderApp. It is emphatically not dead: delete it and the device shows a black
+# rectangle where the camera should be, which is the exact bug it was written to fix.
+G5_ALLOW="^(VinylSetBuilderApp|OrderingMode|MetadataResolving|PreviewView)$"
 g5_decls() {  # $1 = root, $2 = visibility prefix ("public " or "")
     local f
     while IFS= read -r f; do
