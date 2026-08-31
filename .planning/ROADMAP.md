@@ -628,3 +628,20 @@ against the wrong sequencer and retrofitting later is the expensive order.
   their absence structurally rather than counting them in a ledger.
 - **V3** stays open pending the owner's answer on U8. ~~**V12** is Phase 6's.~~ **V12 CLOSED by Phase 6 (commit `f980c1a`).** V15 and V16 were also Phase 6's and are RE-CARRIED to **Phase 11** (corrected 2026-08-30 — they said Phase 8, meaning the stub-swap phase, which this roadmap numbers 11): the de-duplication they need is built and measured, but reaches the inspect sheet only when `CaptureView`'s `FixtureLineSegmenter` is swapped, which is Phase 11's per-swap-verified job.
 - Act I's phase criterion clause 2 remains **NOT MET** and is not laundered by this compression.
+
+---
+
+## Phase 11 — Post-MVP (not started)
+
+A real landing place for work found by running the finished product on real records, so that
+carried defects have an owner rather than a vague "later". Added 2026-08-30 because
+`ledger-check.py` correctly refused a carry to "next milestone" — a phase that does not exist
+cannot re-open an artefact.
+
+| Item | What |
+|---|---|
+| **V22** | V19's root cause survives in `vinylctl` — label from one candidate, tempo from another. Bind label, badges and reason to a single candidate in the CLI renderer, as the app already does. |
+| **V23** | The sequencer cannot prefer the tighter cluster. Tie-break on mean adjacent BPM delta before Camelot — a one-line change to the rank tuple. |
+| **V3** | Unresolved records display as `Vinyl 1`. Blocked on the owner's U8 decision, which matters more now that tier-0 measured 0%. |
+| **CAP-04** | 20 records without thermal throttling — device-only, needs the phone. |
+| V6, V9, V10, V17, V20 | Carried from Acts I–III with reasons in the ledger. |
